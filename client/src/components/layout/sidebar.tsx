@@ -10,7 +10,8 @@ import {
   Calendar,
   FileText,
   MessageSquare,
-  LogOut
+  LogOut,
+  CheckCircle
 } from 'lucide-react';
 
 interface User {
@@ -65,7 +66,8 @@ export function Sidebar() {
     { name: 'Care Plans', icon: <ClipboardList className="h-5 w-5" />, id: 'care-plans', path: '/care-plans' },
     { name: 'Calendar', icon: <Calendar className="h-5 w-5" />, id: 'calendar', path: '/calendar' },
     { name: 'Reports', icon: <FileText className="h-5 w-5" />, id: 'reports', path: '/reports' },
-    { name: 'Messages', icon: <MessageSquare className="h-5 w-5" />, id: 'messages', path: '/messages' }
+    { name: 'Messages', icon: <MessageSquare className="h-5 w-5" />, id: 'messages', path: '/messages' },
+    { name: 'CQC Compliance', icon: <CheckCircle className="h-5 w-5" />, id: 'cqc-compliance', path: '/cqc-compliance' }
   ];
 
   const handleLogout = () => {
