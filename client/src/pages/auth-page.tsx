@@ -67,13 +67,27 @@ export default function AuthPage() {
       if (response.ok) {
         const data = await response.json();
         console.log("Login successful:", data);
-        navigate("/");
+        // After successful login, check if we can access the user data
+        return fetch("/api/user", {
+          credentials: "include",
+        });
       } else {
         const text = await response.text();
         console.error("Login failed:", text);
         alert(`Login failed: ${text}`);
+        throw new Error(text);
       }
-    }).catch(error => {
+    })
+    .then(response => {
+      if (response && response.ok) {
+        console.log("User data verified, redirecting to home page");
+        window.location.href = "/"; // Use direct navigation instead of wouter navigate
+      } else {
+        console.error("Failed to verify user session after login");
+        alert("Login succeeded but session verification failed. Please try again.");
+      }
+    })
+    .catch(error => {
       console.error("Login error:", error);
       alert(`Login error: ${error.message}`);
     });
@@ -95,13 +109,28 @@ export default function AuthPage() {
       if (response.ok) {
         const data = await response.json();
         console.log("Registration successful:", data);
-        navigate("/");
+        
+        // After successful registration, check if we can access the user data
+        return fetch("/api/user", {
+          credentials: "include",
+        });
       } else {
         const text = await response.text();
         console.error("Registration failed:", text);
         alert(`Registration failed: ${text}`);
+        throw new Error(text);
       }
-    }).catch(error => {
+    })
+    .then(response => {
+      if (response && response.ok) {
+        console.log("User data verified after registration, redirecting to home page");
+        window.location.href = "/"; // Use direct navigation instead of wouter navigate
+      } else {
+        console.error("Failed to verify user session after registration");
+        alert("Registration succeeded but session verification failed. Please try logging in.");
+      }
+    })
+    .catch(error => {
       console.error("Registration error:", error);
       alert(`Registration error: ${error.message}`);
     });
@@ -156,8 +185,6 @@ export default function AuthPage() {
   };
 
   const onRegisterSubmit = (values: z.infer<typeof registerSchema>) => {
-    // Remove confirmPassword as it's not in the API schema
-    const { confirmPassword, ...registerData } = values;
     handleRegister(values);
   };
 
