@@ -1,0 +1,907 @@
+Let's continue implementing the CQCWellLedCompliance component:
+
+```typescript
+// Continuation of client/src/components/CQCWellLedCompliance.tsx
+
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="subtitle2">
+                    Evidence Items (3)
+                  </Typography>
+                  <Button
+                    size="small"
+                    startIcon={<UploadIcon />}
+                    onClick={() => handleOpenUploadDialog('reg17_1')}
+                    disabled={!isOnline}
+                  >
+                    Add Evidence
+                  </Button>
+                </Box>
+                
+                <List dense>
+                  <ListItem>
+                    <ListItemIcon>
+                      <DocumentIcon color="primary" />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="Governance Framework Document" 
+                      secondary="Last updated: 15/02/2025" 
+                    />
+                    <Button size="small">View</Button>
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <AssignmentIcon color="primary" />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="Staff Meeting Minutes - Governance Review" 
+                      secondary="Added: 10/01/2025" 
+                    />
+                    <Button size="small">View</Button>
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <DocumentIcon color="primary" />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="System Process Audit Report" 
+                      secondary="Added: 05/01/2025" 
+                    />
+                    <Button size="small">View</Button>
+                  </ListItem>
+                </List>
+              </AccordionDetails>
+            </Accordion>
+            
+            <Accordion sx={{ mb: 2 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <SecurityIcon sx={{ mr: 1 }} />
+                    <Typography variant="subtitle1">
+                      17(2)(a) Assess, monitor and mitigate risks
+                    </Typography>
+                  </Box>
+                  <Chip 
+                    label="Partial Compliance" 
+                    size="small"
+                    color="warning"
+                    sx={{ ml: 2 }}
+                  />
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="body2" paragraph>
+                  Such systems or processes must enable the registered person, in particular, to assess, monitor and mitigate the risks relating to the health, safety and welfare of service users and others who may be at risk.
+                </Typography>
+                
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                  <Typography variant="subtitle2">
+                    Action Required:
+                  </Typography>
+                  <Typography variant="body2">
+                    Update risk assessment procedure to include environmental safety risks and provide evidence of implementation.
+                  </Typography>
+                </Alert>
+                
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="subtitle2">
+                    Evidence Items (2)
+                  </Typography>
+                  <Button
+                    size="small"
+                    startIcon={<UploadIcon />}
+                    onClick={() => handleOpenUploadDialog('reg17_2a')}
+                    disabled={!isOnline}
+                  >
+                    Add Evidence
+                  </Button>
+                </Box>
+                
+                <List dense>
+                  <ListItem>
+                    <ListItemIcon>
+                      <DocumentIcon color="primary" />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="Risk Management Policy" 
+                      secondary="Last updated: 20/03/2025" 
+                    />
+                    <Button size="small">View</Button>
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <AssignmentIcon color="primary" />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="Staff Training Records - Risk Assessment" 
+                      secondary="Added: 15/02/2025" 
+                    />
+                    <Button size="small">View</Button>
+                  </ListItem>
+                </List>
+              </AccordionDetails>
+            </Accordion>
+            
+            <Accordion sx={{ mb: 2 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <PeopleIcon sx={{ mr: 1 }} />
+                    <Typography variant="subtitle1">
+                      17(2)(b) Assess, monitor and improve quality/safety
+                    </Typography>
+                  </Box>
+                  <Chip 
+                    label="Compliant" 
+                    size="small"
+                    color="success"
+                    sx={{ ml: 2 }}
+                  />
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="body2" paragraph>
+                  Such systems or processes must enable the registered person, in particular, to assess, monitor and improve the quality and safety of the services provided in the carrying on of the regulated activity (including the quality of the experience of service users in receiving those services).
+                </Typography>
+                
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="subtitle2">
+                    Evidence Items (4)
+                  </Typography>
+                  <Button
+                    size="small"
+                    startIcon={<UploadIcon />}
+                    onClick={() => handleOpenUploadDialog('reg17_2b')}
+                    disabled={!isOnline}
+                  >
+                    Add Evidence
+                  </Button>
+                </Box>
+                
+                <List dense>
+                  <ListItem>
+                    <ListItemIcon>
+                      <DocumentIcon color="primary" />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="Quality Assurance Framework" 
+                      secondary="Last updated: 10/03/2025" 
+                    />
+                    <Button size="small">View</Button>
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <ChartIcon color="primary" />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="Service User Satisfaction Survey Results" 
+                      secondary="Added: 05/03/2025" 
+                    />
+                    <Button size="small">View</Button>
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <TimelineIcon color="primary" />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="Quality Improvement Action Plan" 
+                      secondary="Added: 01/03/2025" 
+                    />
+                    <Button size="small">View</Button>
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <DocumentIcon color="primary" />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary="Audit Schedule and Results" 
+                      secondary="Added: 15/02/2025" 
+                    />
+                    <Button size="small">View</Button>
+                  </ListItem>
+                </List>
+              </AccordionDetails>
+            </Accordion>
+            
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<DownloadIcon />}
+                onClick={handleGenerateReport}
+                size="large"
+                disabled={!isOnline}
+              >
+                Generate Full CQC Well-Led Compliance Report
+              </Button>
+            </Box>
+          </>
+        )}
+      </Box>
+      
+      {/* Evidence Dialog */}
+      <Dialog
+        open={evidenceDialog}
+        onClose={handleCloseEvidenceDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        {selectedEvidence && (
+          <>
+            <DialogTitle>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                {selectedEvidence.type === 'document' ? 
+                  <DocumentIcon sx={{ mr: 1 }} color="primary" /> : 
+                  <AssignmentIcon sx={{ mr: 1 }} color="primary" />
+                }
+                <Typography>
+                  {selectedEvidence.title}
+                </Typography>
+              </Box>
+            </DialogTitle>
+            <DialogContent dividers>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Evidence Type:
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    {selectedEvidence.type}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Related Regulation:
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    {selectedEvidence.regulationCode}: {selectedEvidence.regulationName}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Date Added:
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    {formatDistanceToNow(new Date(selectedEvidence.dateAdded), { addSuffix: true })}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Added By:
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    {selectedEvidence.addedBy}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Description:
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    {selectedEvidence.description}
+                  </Typography>
+                </Grid>
+                {selectedEvidence.type === 'document' && selectedEvidence.fileUrl && (
+                  <Grid item xs={12}>
+                    <Box sx={{ border: 1, borderColor: 'divider', p: 2, textAlign: 'center' }}>
+                      {selectedEvidence.fileType === 'application/pdf' ? (
+                        <iframe 
+                          src={selectedEvidence.fileUrl} 
+                          width="100%" 
+                          height="400px" 
+                          title={selectedEvidence.title}
+                        />
+                      ) : selectedEvidence.fileType.startsWith('image/') ? (
+                        <img 
+                          src={selectedEvidence.fileUrl} 
+                          alt={selectedEvidence.title} 
+                          style={{ maxWidth: '100%', maxHeight: '400px' }} 
+                        />
+                      ) : (
+                        <Typography variant="body1">
+                          Preview not available. Click download to view the file.
+                        </Typography>
+                      )}
+                    </Box>
+                  </Grid>
+                )}
+              </Grid>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                startIcon={<DownloadIcon />}
+                onClick={() => {
+                  if (selectedEvidence.fileUrl) {
+                    window.open(selectedEvidence.fileUrl, '_blank');
+                  }
+                }}
+              >
+                Download
+              </Button>
+              <Button onClick={handleCloseEvidenceDialog}>
+                Close
+              </Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
+      
+      {/* Upload Dialog */}
+      <Dialog
+        open={uploadDialog}
+        onClose={handleCloseUploadDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Upload Evidence</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" paragraph sx={{ mt: 1 }}>
+            Upload documents, images, or other evidence to support CQC compliance for the Well-Led domain.
+          </Typography>
+          
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Evidence Title"
+                name="title"
+                value={uploadForm.title}
+                onChange={handleUploadFormChange}
+                required
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Evidence Type</InputLabel>
+                <Select
+                  name="evidenceType"
+                  value={uploadForm.evidenceType}
+                  onChange={handleUploadFormChange as any}
+                  label="Evidence Type"
+                >
+                  <MenuItem value="document">Document</MenuItem>
+                  <MenuItem value="image">Image</MenuItem>
+                  <MenuItem value="audit">Audit Result</MenuItem>
+                  <MenuItem value="meeting">Meeting Minutes</MenuItem>
+                  <MenuItem value="training">Training Record</MenuItem>
+                  <MenuItem value="policy">Policy/Procedure</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth margin="normal">
+                <InputLabel>Related Regulation</InputLabel>
+                <Select
+                  name="regulationId"
+                  value={uploadForm.regulationId}
+                  onChange={handleUploadFormChange as any}
+                  label="Related Regulation"
+                >
+                  <MenuItem value="">Select a regulation</MenuItem>
+                  {regulations.map(reg => (
+                    <MenuItem key={reg.id} value={reg.id}>
+                      Regulation {reg.code}: {reg.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Description"
+                name="description"
+                value={uploadForm.description}
+                onChange={handleUploadFormChange}
+                multiline
+                rows={3}
+                margin="normal"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  border: '1px dashed',
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                  p: 3,
+                  textAlign: 'center',
+                  mb: 2
+                }}
+              >
+                <input
+                  accept="application/pdf,image/*,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                  style={{ display: 'none' }}
+                  id="evidence-file-upload"
+                  type="file"
+                  onChange={handleFileChange}
+                />
+                <label htmlFor="evidence-file-upload">
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    startIcon={<UploadIcon />}
+                    disabled={!isOnline}
+                  >
+                    Select File
+                  </Button>
+                </label>
+                
+                {uploadFile && (
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="body1">
+                      {uploadFile.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {(uploadFile.size / 1024 / 1024).toFixed(2)} MB
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseUploadDialog}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleUploadEvidence}
+            variant="contained"
+            color="primary"
+            disabled={!uploadFile || !uploadForm.title || !isOnline}
+          >
+            Upload Evidence
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Paper>
+  );
+};
+
+export default CQCWellLedCompliance;
+```
+
+## 11. Integration into Pages
+
+Now, let's create pages that use these components:
+
+```typescript
+// client/src/pages/ServiceUserProfile.tsx
+
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Paper,
+  Tabs,
+  Tab,
+  Divider,
+  Chip,
+  Avatar,
+  Grid,
+  Alert,
+  CircularProgress
+} from '@mui/material';
+import {
+  Person as PersonIcon,
+  Assignment as CareIcon,
+  MedicalServices as MedicationIcon,
+  Assessment as RiskIcon,
+  EventNote as NotesIcon,
+  Link as LinkIcon
+} from '@mui/icons-material';
+import VoiceDocumentation from '../components/VoiceDocumentation';
+import HealthcareIntegration from '../components/HealthcareIntegration';
+import api from '../services/api';
+import { useOffline } from '../contexts/OfflineContext';
+
+// Tab panel component
+interface TabPanelProps {
+  children: React.ReactNode;
+  value: number;
+  index: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`profile-tabpanel-${index}`}
+      aria-labelledby={`profile-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ py: 3 }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
+
+interface ServiceUserProfileProps {}
+
+const ServiceUserProfile: React.FC<ServiceUserProfileProps> = () => {
+  const { id } = useParams<{ id: string }>();
+  const { isOnline, getData } = useOffline();
+  const [tabValue, setTabValue] = useState(0);
+  const [serviceUser, setServiceUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const fetchServiceUser = async () => {
+      try {
+        setLoading(true);
+        
+        let userData;
+        
+        if (isOnline) {
+          // Online - fetch from API
+          const response = await api.get(`/service-users/${id}`);
+          userData = response.data;
+        } else {
+          // Offline - get from IndexedDB
+          userData = await getData('serviceUsers', id || '');
+        }
+        
+        if (!userData) {
+          throw new Error('Service user not found');
+        }
+        
+        setServiceUser(userData);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching service user:', err);
+        setError('Failed to load service user information. Please try again later.');
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchServiceUser();
+    }
+  }, [id, isOnline, getData]);
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
+
+  const handleNoteCreated = (note: any) => {
+    // In a real app, you might want to refresh the notes list or show a notification
+    console.log('New note created:', note);
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error || !serviceUser) {
+    return (
+      <Alert severity="error" sx={{ mt: 3 }}>
+        {error || 'Service user not found'}
+      </Alert>
+    );
+  }
+
+  // If no real data, use mock data for development
+  const mockServiceUser = {
+    id: id,
+    firstName: 'John',
+    lastName: 'Smith',
+    dateOfBirth: '1945-06-15',
+    gender: 'Male',
+    nhsNumber: '123 456 7890',
+    address: '15 Oak Lane, London, SW1A 1AA',
+    phone: '020 7946 0958',
+    status: 'Active',
+    primaryCondition: 'Diabetes Type 2',
+    riskLevel: 'Medium'
+  };
+
+  const effectiveServiceUser = serviceUser.firstName ? serviceUser : mockServiceUser;
+
+  return (
+    <Box sx={{ width: '100%' }}>
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={2} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Avatar
+              sx={{ width: 100, height: 100, fontSize: 40, bgcolor: 'primary.main' }}
+            >
+              {effectiveServiceUser.firstName.charAt(0) + effectiveServiceUser.lastName.charAt(0)}
+            </Avatar>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Typography variant="h4" component="h1">
+              {effectiveServiceUser.firstName} {effectiveServiceUser.lastName}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+              NHS Number: {effectiveServiceUser.nhsNumber} | DOB: {new Date(effectiveServiceUser.dateOfBirth).toLocaleDateString()}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+              <Chip 
+                label={effectiveServiceUser.status} 
+                color={effectiveServiceUser.status === 'Active' ? 'success' : 'default'} 
+                size="small" 
+              />
+              <Chip 
+                label={effectiveServiceUser.primaryCondition} 
+                variant="outlined" 
+                size="small" 
+              />
+              <Chip 
+                label={`Risk: ${effectiveServiceUser.riskLevel}`} 
+                color={
+                  effectiveServiceUser.riskLevel === 'High' ? 'error' :
+                  effectiveServiceUser.riskLevel === 'Medium' ? 'warning' :
+                  'success'
+                } 
+                size="small" 
+              />
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              <strong>Address:</strong> {effectiveServiceUser.address}
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              <strong>Phone:</strong> {effectiveServiceUser.phone}
+            </Typography>
+            <Typography variant="body2">
+              <strong>Gender:</strong> {effectiveServiceUser.gender}
+            </Typography>
+          </Grid>
+        </Grid>
+      </Paper>
+      
+      <Paper sx={{ mb: 3 }}>
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          aria-label="service user tabs"
+          variant="scrollable"
+          scrollButtons="auto"
+        >
+          <Tab icon={<PersonIcon />} label="Overview" />
+          <Tab icon={<CareIcon />} label="Care Plan" />
+          <Tab icon={<RiskIcon />} label="Risk Assessments" />
+          <Tab icon={<MedicationIcon />} label="Medications" />
+          <Tab icon={<NotesIcon />} label="Notes" />
+          <Tab icon={<LinkIcon />} label="Healthcare Integration" />
+        </Tabs>
+        
+        <Divider />
+        
+        <TabPanel value={tabValue} index={0}>
+          <Typography variant="h6" gutterBottom>
+            Service User Overview
+          </Typography>
+          <Typography variant="body1" paragraph>
+            This is the overview for {effectiveServiceUser.firstName} {effectiveServiceUser.lastName}. It would include summary information about their care needs, recent activities, and key information.
+          </Typography>
+        </TabPanel>
+        
+        <TabPanel value={tabValue} index={1}>
+          <Typography variant="h6" gutterBottom>
+            Care Plan
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Care plan information would be displayed here.
+          </Typography>
+        </TabPanel>
+        
+        <TabPanel value={tabValue} index={2}>
+          <Typography variant="h6" gutterBottom>
+            Risk Assessments
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Risk assessment information would be displayed here.
+          </Typography>
+        </TabPanel>
+        
+        <TabPanel value={tabValue} index={3}>
+          <Typography variant="h6" gutterBottom>
+            Medications
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Medication information would be displayed here.
+          </Typography>
+        </TabPanel>
+        
+        <TabPanel value={tabValue} index={4}>
+          <Typography variant="h6" gutterBottom>
+            Care Notes
+          </Typography>
+          
+          <VoiceDocumentation 
+            serviceUserId={id || ''} 
+            onNoteCreated={handleNoteCreated} 
+          />
+          
+          <Typography variant="body1" paragraph>
+            Recent care notes would be displayed here.
+          </Typography>
+        </TabPanel>
+        
+        <TabPanel value={tabValue} index={5}>
+          <Typography variant="h6" gutterBottom>
+            Healthcare System Integration
+          </Typography>
+          
+          <HealthcareIntegration serviceUserId={id || ''} />
+        </TabPanel>
+      </Paper>
+    </Box>
+  );
+};
+
+export default ServiceUserProfile;
+```
+
+```typescript
+// client/src/pages/CQCEvidencePage.tsx
+
+import React from 'react';
+import { Box, Typography, Paper } from '@mui/material';
+import CQCWellLedCompliance from '../components/CQCWellLedCompliance';
+
+const CQCEvidencePage: React.FC = () => {
+  return (
+    <Box sx={{ width: '100%' }}>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          CQC Compliance Management
+        </Typography>
+        
+        <Typography variant="body1" paragraph>
+          This dashboard allows you to manage compliance with Care Quality Commission (CQC) regulations, track evidence, and prepare for inspections. The 'Well-led' domain focuses on leadership, governance, and continuous improvement.
+        </Typography>
+      </Box>
+      
+      <CQCWellLedCompliance />
+    </Box>
+  );
+};
+
+export default CQCEvidencePage;
+```
+
+## 12. Server-Side Implementation of Healthcare Integration API
+
+Let's implement the server-side API for healthcare system integration:
+
+```typescript
+// server/src/routes/integration.ts
+
+import express from 'express';
+import { authenticateJWT } from '../middleware/auth';
+
+const router = express.Router();
+
+// Middleware to ensure authenticated access
+router.use(authenticateJWT);
+
+// Get linked healthcare systems for a service user
+router.get('/systems/:serviceUserId', async (req, res) => {
+  try {
+    const { serviceUserId } = req.params;
+    
+    // In a real implementation, this would come from a database
+    // For this mockup, we'll return sample data
+    const linkedSystems = [
+      {
+        id: 'sys_1',
+        systemName: 'NHS Digital',
+        systemType: 'nhs',
+        patientId: '123456789',
+        autoSync: true,
+        serviceUserId,
+        linkedAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+      },
+      {
+        id: 'sys_2',
+        systemName: 'Local GP Practice',
+        systemType: 'gp',
+        patientId: 'GP-987654',
+        autoSync: false,
+        serviceUserId,
+        linkedAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ];
+    
+    res.status(200).json(linkedSystems);
+  } catch (error) {
+    console.error('Error getting linked systems:', error);
+    res.status(500).json({ error: 'Failed to get linked systems' });
+  }
+});
+
+// Link a new healthcare system
+router.post('/link', async (req, res) => {
+  try {
+    const { serviceUserId, systemName, systemType, patientId, autoSync } = req.body;
+    
+    // Validate required fields
+    if (!serviceUserId || !systemName || !systemType || !patientId) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    
+    // In a real implementation, this would save to a database
+    // For this mockup, we'll just return success
+    
+    const newSystem = {
+      id: `sys_${Date.now()}`,
+      systemName,
+      systemType,
+      patientId,
+      autoSync: autoSync === undefined ? true : autoSync,
+      serviceUserId,
+      linkedAt: new Date().toISOString()
+    };
+    
+    res.status(201).json(newSystem);
+  } catch (error) {
+    console.error('Error linking system:', error);
+    res.status(500).json({ error: 'Failed to link healthcare system' });
+  }
+});
+
+// Unlink a healthcare system
+router.delete('/link/:systemId', async (req, res) => {
+  try {
+    const { systemId } = req.params;
+    
+    // In a real implementation, this would delete from a database
+    // For this mockup, we'll just return success
+    
+    res.status(200).json({ success: true, message: 'System unlinked successfully' });
+  } catch (error) {
+    console.error('Error unlinking system:', error);
+    res.status(500).json({ error: 'Failed to unlink healthcare system' });
+  }
+});
+
+// Get medications from external systems for a service user
+router.get('/medications/:serviceUserId', async (req, res) => {
+  try {
+    const { serviceUserId } = req.params;
+    
+    // In a real implementation, this would come from external systems via FHIR/HL7
+    // For this mockup, we'll return sample data
+    const medications = [
+      {
+        id: 'med_1',
+        name: 'Atorvastatin',
+        dosage: '20mg once daily',
+        source: 'NHS Digital',
+        lastUpdated: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        imported: true,
+        serviceUserId
+      },
+      {
+        id: 'med_2',
+        name: 'Amlodipine',
+        dosage: '5mg once daily',
+        source: 'NHS Digital',
+        lastUpdated: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        imported: false,
+        serviceUserId
+      },
+      {
+        id: 'med_3',
+        name: 'Paracetamol',
+        dosage: '500mg as required for pain',
+        source: 'Local GP Practice',
+        lastUpdated: new Date(Date.now() - 
