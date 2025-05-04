@@ -10,6 +10,9 @@ import Reports from "@/pages/reports";
 import Messages from "@/pages/messages";
 import CQCCompliancePage from "@/pages/cqc-compliance";
 import { AppShell } from "@/components/layout/app-shell";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { useErrorNotification } from "@/hooks/use-notifications";
+import { useEffect } from "react";
 
 function Router() {
   return (
@@ -28,9 +31,40 @@ function Router() {
 }
 
 function App() {
+  const showErrorNotification = useErrorNotification();
+  
+  // Listen for online/offline events
+  useEffect(() => {
+    const handleOnline = () => {
+      console.log('Application is online');
+    };
+    
+    const handleOffline = () => {
+      showErrorNotification(
+        'You are offline',
+        'Some features may be limited until your connection is restored.'
+      );
+    };
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    // Check initial state
+    if (!navigator.onLine) {
+      handleOffline();
+    }
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [showErrorNotification]);
+  
   return (
     <div className="min-h-screen bg-background">
-      <Router />
+      <ErrorBoundary>
+        <Router />
+      </ErrorBoundary>
     </div>
   );
 }

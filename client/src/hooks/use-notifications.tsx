@@ -2,6 +2,12 @@ import React, { createContext, useState, useContext, useEffect, ReactNode, useCa
 import { X, CheckCircle, AlertTriangle, AlertCircle, Info } from 'lucide-react';
 import { v4 as uuid } from 'uuid';
 import { useToast } from './use-toast';
+import { 
+  Toast,
+  ToastAction,
+  ToastDescription,
+  ToastTitle 
+} from '@/components/ui/toast';
 
 export type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
@@ -59,10 +65,11 @@ export const NotificationsProvider: React.FC<{ children: ReactNode }> = ({ child
       variant: notification.type === 'error' ? 'destructive' : 'default',
       title: notification.title,
       description: notification.message,
-      action: notification.actionLabel && notification.actionFn ? {
-        label: notification.actionLabel,
-        onClick: notification.actionFn
-      } : undefined,
+      action: notification.actionLabel && notification.actionFn ? (
+        <ToastAction altText={notification.actionLabel} onClick={notification.actionFn}>
+          {notification.actionLabel}
+        </ToastAction>
+      ) : undefined,
     });
 
     // Auto remove non-sticky notifications after their duration

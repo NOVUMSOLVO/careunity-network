@@ -92,7 +92,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 /**
  * Hook-based wrapper for ErrorBoundary component
  */
-export function withErrorBoundary<P>(
+export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
   errorBoundaryProps: Omit<ErrorBoundaryProps, 'children'> = {}
 ): React.ComponentType<P> {
