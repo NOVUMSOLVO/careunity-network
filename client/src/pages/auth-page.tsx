@@ -29,8 +29,18 @@ const registerSchema = insertUserSchema.extend({
 
 // Create empty versions of the mutation objects to use as fallbacks
 const emptyMutation = {
-  mutate: () => {},
+  mutate: (data: any) => {
+    console.log("Auth provider not available. Would have submitted:", data);
+    alert("Authentication service is not available at the moment. Please try again later.");
+  },
   isPending: false,
+  isLoading: false,
+  isSuccess: false,
+  isError: false,
+  error: null,
+  data: null,
+  reset: () => {},
+  variables: null,
 };
 
 export default function AuthPage() {

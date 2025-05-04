@@ -8,6 +8,7 @@ import CarePlans from "@/pages/care-plans";
 import Calendar from "@/pages/calendar";
 import Reports from "@/pages/reports";
 import Messages from "@/pages/messages";
+import { AppShell } from "@/components/layout/app-shell";
 
 function Router() {
   return (
@@ -25,7 +26,11 @@ function Router() {
 }
 
 function App() {
-  return <Router />;
+  return (
+    <div className="min-h-screen bg-background">
+      <Router />
+    </div>
+  );
 }
 
 export default App;
