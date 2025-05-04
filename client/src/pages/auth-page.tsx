@@ -14,9 +14,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2 } from 'lucide-react';
 
 // Login schema is a subset of the user schema
-const loginSchema = insertUserSchema.pick({
-  username: true,
-  password: true,
+const loginSchema = z.object({
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(1, "Password is required"),
 });
 
 // Register schema adds password confirmation
