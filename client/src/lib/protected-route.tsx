@@ -1,6 +1,15 @@
-import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 import { Redirect, Route } from "wouter";
+import { useEffect, useState } from "react";
+
+interface User {
+  id: number;
+  username: string;
+  fullName: string;
+  email: string;
+  role: string;
+  // Add any other user fields you need
+}
 
 export function ProtectedRoute({
   path,
@@ -9,35 +18,62 @@ export function ProtectedRoute({
   path: string;
   component: () => React.JSX.Element;
 }) {
-  try {
-    const { user, isLoading } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
 
-    if (isLoading) {
-      return (
-        <Route path={path}>
-          <div className="flex items-center justify-center min-h-screen">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        </Route>
-      );
-    }
+  useEffect(() => {
+    // Function to check if user is authenticated
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/user', {
+          credentials: 'include',
+        });
 
-    if (!user) {
-      return (
-        <Route path={path}>
-          <Redirect to="/auth" />
-        </Route>
-      );
-    }
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
+      } catch (err: any) {
+        console.error('Failed to check authentication:', err);
+        setError(err);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    return <Route path={path} component={Component} />;
-  } catch (error) {
-    // If useAuth fails (e.g., AuthProvider not available), redirect to auth page
-    console.error("Auth provider not available:", error);
+    checkAuth();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <Route path={path}>
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </Route>
+    );
+  }
+
+  if (error) {
+    console.error("Authentication check failed:", error);
     return (
       <Route path={path}>
         <Redirect to="/auth" />
       </Route>
     );
   }
+
+  if (!user) {
+    return (
+      <Route path={path}>
+        <Redirect to="/auth" />
+      </Route>
+    );
+  }
+
+  return <Route path={path} component={Component} />;
 }

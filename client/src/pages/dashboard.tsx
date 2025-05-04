@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@/hooks/use-auth';
 import { AppShell } from '@/components/layout/app-shell';
 import { PageHeader } from '@/components/ui/page-header';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
@@ -11,9 +10,44 @@ import { VoiceRecorder } from '@/components/ui/voice-recorder';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
+interface User {
+  id: number;
+  username: string;
+  fullName: string;
+  email: string;
+  role: string;
+  // Add any other user fields you need
+}
+
 export default function Dashboard() {
-  const { user } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
   const { toast } = useToast();
+  
+  // Fetch user data directly
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/user', {
+          credentials: 'include',
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        setUser(null);
+      } finally {
+        setIsAuthLoading(false);
+      }
+    };
+    
+    fetchUser();
+  }, []);
 
   // Fetch dashboard data
   const { data, isLoading } = useQuery({
