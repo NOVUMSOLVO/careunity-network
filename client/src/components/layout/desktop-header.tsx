@@ -1,15 +1,49 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'wouter';
-import { useAuth } from '@/hooks/use-auth';
 import { AvatarWithStatus } from '@/components/ui/avatar-with-status';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Bell, Search, Sun, Moon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
+interface User {
+  id: number;
+  username: string;
+  fullName: string;
+  email: string;
+  role: string;
+  profileImage?: string | null;
+  // Add any other user fields you need
+}
+
 export function DesktopHeader() {
-  const { user } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const { theme, setTheme } = useTheme();
+  
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/user', {
+          credentials: 'include',
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchUser();
+  }, []);
   
   // Generate initials for avatar fallback
   const initials = user?.fullName

@@ -1,16 +1,50 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'wouter';
-import { useAuth } from '@/hooks/use-auth';
 import { AvatarWithStatus } from '@/components/ui/avatar-with-status';
 import { Button } from '@/components/ui/button';
 import { Bell, Menu } from 'lucide-react';
+
+interface User {
+  id: number;
+  username: string;
+  fullName: string;
+  email: string;
+  role: string;
+  profileImage?: string | null;
+  // Add any other user fields you need
+}
 
 interface MobileHeaderProps {
   onOpenSidebar: () => void;
 }
 
 export function MobileHeader({ onOpenSidebar }: MobileHeaderProps) {
-  const { user } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/user', {
+          credentials: 'include',
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchUser();
+  }, []);
   
   // Generate initials for avatar fallback
   const initials = user?.fullName

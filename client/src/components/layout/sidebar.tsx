@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'wouter';
-import { useAuth } from '@/hooks/use-auth';
 import { AvatarWithStatus } from '@/components/ui/avatar-with-status';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -14,6 +13,16 @@ import {
   LogOut
 } from 'lucide-react';
 
+interface User {
+  id: number;
+  username: string;
+  fullName: string;
+  email: string;
+  role: string;
+  profileImage?: string | null;
+  // Add any other user fields you need
+}
+
 interface NavigationItem {
   name: string;
   icon: React.ReactNode;
@@ -23,7 +32,32 @@ interface NavigationItem {
 
 export function Sidebar() {
   const [location] = useLocation();
-  const { user, logoutMutation } = useAuth();
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('/api/user', {
+          credentials: 'include',
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchUser();
+  }, []);
   
   const navigationItems: NavigationItem[] = [
     { name: 'Dashboard', icon: <BarChart3 className="h-5 w-5" />, id: 'dashboard', path: '/' },
@@ -35,7 +69,21 @@ export function Sidebar() {
   ];
 
   const handleLogout = () => {
-    logoutMutation.mutate();
+    fetch('/api/logout', {
+      method: 'POST',
+      credentials: 'include'
+    })
+    .then(response => {
+      if (response.ok) {
+        // Redirect to login page
+        window.location.href = '/auth';
+      } else {
+        console.error('Logout failed');
+      }
+    })
+    .catch(error => {
+      console.error('Logout error:', error);
+    });
   };
 
   // Generate initials for avatar fallback
