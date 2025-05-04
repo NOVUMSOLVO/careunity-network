@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useAuth } from '@/hooks/use-auth';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -149,13 +148,35 @@ export default function AuthPage() {
     isLoading: false
   };
   
-  const user = null;
+  const [user, setUser] = useState(null);
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
 
-  // Redirect if already logged in
-  if (user) {
-    navigate("/");
-    return null;
-  }
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/user', {
+          credentials: 'include',
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+          // Redirect if user is already logged in
+          window.location.href = '/';
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Failed to check authentication:', error);
+        setUser(null);
+      } finally {
+        setIsAuthChecking(false);
+      }
+    };
+    
+    checkAuth();
+  }, []);
 
   // Login form
   const loginForm = useForm<z.infer<typeof loginSchema>>({

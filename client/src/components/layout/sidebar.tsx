@@ -153,10 +153,10 @@ export function Sidebar() {
             />
             <div className="ml-3 flex-1">
               <p className="text-sm font-medium text-gray-700 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-white">
-                {user?.fullName}
+                {user?.fullName || 'User'}
               </p>
               <p className="text-xs font-medium text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300">
-                {user?.role.charAt(0).toUpperCase() + user?.role.slice(1)}
+                {user?.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : 'Guest'}
               </p>
             </div>
             <Button
