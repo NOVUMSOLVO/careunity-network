@@ -2,6 +2,8 @@ import React from 'react';
 import { AppShell } from '@/components/layout/app-shell';
 import { PageHeader } from '@/components/ui/page-header';
 import CQCWellLedCompliance from '@/components/cqc/CQCWellLedCompliance';
+import CQCSafeCompliance from '@/components/cqc/CQCSafeCompliance';
+import CQCEffectiveCompliance from '@/components/cqc/CQCEffectiveCompliance';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function CQCCompliancePage() {
@@ -28,17 +30,11 @@ export default function CQCCompliancePage() {
             </TabsContent>
             
             <TabsContent value="safe">
-              <div className="py-12 px-4 text-center">
-                <h3 className="text-xl font-medium text-gray-500 mb-4">Safe Compliance</h3>
-                <p>This section is under development and will be available soon.</p>
-              </div>
+              <CQCSafeCompliance />
             </TabsContent>
             
             <TabsContent value="effective">
-              <div className="py-12 px-4 text-center">
-                <h3 className="text-xl font-medium text-gray-500 mb-4">Effective Compliance</h3>
-                <p>This section is under development and will be available soon.</p>
-              </div>
+              <CQCEffectiveCompliance />
             </TabsContent>
             
             <TabsContent value="caring">
