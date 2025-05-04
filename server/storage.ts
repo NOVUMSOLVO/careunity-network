@@ -63,7 +63,10 @@ export interface IStorage {
   updateRiskAssessment(id: number, riskAssessment: Partial<InsertRiskAssessment>): Promise<RiskAssessment | undefined>;
   
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
+  
+  // Seed initial data
+  seedInitialData(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -76,7 +79,7 @@ export class MemStorage implements IStorage {
   private notesStore: Map<number, Note>;
   private riskAssessmentsStore: Map<number, RiskAssessment>;
   
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
   
   userCurrentId: number;
   serviceUserCurrentId: number;
@@ -350,10 +353,19 @@ export class MemStorage implements IStorage {
     return updatedRiskAssessment;
   }
   
-  // Seed initial data for demo purposes
+  // Seed initial data
+  async seedInitialData(): Promise<void> {
+    // Already handled in constructor
+    this._seedInitialData();
+  }
+  
+  // Private method to seed initial data for demo purposes
   private _seedInitialData() {
     // This will be populated by the server when needed
+    console.log("In-memory storage initialized");
   }
 }
 
-export const storage = new MemStorage();
+// Switch to database storage
+import { DatabaseStorage } from "./database-storage";
+export const storage = new DatabaseStorage();
