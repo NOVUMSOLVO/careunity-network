@@ -35,9 +35,15 @@ export default function ServiceUsers() {
     const categories = [];
     
     // Convert needs JSON string to object if needed
-    const needs = typeof serviceUser.needs === 'string' 
-      ? JSON.parse(serviceUser.needs) 
-      : serviceUser.needs;
+    let needs = serviceUser.needs;
+    if (typeof serviceUser.needs === 'string') {
+      try {
+        needs = JSON.parse(serviceUser.needs);
+      } catch (error) {
+        console.error('Error parsing needs JSON:', error);
+        needs = {}; // Use empty object as fallback
+      }
+    }
     
     if (needs) {
       if (needs.personalCare) {
