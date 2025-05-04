@@ -20,8 +20,14 @@ const loginSchema = z.object({
 });
 
 // Register schema adds password confirmation
-const registerSchema = insertUserSchema.extend({
+const registerSchema = z.object({
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(1, "Password is required"),
   confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
+  fullName: z.string().min(1, "Full name is required"),
+  email: z.string().email("Invalid email address"),
+  role: z.enum(["caregiver", "manager", "admin", "family"]),
+  phoneNumber: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],
@@ -47,20 +53,74 @@ export default function AuthPage() {
   const [activeTab, setActiveTab] = useState<string>('login');
   const [location, navigate] = useLocation();
   
-  // Try to use the auth context, but don't crash if it's not available
-  let auth = { 
-    loginMutation: emptyMutation, 
-    registerMutation: emptyMutation, 
-    user: null 
+  // Define the login and register functions that will work without the auth provider
+  const handleLogin = (values: z.infer<typeof loginSchema>) => {
+    console.log("Login with:", values);
+    fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+      credentials: "include",
+    }).then(async (response) => {
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Login successful:", data);
+        navigate("/");
+      } else {
+        const text = await response.text();
+        console.error("Login failed:", text);
+        alert(`Login failed: ${text}`);
+      }
+    }).catch(error => {
+      console.error("Login error:", error);
+      alert(`Login error: ${error.message}`);
+    });
+  };
+
+  const handleRegister = (values: z.infer<typeof registerSchema>) => {
+    // Remove confirmPassword as it's not in the API schema
+    const { confirmPassword, ...registerData } = values;
+    console.log("Register with:", registerData);
+    
+    fetch("/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(registerData),
+      credentials: "include",
+    }).then(async (response) => {
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Registration successful:", data);
+        navigate("/");
+      } else {
+        const text = await response.text();
+        console.error("Registration failed:", text);
+        alert(`Registration failed: ${text}`);
+      }
+    }).catch(error => {
+      console.error("Registration error:", error);
+      alert(`Registration error: ${error.message}`);
+    });
+  };
+
+  // Create objects that match the expected mutation interface
+  const loginMutation = {
+    mutate: handleLogin,
+    isPending: false,
+    isLoading: false
   };
   
-  try {
-    auth = useAuth();
-  } catch (error) {
-    console.error("Auth provider not available:", error);
-  }
+  const registerMutation = {
+    mutate: handleRegister,
+    isPending: false,
+    isLoading: false
+  };
   
-  const { loginMutation, registerMutation, user } = auth;
+  const user = null;
 
   // Redirect if already logged in
   if (user) {
@@ -92,13 +152,13 @@ export default function AuthPage() {
   });
 
   const onLoginSubmit = (values: z.infer<typeof loginSchema>) => {
-    loginMutation.mutate(values);
+    handleLogin(values);
   };
 
   const onRegisterSubmit = (values: z.infer<typeof registerSchema>) => {
     // Remove confirmPassword as it's not in the API schema
     const { confirmPassword, ...registerData } = values;
-    registerMutation.mutate(registerData);
+    handleRegister(values);
   };
 
   return (
