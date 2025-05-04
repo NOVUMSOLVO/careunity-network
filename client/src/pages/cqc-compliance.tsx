@@ -4,6 +4,8 @@ import { PageHeader } from '@/components/ui/page-header';
 import CQCWellLedCompliance from '@/components/cqc/CQCWellLedCompliance';
 import CQCSafeCompliance from '@/components/cqc/CQCSafeCompliance';
 import CQCEffectiveCompliance from '@/components/cqc/CQCEffectiveCompliance';
+import CQCCaringCompliance from '@/components/cqc/CQCCaringCompliance';
+import CQCResponsiveCompliance from '@/components/cqc/CQCResponsiveCompliance';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function CQCCompliancePage() {
@@ -38,17 +40,11 @@ export default function CQCCompliancePage() {
             </TabsContent>
             
             <TabsContent value="caring">
-              <div className="py-12 px-4 text-center">
-                <h3 className="text-xl font-medium text-gray-500 mb-4">Caring Compliance</h3>
-                <p>This section is under development and will be available soon.</p>
-              </div>
+              <CQCCaringCompliance />
             </TabsContent>
             
             <TabsContent value="responsive">
-              <div className="py-12 px-4 text-center">
-                <h3 className="text-xl font-medium text-gray-500 mb-4">Responsive Compliance</h3>
-                <p>This section is under development and will be available soon.</p>
-              </div>
+              <CQCResponsiveCompliance />
             </TabsContent>
           </Tabs>
         </div>
