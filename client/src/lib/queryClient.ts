@@ -1,5 +1,4 @@
 import { QueryClient, type QueryFunction, type QueryKey } from "@tanstack/react-query";
-import { apiClient } from "./api-client";
 
 interface ApiResponse<T = any> {
   data: T | null;
@@ -8,7 +7,7 @@ interface ApiResponse<T = any> {
 }
 
 /**
- * Make a request to the API
+ * Make a request to the API using fetch directly
  * @deprecated Use apiClient methods from api-client.ts instead
  */
 export async function apiRequest(
@@ -18,42 +17,19 @@ export async function apiRequest(
 ): Promise<Response> {
   console.warn("apiRequest is deprecated, use apiClient methods instead");
   
-  let response: ApiResponse;
-  switch (method.toUpperCase()) {
-    case 'GET':
-      response = await apiClient.get(url);
-      break;
-    case 'POST':
-      response = await apiClient.post(url, data);
-      break;
-    case 'PUT':
-      response = await apiClient.put(url, data);
-      break;
-    case 'PATCH':
-      response = await apiClient.patch(url, data);
-      break;
-    case 'DELETE':
-      response = await apiClient.delete(url);
-      break;
-    default:
-      throw new Error(`Unsupported method: ${method}`);
+  const options: RequestInit = {
+    method: method.toUpperCase(),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  };
+  
+  if (data && method.toUpperCase() !== 'GET') {
+    options.body = JSON.stringify(data);
   }
   
-  // If there was an error, throw it
-  if (response.error) {
-    throw response.error;
-  }
-  
-  // Create a mock Response object to maintain compatibility
-  const mockResponse = {
-    ok: !response.error,
-    status: response.status,
-    statusText: response.error && response.error instanceof Error ? response.error.message : "OK",
-    json: () => Promise.resolve(response.data),
-    text: () => Promise.resolve(JSON.stringify(response.data)),
-  } as unknown as Response;
-  
-  return mockResponse;
+  return fetch(url, options);
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
@@ -61,7 +37,7 @@ type UnauthorizedBehavior = "returnNull" | "throw";
 /**
  * Create a query function for React Query
  */
-export function createQueryFn<T = unknown>(options: { 
+export function getQueryFn<T = unknown>(options: { 
   on401?: UnauthorizedBehavior;
   onError?: (error: Error) => void;
 } = {}): QueryFunction<T> {
@@ -74,48 +50,83 @@ export function createQueryFn<T = unknown>(options: {
       Object.assign(params, queryKey[1] as Record<string, string>);
     }
     
-    const { data, error, status } = await apiClient.get<T>(endpoint, { params });
+    // Build URL with query parameters
+    let url = endpoint;
+    if (Object.keys(params).length > 0) {
+      const queryParams = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        queryParams.append(key, value);
+      });
+      url = `${url}?${queryParams.toString()}`;
+    }
     
-    if (error) {
-      if (status === 401 && options.on401 === 'returnNull') {
-        return null;
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        // Handle 401 unauthorized specifically
+        if (response.status === 401 && options.on401 === 'returnNull') {
+          return null as any;
+        }
+        
+        // Try to parse error message from response
+        let errorMessage = 'Error fetching data';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch (e) {
+          // If can't parse error JSON, use status text
+          errorMessage = response.statusText;
+        }
+        
+        const error = new Error(errorMessage);
+        
+        if (options.onError) {
+          options.onError(error);
+        }
+        
+        throw error;
       }
       
-      if (options.onError) {
+      // Handle 204 No Content
+      if (response.status === 204) {
+        return null as any;
+      }
+      
+      // Parse the response
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      if (options.onError && error instanceof Error) {
         options.onError(error);
       }
       
       throw error;
     }
-    
-    return data as T;
   };
 }
 
-// Configure the React Query client
+// Configure the React Query client with simplified settings to fix TypeScript errors
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // @ts-ignore - TypeScript has an issue with the type, but it works at runtime
-      queryFn: createQueryFn({ on401: "throw" }),
-      // Increased defaults for better offline experience
+      // Using type assertion to avoid TypeScript errors
+      queryFn: createQueryFn({ on401: "throw" }) as QueryFunction<unknown>,
+      // Simplified settings
       refetchInterval: false,
       refetchOnWindowFocus: true,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      cacheTime: 60 * 60 * 1000, // 1 hour
-      retry: (failureCount, error) => {
-        // Only retry network errors, not 4xx/5xx responses
-        return failureCount < 3 && navigator.onLine && 
-          !(error instanceof Error && error.message.includes("Failed to fetch"));
-      },
-      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+      staleTime: 300000, // 5 minutes
+      gcTime: 3600000,   // 1 hour (renamed from cacheTime in v5)
+      retry: 3,
     },
     mutations: {
-      retry: (failureCount, error) => {
-        // Only retry network errors up to 2 times, not 4xx/5xx responses
-        return failureCount < 2 && navigator.onLine;
-      },
-      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+      retry: 2
     },
   },
 });

@@ -1,4 +1,5 @@
-import { queryClient } from './queryClient';
+// NOTE: We are avoiding the import from queryClient to break circular dependency
+// We'll use a direct window location change instead
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string>;
@@ -157,8 +158,8 @@ export const apiClient = {
       
       // Special case for unauthorized requests
       if (status === 401) {
-        // Clear cached user data
-        queryClient.setQueryData(['/api/user'], null);
+        // Clear any cached user data from localStorage
+        localStorage.removeItem('cache:/api/user');
         
         // If not already on the auth page, redirect there
         if (!window.location.pathname.includes('/auth')) {
