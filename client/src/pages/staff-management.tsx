@@ -920,7 +920,7 @@ export default function StaffManagement() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={() => alert('All candidates will be displayed in the next release')}>View All Candidates</Button>
+                <Button className="w-full" onClick={() => setViewCandidatesModalOpen(true)}>View All Candidates</Button>
               </CardFooter>
             </Card>
             
@@ -960,7 +960,7 @@ export default function StaffManagement() {
                 <Button 
                   variant="outline" 
                   className="w-full" 
-                  onClick={() => alert('New position form will be displayed in the next release')}
+                  onClick={() => setNewPositionModalOpen(true)}
                 >
                   <PlusCircle className="h-4 w-4 mr-2" />
                   Add New Position
@@ -1000,7 +1000,7 @@ export default function StaffManagement() {
                 <Button 
                   variant="outline" 
                   className="w-full" 
-                  onClick={() => alert('All applications will be displayed in the next release')}
+                  onClick={() => setViewApplicationsModalOpen(true)}
                 >
                   View All Applications
                 </Button>
@@ -1081,6 +1081,21 @@ export default function StaffManagement() {
         staffId={reviewModalData.staffId}
         missedVisits={reviewModalData.missedVisits}
         month={reviewModalData.month}
+      />
+      
+      <NewPositionModal
+        isOpen={newPositionModalOpen}
+        onClose={() => setNewPositionModalOpen(false)}
+      />
+      
+      <ViewCandidatesModal
+        isOpen={viewCandidatesModalOpen}
+        onClose={() => setViewCandidatesModalOpen(false)}
+      />
+      
+      <ViewApplicationsModal
+        isOpen={viewApplicationsModalOpen}
+        onClose={() => setViewApplicationsModalOpen(false)}
       />
     </div>
   );
