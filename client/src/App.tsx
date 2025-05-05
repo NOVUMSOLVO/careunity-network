@@ -12,6 +12,7 @@ import Settings from '@/pages/settings';
 import IncidentReporting from '@/pages/incident-reporting';
 import StaffManagement from '@/pages/staff-management';
 import SimpleRbacManagement from '@/pages/simple-rbac';
+import PermissionsManagement from '@/pages/permissions-management';
 import Reports from '@/pages/reports';
 import AuthPage from '@/pages/auth-page';
 import FamilyPortal from '@/pages/family-portal';
@@ -117,6 +118,7 @@ function App() {
           {/* Administration */}
           <Route path="/staff-management" component={StaffManagement} />
           <Route path="/rbac-management" component={SimpleRbacManagement} />
+          <Route path="/permissions-management" component={PermissionsManagement} />
           
           {/* User Tools */}
           <Route path="/messages" component={Messages} />
