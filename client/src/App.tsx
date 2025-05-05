@@ -75,12 +75,12 @@ function LandingPage() {
         </p>
         
         <div className="flex justify-center mt-6 space-x-4">
-          <a href="/auth" className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
+          <Link href="/auth" className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
             Login
-          </a>
-          <a href="/auth?register=true" className="px-4 py-2 border border-indigo-600 text-indigo-600 rounded hover:bg-indigo-50 transition">
+          </Link>
+          <Link href="/auth?register=true" className="px-4 py-2 border border-indigo-600 text-indigo-600 rounded hover:bg-indigo-50 transition">
             Register
-          </a>
+          </Link>
         </div>
       </div>
     </div>
