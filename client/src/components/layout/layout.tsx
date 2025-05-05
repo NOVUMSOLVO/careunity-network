@@ -12,7 +12,8 @@ import {
   Menu, 
   X, 
   AlertTriangle,
-  Briefcase 
+  Briefcase,
+  ShieldCheck
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -36,6 +37,7 @@ export function Layout({ children }: LayoutProps) {
     { href: '/staff-management', icon: <Briefcase size={20} />, label: 'Staff Management' },
     { href: '/incident-reporting', icon: <AlertTriangle size={20} />, label: 'Incident Reporting' },
     { href: '/cqc-compliance', icon: <BarChart3 size={20} />, label: 'CQC Compliance' },
+    { href: '/rbac-management', icon: <ShieldCheck size={20} />, label: 'Access Control' },
     { href: '/messages', icon: <MessageSquare size={20} />, label: 'Messages' },
     { href: '/settings', icon: <Settings size={20} />, label: 'Settings' },
   ];

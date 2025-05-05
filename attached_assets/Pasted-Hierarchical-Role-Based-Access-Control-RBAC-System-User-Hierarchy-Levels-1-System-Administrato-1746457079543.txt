@@ -1,0 +1,147 @@
+Hierarchical Role-Based Access Control (RBAC) System:
+
+User Hierarchy Levels:
+1. System Administrator
+2. Regional/Area Manager
+3. Service/Branch Manager
+4. Care Coordinator/Supervisor
+5. Senior Care Worker
+6. Care Worker
+7. Office Administrator
+8. Finance/Payroll Staff
+9. Service User/Family Portal
+
+Access Control Framework:
+
+1. System Administrator:
+   - Full system access with no restrictions
+   - User management and role assignment capabilities
+   - System configuration and customization
+   - Access to all branches/locations
+   - Database and backup management
+   - Audit trail review capabilities
+   - Custom role creation abilities
+
+2. Regional/Area Manager:
+   - Multi-branch/location access
+   - Regional performance dashboards
+   - Cross-branch reporting and analytics
+   - Strategic planning tools
+   - Resource allocation between branches
+   - Regional budget management
+   - Access to all service users and staff within region
+   - Cannot modify system configurations
+   - Limited user management (can't create admin accounts)
+
+3. Service/Branch Manager:
+   - Single branch/location access
+   - Full access to all staff and service users within branch
+   - Staff recruitment and termination capabilities
+   - Complete reporting suite for their branch
+   - Budget management for branch
+   - Contract management tools
+   - Service user assessment approval
+   - Incident investigation tools
+   - Cannot access other branches' data
+   - Cannot modify system-wide settings
+
+4. Care Coordinator/Supervisor:
+   - Full allocation rights for their assigned teams
+   - Staff scheduling and rota management
+   - Care plan approval capabilities
+   - Service user record access (within assigned caseload)
+   - Basic reporting for their team
+   - Staff supervision recording
+   - Risk assessment management
+   - Medication administration record access
+   - Cannot access payroll information
+   - Cannot approve new service users without manager review
+
+5. Senior Care Worker:
+   - Limited allocation rights (for their team only)
+   - Care plan contribution but not final approval
+   - Assessment input capabilities
+   - Team messaging and coordination
+   - Shift handover management
+   - Incident reporting initiation
+   - Limited reporting access
+   - Cannot access HR records or detailed staff information
+   - Cannot modify care plans without review
+
+6. Care Worker:
+   - View-only access to their own schedule
+   - Access to care plans for assigned service users only
+   - Visit logging and documentation
+   - Medication administration recording
+   - Incident reporting (initiation only)
+   - Cannot view other staff schedules
+   - Cannot modify care plans or assessments
+   - Cannot see business/financial information
+
+7. Office Administrator:
+   - Document management
+   - Basic staff record maintenance
+   - Service user record data entry
+   - Schedule viewing capabilities
+   - Communication management
+   - Cannot modify care plans or allocations
+   - Limited financial information access
+   - Cannot approve assessments or care plans
+
+8. Finance/Payroll Staff:
+   - Invoice generation and management
+   - Payroll processing and reporting
+   - Financial dashboard access
+   - Budget vs. actual reporting
+   - Time and attendance verification
+   - Limited access to staff records (employment details only)
+   - Cannot access care plans or medical information
+   - Cannot modify schedules or allocations
+
+9. Service User/Family Portal:
+   - View scheduled visits
+   - See assigned care workers
+   - Access to own care plan summary
+   - Communication with care team
+   - Feedback submission
+   - Invoice/statement viewing
+   - Cannot access other service users' information
+   - Cannot modify care plans or schedules
+
+Implementation Features:
+
+1. Dynamic Permission Management:
+   - Granular permission controls for each function
+   - Permission inheritance based on hierarchy
+   - Custom permission exceptions capability
+   - Temporary elevated access with expiration
+   - Emergency access protocols
+
+2. Data Visibility Controls:
+   - Geographic restrictions (branch/region based)
+   - Service user caseload restrictions
+   - Staff team restrictions
+   - Field-level security (hide sensitive data fields)
+   - Document classification levels
+
+3. Action-Based Restrictions:
+   - View-only vs. edit capabilities
+   - Approval workflows with hierarchy enforcement
+   - Action logging and accountability
+   - Delegation capabilities with oversight
+
+4. Security Features:
+   - Two-factor authentication for sensitive operations
+   - Role-specific login session timeouts
+   - IP restriction options for higher roles
+   - Audit logging of permission changes
+   - Attempted unauthorized access alerts
+
+5. Administrative Tools:
+   - Role assignment dashboard
+   - Permission template management
+   - User access review reporting
+   - Role comparison visualization
+   - Permission impact analysis before changes
+   - Bulk permission updates for organizational changes
+   - Unused account detection and management

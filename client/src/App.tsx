@@ -11,6 +11,7 @@ import Messages from '@/pages/messages';
 import Settings from '@/pages/settings';
 import IncidentReporting from '@/pages/incident-reporting';
 import StaffManagement from '@/pages/staff-management';
+import RbacManagement from '@/pages/rbac-management';
 import NotFound from '@/pages/not-found';
 
 // Test page to verify API connectivity
@@ -106,6 +107,7 @@ function App() {
           <Route path="/settings" component={Settings} />
           <Route path="/incident-reporting" component={IncidentReporting} />
           <Route path="/staff-management" component={StaffManagement} />
+          <Route path="/rbac-management" component={RbacManagement} />
           <Route component={NotFound} />
         </Switch>
       </Layout>
