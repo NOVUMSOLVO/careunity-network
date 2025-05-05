@@ -46,8 +46,45 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
+import { ScheduleSupervisionModal } from "@/components/modals/schedule-supervision-modal";
+import { MissedVisitReviewModal } from "@/components/modals/missed-visit-review-modal";
 
 export default function StaffManagement() {
+  // State for the supervision modal
+  const [supervisionModalData, setSupervisionModalData] = useState<{
+    isOpen: boolean;
+    staffName: string;
+    staffId: string;
+  }>({
+    isOpen: false,
+    staffName: "",
+    staffId: "",
+  });
+  
+  // State for the review modal
+  const [reviewModalData, setReviewModalData] = useState<{
+    isOpen: boolean;
+    staffName: string;
+    staffId: string;
+    missedVisits: number;
+    month: string;
+  }>({
+    isOpen: false,
+    staffName: "",
+    staffId: "",
+    missedVisits: 0,
+    month: "",
+  });
+  
+  // Function to close the supervision modal
+  const closeSupervisionModal = () => {
+    setSupervisionModalData({ ...supervisionModalData, isOpen: false });
+  };
+  
+  // Function to close the review modal
+  const closeReviewModal = () => {
+    setReviewModalData({ ...reviewModalData, isOpen: false });
+  };
   const [activeTab, setActiveTab] = useState<'staff' | 'training' | 'performance' | 'recruitment'>('staff');
   const [searchText, setSearchText] = useState('');
   const [selectedStaff, setSelectedStaff] = useState<number | null>(null);
