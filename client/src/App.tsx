@@ -10,6 +10,7 @@ import CQCCompliance from '@/pages/cqc-compliance';
 import Messages from '@/pages/messages';
 import Settings from '@/pages/settings';
 import IncidentReporting from '@/pages/incident-reporting';
+import StaffManagement from '@/pages/staff-management';
 import NotFound from '@/pages/not-found';
 
 // Test page to verify API connectivity
@@ -104,6 +105,7 @@ function App() {
           <Route path="/messages" component={Messages} />
           <Route path="/settings" component={Settings} />
           <Route path="/incident-reporting" component={IncidentReporting} />
+          <Route path="/staff-management" component={StaffManagement} />
           <Route component={NotFound} />
         </Switch>
       </Layout>
