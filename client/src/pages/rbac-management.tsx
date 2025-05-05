@@ -1056,19 +1056,19 @@ export default function RbacManagement() {
                   <div className="space-y-2">
                     <Button variant="outline" className="w-full justify-between">
                       <span>Basic Care Worker</span>
-                      <ArrowUpRight className="h-4 w-4" />
+                      <ChevronRight className="h-4 w-4" />
                     </Button>
                     <Button variant="outline" className="w-full justify-between">
                       <span>Coordinator Template</span>
-                      <ArrowUpRight className="h-4 w-4" />
+                      <ChevronRight className="h-4 w-4" />
                     </Button>
                     <Button variant="outline" className="w-full justify-between">
                       <span>Manager Template</span>
-                      <ArrowUpRight className="h-4 w-4" />
+                      <ChevronRight className="h-4 w-4" />
                     </Button>
                     <Button variant="outline" className="w-full justify-between">
                       <span>Read-Only Access</span>
-                      <ArrowUpRight className="h-4 w-4" />
+                      <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
                 </CardContent>
@@ -1442,7 +1442,7 @@ export default function RbacManagement() {
                   <Checkbox 
                     id="access-all-regions" 
                     defaultChecked={selectedRole !== null && selectedRole <= 1}
-                    disabled={selectedRole === 1} // System Admin always has access to all
+                    disabled={selectedRole === 1 || selectedRole === null} // System Admin always has access to all
                   />
                   <label htmlFor="access-all-regions" className="text-sm font-medium">
                     Access to all regions
@@ -1453,7 +1453,7 @@ export default function RbacManagement() {
                   <Checkbox 
                     id="access-all-branches" 
                     defaultChecked={selectedRole !== null && selectedRole <= 2}
-                    disabled={selectedRole === 1} // System Admin always has access to all
+                    disabled={selectedRole === 1 || selectedRole === null} // System Admin always has access to all
                   />
                   <label htmlFor="access-all-branches" className="text-sm font-medium">
                     Access to all branches within region
@@ -1464,7 +1464,7 @@ export default function RbacManagement() {
                   <Checkbox 
                     id="limit-to-branch" 
                     defaultChecked={selectedRole !== null && selectedRole >= 3 && selectedRole <= 8}
-                    disabled={selectedRole === 1} // System Admin always has access to all
+                    disabled={selectedRole === 1 || selectedRole === null} // System Admin always has access to all
                   />
                   <label htmlFor="limit-to-branch" className="text-sm font-medium">
                     Limit to assigned branch only
