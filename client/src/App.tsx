@@ -96,7 +96,12 @@ function App() {
           <Route path="/" component={Dashboard} />
           <Route path="/test" component={TestPage} />
           <Route path="/service-users" component={ServiceUsers} />
-          {/* Add other routes here */}
+          <Route path="/calendar" component={Calendar} />
+          <Route path="/care-plans" component={CarePlans} />
+          <Route path="/care-allocation" component={CareAllocation} />
+          <Route path="/cqc-compliance" component={CQCCompliance} />
+          <Route path="/messages" component={Messages} />
+          <Route path="/settings" component={Settings} />
           <Route component={NotFound} />
         </Switch>
       </Layout>
