@@ -1,4 +1,5 @@
-import { QueryClient, type QueryFunction, type QueryKey } from "@tanstack/react-query";
+import { type QueryFunction, type QueryKey } from "@tanstack/react-query";
+import { queryClient } from "./shared-query-client";
 
 interface ApiResponse<T = any> {
   data: T | null;
@@ -112,21 +113,5 @@ export function getQueryFn<T = unknown>(options: {
   };
 }
 
-// Configure the React Query client with simplified settings to fix TypeScript errors
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      // Using type assertion to avoid TypeScript errors
-      queryFn: getQueryFn({ on401: "throw" }) as QueryFunction<unknown>,
-      // Simplified settings
-      refetchInterval: false,
-      refetchOnWindowFocus: true,
-      staleTime: 300000, // 5 minutes
-      gcTime: 3600000,   // 1 hour (renamed from cacheTime in v5)
-      retry: 3,
-    },
-    mutations: {
-      retry: 2
-    },
-  },
-});
+// Export the shared query client instance
+export { queryClient };
