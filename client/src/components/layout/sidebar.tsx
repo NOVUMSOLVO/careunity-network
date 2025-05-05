@@ -82,6 +82,7 @@ export function Sidebar() {
     { name: 'Permissions', icon: <Lock className="h-5 w-5" />, id: 'permissions-management', path: '/permissions-management' },
     { name: 'Predictive Health', icon: <Activity className="h-5 w-5" />, id: 'predictive-health', path: '/predictive-health' },
     { name: 'Healthcare Integration', icon: <Globe className="h-5 w-5" />, id: 'healthcare-integration', path: '/healthcare-integration' },
+    { name: 'Community Resources', icon: <Home className="h-5 w-5" />, id: 'community-resources', path: '/community-resources' },
     { name: 'Route Optimizer', icon: <Navigation className="h-5 w-5" />, id: 'route-optimizer', path: '/route-optimizer' },
     { name: 'Family Portal', icon: <Heart className="h-5 w-5" />, id: 'family-portal', path: '/family-portal' },
     { name: 'Incident Reporting', icon: <AlertTriangle className="h-5 w-5" />, id: 'incident-reporting', path: '/incident-reporting' },
