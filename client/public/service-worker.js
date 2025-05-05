@@ -1,78 +1,31 @@
-// CareUnity Service Worker for offline support
-const CACHE_NAME = 'careunity-cache-v1';
-const OFFLINE_URL = '/offline.html';
+// Minimal service worker - pass-through only
+console.log('Service worker loaded - minimal version');
 
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/offline.html',
-  '/assets/index.css',
-  '/assets/index.js',
-];
-
-// Install a service worker
+// Skip waiting for the page to reload
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
+  self.skipWaiting();
 });
 
-// Cache and return requests
+// Simple pass-through fetch handler - no caching
 self.addEventListener('fetch', event => {
+  if (event.request.url.startsWith('chrome-extension:')) {
+    // Skip chrome extension URLs that cause errors
+    return;
+  }
+  
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-
-        return fetch(event.request)
-          .then(response => {
-            // Check if we received a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clone the response
-            const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                // Don't cache API calls
-                if (!event.request.url.includes('/api/')) {
-                  cache.put(event.request, responseToCache);
-                }
-              });
-
-            return response;
-          })
-          .catch(() => {
-            // If the request is for a page, return the offline page
-            if (event.request.mode === 'navigate') {
-              return caches.match(OFFLINE_URL);
-            }
-          });
+    fetch(event.request)
+      .catch(error => {
+        console.error('Fetch error in service worker:', error);
+        return new Response('Network error happened', {
+          status: 408,
+          headers: { 'Content-Type': 'text/plain' },
+        });
       })
   );
 });
 
-// Update service worker
+// Activate immediately
 self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
+  event.waitUntil(clients.claim());
 });
