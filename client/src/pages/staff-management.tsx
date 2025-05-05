@@ -61,6 +61,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScheduleSupervisionModal } from "@/components/modals/schedule-supervision-modal";
 import { MissedVisitReviewModal } from "@/components/modals/missed-visit-review-modal";
+import { ViewCandidatesModal } from "@/components/modals/view-candidates-modal";
+import { ViewApplicationsModal } from "@/components/modals/view-applications-modal";
+import { NewPositionModal } from "@/components/modals/new-position-modal";
 
 // Sample recruitment data
 const recruitmentData = {
@@ -103,6 +106,10 @@ export default function StaffManagement() {
     missedVisits: 0,
     month: ""
   });
+  
+  const [newPositionModalOpen, setNewPositionModalOpen] = useState(false);
+  const [viewCandidatesModalOpen, setViewCandidatesModalOpen] = useState(false);
+  const [viewApplicationsModalOpen, setViewApplicationsModalOpen] = useState(false);
   
   // Functions to close the modals
   const closeSupervisionModal = () => {
