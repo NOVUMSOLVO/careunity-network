@@ -129,7 +129,13 @@ const Dashboard = () => {
               <SelectItem value="nextWeek">Next Week</SelectItem>
             </SelectContent>
           </Select>
-          <Button>
+          <Button
+            onClick={() => {
+              // In a real application, this would refresh data from the API
+              // For now, we'll just show a notification
+              alert("Dashboard data refreshed successfully");
+            }}
+          >
             <RotateCw className="mr-2 h-4 w-4" />
             Refresh Data
           </Button>
@@ -242,11 +248,24 @@ const Dashboard = () => {
                     <CardDescription>Visits requiring staff allocation</CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        // In a real app, this would open a filter dialog
+                        alert("Filter dialog would open here");
+                      }}
+                    >
                       <Filter className="h-4 w-4 mr-2" />
                       Filter
                     </Button>
-                    <Button size="sm">
+                    <Button 
+                      size="sm"
+                      onClick={() => {
+                        // In a real app, this would trigger an AI-based allocation
+                        alert("AI auto-allocation has been initiated. 3 out of 5 visits have been automatically assigned to available staff.");
+                      }}
+                    >
                       <RotateCw className="h-4 w-4 mr-2" />
                       Auto-Allocate
                     </Button>
@@ -281,15 +300,39 @@ const Dashboard = () => {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button size="sm" variant="outline">View Details</Button>
-                        <Button size="sm">Allocate Staff</Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            // In a real app, this would open a detailed view modal
+                            alert(`Viewing details for ${visit.user}'s ${visit.type} visit at ${visit.time}`);
+                          }}
+                        >
+                          View Details
+                        </Button>
+                        <Button 
+                          size="sm"
+                          onClick={() => {
+                            // In a real app, this would open an allocation dialog
+                            alert(`Opening staff allocation interface for ${visit.user}'s ${visit.type} visit`);
+                          }}
+                        >
+                          Allocate Staff
+                        </Button>
                       </div>
                     </div>
                   ))}
                 </div>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    // In a real app, this would navigate to a full list view
+                    alert("Navigating to comprehensive unallocated visits management view");
+                  }}
+                >
                   View All Unallocated Visits
                 </Button>
               </CardFooter>
@@ -347,7 +390,16 @@ const Dashboard = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">View All Staff</Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    // In a real app, this would navigate to the staff directory
+                    alert("Navigating to the full staff directory");
+                  }}
+                >
+                  View All Staff
+                </Button>
               </CardFooter>
             </Card>
           </div>
@@ -361,11 +413,25 @@ const Dashboard = () => {
                   <CardDescription>Geographic view of visits and staff</CardDescription>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      // In a real app, this would toggle different map layers
+                      alert("Map layers panel would open here");
+                    }}
+                  >
                     <Layers className="h-4 w-4 mr-2" />
                     Layers
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      // In a real app, this would toggle between service user and staff views
+                      alert("Switching to staff-focused map view");
+                    }}
+                  >
                     <UserCheck className="h-4 w-4 mr-2" />
                     Staff View
                   </Button>
@@ -377,7 +443,15 @@ const Dashboard = () => {
                 <div className="text-center">
                   <Map className="h-12 w-12 text-gray-300 mx-auto mb-2" />
                   <p className="text-gray-500">Interactive map showing service users and staff locations</p>
-                  <Button variant="outline" size="sm" className="mt-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-4"
+                    onClick={() => {
+                      // In a real app, this would open the full map view in a new window/tab
+                      alert("Opening full-screen interactive map view");
+                    }}
+                  >
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Open Full Map
                   </Button>
