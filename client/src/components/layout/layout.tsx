@@ -1,6 +1,19 @@
 import React, { ReactNode, useState } from 'react';
 import { Link, useLocation } from 'wouter';
-import { Home, Calendar, Users, FilePlus, Users2, BarChart3, MessageSquare, Settings, Menu, X } from 'lucide-react';
+import { 
+  Home, 
+  Calendar, 
+  Users, 
+  FilePlus, 
+  Users2, 
+  BarChart3, 
+  MessageSquare, 
+  Settings, 
+  Menu, 
+  X, 
+  AlertTriangle,
+  Briefcase 
+} from 'lucide-react';
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,6 +33,8 @@ export function Layout({ children }: LayoutProps) {
     { href: '/service-users', icon: <Users size={20} />, label: 'Service Users' },
     { href: '/care-plans', icon: <FilePlus size={20} />, label: 'Care Plans' },
     { href: '/care-allocation', icon: <Users2 size={20} />, label: 'Care Allocation' },
+    { href: '/staff-management', icon: <Briefcase size={20} />, label: 'Staff Management' },
+    { href: '/incident-reporting', icon: <AlertTriangle size={20} />, label: 'Incident Reporting' },
     { href: '/cqc-compliance', icon: <BarChart3 size={20} />, label: 'CQC Compliance' },
     { href: '/messages', icon: <MessageSquare size={20} />, label: 'Messages' },
     { href: '/settings', icon: <Settings size={20} />, label: 'Settings' },
