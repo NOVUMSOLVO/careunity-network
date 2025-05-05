@@ -91,10 +91,13 @@ export default function ServiceUsers() {
           <h1 className="text-2xl font-bold text-gray-800">Service Users</h1>
           <p className="text-gray-600">Manage service user profiles and care plans</p>
         </div>
-        <Link href="/service-users/new" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
+        <button 
+          onClick={() => alert('Service user creation form will be displayed in the next release')}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer"
+        >
           <UserPlus size={18} />
           <span>Add Service User</span>
-        </Link>
+        </button>
       </div>
 
       {/* Search and filter */}
@@ -149,13 +152,19 @@ export default function ServiceUsers() {
                   Last updated: {new Date().toLocaleDateString()}
                 </div>
                 <div className="flex space-x-2">
-                  <Link href={`/care-plans?userId=${user.id}`} className="text-indigo-600 hover:text-indigo-800 flex items-center text-sm">
+                  <button 
+                    onClick={() => alert(`Care plans for ${user.firstName} ${user.lastName} will be displayed in the next release`)}
+                    className="text-indigo-600 hover:text-indigo-800 flex items-center text-sm"
+                  >
                     <FileText className="h-4 w-4 mr-1" />
                     Care Plans
-                  </Link>
-                  <Link href={`/service-users?id=${user.id}`} className="text-indigo-600 hover:text-indigo-800 flex items-center text-sm">
+                  </button>
+                  <button 
+                    onClick={() => alert(`Details for ${user.firstName} ${user.lastName} will be displayed in the next release`)}
+                    className="text-indigo-600 hover:text-indigo-800 flex items-center text-sm"
+                  >
                     View
-                  </Link>
+                  </button>
                 </div>
               </div>
             </div>

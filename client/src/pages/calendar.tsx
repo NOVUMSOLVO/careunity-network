@@ -1,5 +1,6 @@
-import React from 'react';
-import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Calendar as CalendarIcon, Clock, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { Link } from 'wouter';
 
 export default function Calendar() {
   // Mock data - would come from API in a real app
@@ -12,6 +13,8 @@ export default function Calendar() {
     { id: 4, time: '03:15 PM', client: 'Emily Wilson', type: 'Follow-up Check', duration: '30 min' },
   ];
 
+  const [showAppointmentForm, setShowAppointmentForm] = useState(false);
+  
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -19,7 +22,13 @@ export default function Calendar() {
           <h1 className="text-2xl font-bold text-gray-800">Calendar</h1>
           <p className="text-gray-600">Manage appointments and schedule</p>
         </div>
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <button 
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          onClick={() => {
+            setShowAppointmentForm(true);
+            alert('New Appointment form will be displayed in the next release');
+          }}
+        >
           <CalendarIcon size={18} />
           <span>New Appointment</span>
         </button>
@@ -28,11 +37,17 @@ export default function Calendar() {
       {/* Calendar Controls */}
       <div className="bg-white rounded-lg shadow p-4">
         <div className="flex justify-between items-center mb-4">
-          <button className="p-2 rounded-full hover:bg-gray-100">
+          <button 
+            className="p-2 rounded-full hover:bg-gray-100"
+            onClick={() => alert('Previous month will be displayed in the next release')}
+          >
             <ChevronLeft className="h-5 w-5 text-gray-600" />
           </button>
           <h2 className="text-xl font-semibold text-gray-800">{currentMonth}</h2>
-          <button className="p-2 rounded-full hover:bg-gray-100">
+          <button 
+            className="p-2 rounded-full hover:bg-gray-100"
+            onClick={() => alert('Next month will be displayed in the next release')}
+          >
             <ChevronRight className="h-5 w-5 text-gray-600" />
           </button>
         </div>
@@ -65,7 +80,12 @@ export default function Calendar() {
                   </div>
                 </div>
                 <div>
-                  <button className="text-sm text-indigo-600 hover:text-indigo-800">View Details</button>
+                  <button 
+                    className="text-sm text-indigo-600 hover:text-indigo-800"
+                    onClick={() => alert(`Details for appointment with ${appointment.client} will be displayed in the next release`)}
+                  >
+                    View Details
+                  </button>
                 </div>
               </div>
             </div>
