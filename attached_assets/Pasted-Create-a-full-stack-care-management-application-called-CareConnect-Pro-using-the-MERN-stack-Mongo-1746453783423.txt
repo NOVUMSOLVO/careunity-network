@@ -1,0 +1,60 @@
+Create a full-stack care management application called "CareConnect Pro" using the MERN stack (MongoDB, Express.js, React, Node.js) with the following features:
+
+Backend Requirements:
+1. MongoDB database with models for:
+   - Care Staff (qualifications, availability, location, preferences)
+   - Service Users (care needs, location, preferences, medical requirements)
+   - Care Visits (scheduling, duration, required skills)
+   - Allocation History (tracking which staff served which users)
+
+2. RESTful API endpoints for:
+   - CRUD operations for all models
+   - Advanced search with filtering (by location, skills, availability)
+   - Authentication and role-based authorization
+   - Real-time updates using Socket.io
+
+3. Intelligent allocation algorithm that considers:
+   - Geographic proximity (using geospatial queries)
+   - Staff qualifications matching service user needs
+   - Continuity of care preferences
+   - Working hour regulations
+   - Travel time between visits
+
+Frontend Requirements:
+1. Responsive React application with:
+   - Dashboard overview of daily allocation status
+   - Interactive calendar with drag-and-drop allocation
+   - Map view showing staff and service user locations
+   - Staff availability calendar
+   - Care plan management interface
+
+2. Modern UI components:
+   - Color-coded allocation status indicators
+   - Smart filtering and search capabilities
+   - Accessibility features for all users
+   - Dark/light mode toggle
+
+3. Mobile-first design for:
+   - Staff mobile experience (schedule viewing, check-in/out)
+   - Manager allocation tools on mobile devices
+   - Responsive layouts for all screen sizes
+
+Advanced Features:
+1. AI recommendations for optimal staff allocation
+2. Predictive analytics for staffing needs
+3. Automatic route optimization between visits
+4. Real-time notifications and alerts
+5. Comprehensive reporting dashboard
+6. Electronic call monitoring integration
+7. Medication management system
+8. Family/Service user portal
+
+Technical Requirements:
+1. Implement JWT authentication
+2. Use React Context API or Redux for state management
+3. Implement responsive design with Tailwind CSS
+4. Create comprehensive API documentation
+5. Implement unit and integration tests
+6. Set up CI/CD pipeline
+7. Ensure GDPR compliance with data handling
+8. Implement proper error handling and logging
