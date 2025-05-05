@@ -888,7 +888,14 @@ const Dashboard = () => {
                     <CardTitle>Medication Alerts</CardTitle>
                     <CardDescription>Medication issues requiring attention</CardDescription>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      // In a real app, this would open a filter panel for medication alerts
+                      window.alert("Opening medication alerts filter panel");
+                    }}
+                  >
                     <Filter className="h-4 w-4 mr-2" />
                     Filter
                   </Button>
@@ -973,7 +980,17 @@ const Dashboard = () => {
                     </div>
                     <div className="mt-2 flex justify-between">
                       <span className="text-sm">12 medications for 8 service users</span>
-                      <Button variant="ghost" size="sm" className="h-6 px-2">Details</Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 px-2"
+                        onClick={() => {
+                          // In a real app, this would open morning medication details
+                          window.alert("Opening morning medication schedule details");
+                        }}
+                      >
+                        Details
+                      </Button>
                     </div>
                   </div>
                   
@@ -988,7 +1005,17 @@ const Dashboard = () => {
                     </div>
                     <div className="mt-2 flex justify-between">
                       <span className="text-sm">15 medications for 10 service users</span>
-                      <Button variant="ghost" size="sm" className="h-6 px-2">Details</Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 px-2"
+                        onClick={() => {
+                          // In a real app, this would open midday medication details
+                          window.alert("Opening midday medication schedule details");
+                        }}
+                      >
+                        Details
+                      </Button>
                     </div>
                   </div>
                   
@@ -1003,7 +1030,17 @@ const Dashboard = () => {
                     </div>
                     <div className="mt-2 flex justify-between">
                       <span className="text-sm">18 medications for 12 service users</span>
-                      <Button variant="ghost" size="sm" className="h-6 px-2">Details</Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 px-2"
+                        onClick={() => {
+                          // In a real app, this would open evening medication details
+                          window.alert("Opening evening medication schedule details");
+                        }}
+                      >
+                        Details
+                      </Button>
                     </div>
                   </div>
                   
@@ -1018,7 +1055,17 @@ const Dashboard = () => {
                     </div>
                     <div className="mt-2 flex justify-between">
                       <span className="text-sm">9 medications for 7 service users</span>
-                      <Button variant="ghost" size="sm" className="h-6 px-2">Details</Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-6 px-2"
+                        onClick={() => {
+                          // In a real app, this would open night medication details
+                          window.alert("Opening night medication schedule details");
+                        }}
+                      >
+                        Details
+                      </Button>
                     </div>
                   </div>
                 </div>
