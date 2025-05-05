@@ -26,6 +26,7 @@ import {
   HelpCircle,
   Smartphone
 } from 'lucide-react';
+import { OfflineIndicator } from '@/components/ui/offline-indicator';
 
 interface LayoutProps {
   children: ReactNode;
@@ -258,6 +259,9 @@ export function Layout({ children }: LayoutProps) {
           </div>
           
           <div className="flex items-center space-x-3">
+            {/* Offline indicator */}
+            <OfflineIndicator showOnlineStatus={true} />
+            
             <div className="hidden sm:block bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
               {currentRole.charAt(0).toUpperCase() + currentRole.slice(1)}
             </div>

@@ -21,6 +21,7 @@ import NotFound from '@/pages/not-found';
 import PredictiveHealth from '@/pages/predictive-health';
 import HealthcareIntegration from '@/pages/healthcare-integration';
 import CommunityResources from '@/pages/community-resources-new';
+import Alerts from '@/pages/alerts';
 
 // Test page to verify API connectivity
 function TestPage() {
@@ -125,6 +126,7 @@ function App() {
           
           {/* User Tools */}
           <Route path="/messages" component={Messages} />
+          <Route path="/alerts" component={Alerts} />
           <Route path="/settings" component={Settings} />
           
           {/* Advanced Features */}
