@@ -71,10 +71,13 @@ export default function CarePlans() {
           <h1 className="text-2xl font-bold text-gray-800">Care Plans</h1>
           <p className="text-gray-600">Manage and track care plans for service users</p>
         </div>
-        <Link href="/care-plans/new" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
+        <button 
+          onClick={() => alert('Create care plan form will be displayed in the next release')}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer"
+        >
           <FilePlus size={18} />
           <span>Create Care Plan</span>
-        </Link>
+        </button>
       </div>
 
       {/* Search and filter */}
@@ -136,12 +139,12 @@ export default function CarePlans() {
                   <span>Assigned to: </span>
                   <span className="font-medium text-gray-700">{plan.assignedTo}</span>
                 </div>
-                <Link 
-                  href={`/care-plans?id=${plan.id}`} 
+                <button 
+                  onClick={() => alert(`Details for ${plan.title} will be displayed in the next release`)} 
                   className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
                 >
                   View Details
-                </Link>
+                </button>
               </div>
             </div>
           </div>
