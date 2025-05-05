@@ -1463,7 +1463,7 @@ export default function RbacManagement() {
                 <div className="flex items-center space-x-2">
                   <Checkbox 
                     id="limit-to-branch" 
-                    defaultChecked={selectedRole >= 3 && selectedRole <= 8}
+                    defaultChecked={selectedRole !== null && selectedRole >= 3 && selectedRole <= 8}
                     disabled={selectedRole === 1} // System Admin always has access to all
                   />
                   <label htmlFor="limit-to-branch" className="text-sm font-medium">
