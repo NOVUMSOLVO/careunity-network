@@ -48,6 +48,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(process.cwd(), "client/public/static.html"));
   });
   
+  // Add a route for our simplified React version
+  app.get("/react", (req, res) => {
+    console.log("Request received at /react");
+    res.sendFile(path.join(process.cwd(), "client/public/react-version.html"));
+  });
+  
+  // Add a route for inline React version (no build process)
+  app.get("/inline", (req, res) => {
+    console.log("Request received at /inline");
+    res.sendFile(path.join(process.cwd(), "client/public/inline-react.html"));
+  });
+  
   // Add a direct HTML response route
   app.get("/direct", (req, res) => {
     console.log("Request received at /direct");

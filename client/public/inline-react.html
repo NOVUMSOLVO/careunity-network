@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareUnity - Inline React</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      max-width: 500px;
+      width: 100%;
+      margin: 1rem;
+    }
+    h1 {
+      color: #4f46e5;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    p {
+      color: #4b5563;
+      margin-bottom: 1rem;
+    }
+    .button {
+      display: inline-block;
+      background: #4f46e5;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      border: none;
+      font-size: 16px;
+      margin: 0.25rem;
+    }
+    .button.green {
+      background: #10b981;
+    }
+    .button:hover {
+      background: #4338ca;
+    }
+    .button.green:hover {
+      background: #059669;
+    }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .status {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f9fafb;
+      border-radius: 0.25rem;
+    }
+    .links {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+    .links a {
+      color: #4f46e5;
+      margin: 0 0.5rem;
+      text-decoration: none;
+    }
+    .links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+  <!-- Load React from CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    // Simple React component using vanilla JS (no JSX)
+    function App() {
+      const [message, setMessage] = React.useState('Click a button to test functionality');
+      
+      const testReact = () => {
+        setMessage('React state is working correctly!');
+      };
+      
+      const testAPI = () => {
+        setMessage('Testing API connection...');
+        
+        fetch('/api/healthcheck')
+          .then(response => response.json())
+          .then(data => {
+            setMessage('API response: ' + JSON.stringify(data));
+          })
+          .catch(error => {
+            setMessage('API error: ' + error.message);
+          });
+      };
+      
+      return React.createElement(
+        'div',
+        { className: 'card' },
+        [
+          React.createElement('h1', { key: 'title' }, 'CareUnity'),
+          React.createElement('p', { key: 'desc' }, 'This page uses React loaded from CDN with inline JavaScript (no build process required).'),
+          
+          React.createElement(
+            'div',
+            { className: 'buttons', key: 'buttons' },
+            [
+              React.createElement(
+                'button',
+                { 
+                  key: 'react-btn',
+                  className: 'button',
+                  onClick: testReact
+                },
+                'Test React'
+              ),
+              React.createElement(
+                'button',
+                { 
+                  key: 'api-btn',
+                  className: 'button green',
+                  onClick: testAPI
+                },
+                'Test API'
+              )
+            ]
+          ),
+          
+          React.createElement(
+            'div',
+            { className: 'status', key: 'status' },
+            message
+          ),
+          
+          React.createElement(
+            'div',
+            { className: 'links', key: 'links' },
+            [
+              React.createElement('a', { key: 'home', href: '/' }, 'Home'),
+              React.createElement('a', { key: 'direct', href: '/direct' }, 'Direct HTML'),
+              React.createElement('a', { key: 'static', href: '/static' }, 'Static HTML')
+            ]
+          )
+        ]
+      );
+    }
+    
+    // Render React app
+    const rootElement = document.getElementById('root');
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(React.createElement(App));
+  </script>
+</body>
+</html>
