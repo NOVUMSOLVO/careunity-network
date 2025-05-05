@@ -26,10 +26,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const testHtmlPath = path.join(process.cwd(), "client/public/test.html");
   console.log(`Test HTML path: ${testHtmlPath}`);
   
-  // Serve test.html at multiple paths to ensure it can be accessed
+  // Serve minimal.html at root to ensure it can be accessed
   app.get("/", (req, res) => {
     console.log("Request received at /");
-    res.sendFile(testHtmlPath);
+    res.sendFile(path.join(process.cwd(), "client/public/minimal.html"));
   });
   
   app.get("/test", (req, res) => {

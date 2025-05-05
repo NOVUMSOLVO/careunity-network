@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareUnity Minimal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      color: #4f46e5;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    p {
+      color: #4b5563;
+      margin-bottom: 1rem;
+    }
+    .button {
+      display: inline-block;
+      background: #4f46e5;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .button:hover {
+      background: #4338ca;
+    }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>CareUnity Static Page</h1>
+    <p>This is a completely static HTML page with no JavaScript frameworks. It should always load reliably.</p>
+    
+    <div class="buttons">
+      <button class="button" onclick="alert('This works!')">Test Button</button>
+    </div>
+  </div>
+</body>
+</html>
