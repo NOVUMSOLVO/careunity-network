@@ -3,6 +3,12 @@ import { Route, Switch } from 'wouter';
 import { Layout } from '@/components/layout/layout';
 import Dashboard from '@/pages/dashboard';
 import ServiceUsers from '@/pages/service-users';
+import Calendar from '@/pages/calendar';
+import CarePlans from '@/pages/care-plans';
+import CareAllocation from '@/pages/care-allocation';
+import CQCCompliance from '@/pages/cqc-compliance';
+import Messages from '@/pages/messages';
+import Settings from '@/pages/settings';
 import NotFound from '@/pages/not-found';
 
 // Test page to verify API connectivity

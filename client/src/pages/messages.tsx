@@ -1,295 +1,191 @@
 import React, { useState } from 'react';
-import { AppShell } from '@/components/layout/app-shell';
-import { PageHeader } from '@/components/ui/page-header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { AvatarWithStatus } from '@/components/ui/avatar-with-status';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Search, Send, Users, Edit, Paperclip } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
+import { MessageSquare, Plus, Search, Send, UserPlus, Paperclip, MoreHorizontal } from 'lucide-react';
 
 export default function Messages() {
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
-  const [newMessage, setNewMessage] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedContact, setSelectedContact] = useState<number | null>(1);
+  const [messageInput, setMessageInput] = useState('');
 
-  // Mock conversations data - in a real app, this would come from an API
-  const conversations = [
-    {
-      id: '1',
-      name: 'Team Group',
-      lastMessage: 'Remember the staff meeting tomorrow at 9 AM',
-      time: '10:30 AM',
-      unread: 2,
-      isGroup: true,
-      status: 'online', // or offline, away
-      members: ['Sarah J.', 'Mark L.', 'Emma R.'],
-      messages: [
-        { id: 1, sender: 'Mark L.', content: 'Good morning team! Just a reminder that we have our weekly staff meeting tomorrow at 9 AM.', time: '10:15 AM', isMe: false },
-        { id: 2, sender: 'Emma R.', content: 'Thanks for the reminder, Mark. Will we be discussing the new care plan templates?', time: '10:20 AM', isMe: false },
-        { id: 3, sender: 'Mark L.', content: "Yes, that's on the agenda. Also updates on CQC compliance.", time: '10:25 AM', isMe: false },
-        { id: 4, sender: 'Me', content: "I'll prepare a brief report on our compliance progress. See you all tomorrow!", time: '10:30 AM', isMe: true },
-      ]
-    },
-    {
-      id: '2',
-      name: 'Dr. Michael Chen',
-      lastMessage: "I've reviewed James's medication plan and made some adjustments",
-      time: 'Yesterday',
-      unread: 0,
-      isGroup: false,
-      status: 'offline',
-      messages: [
-        { id: 1, sender: 'Dr. Michael Chen', content: "Hello Sarah, I've been reviewing James Wilson's medication plan.", time: 'Yesterday, 2:15 PM', isMe: false },
-        { id: 2, sender: 'Dr. Michael Chen', content: "I've made some adjustments to his blood pressure medication dosage. The updated prescription has been sent to the pharmacy.", time: 'Yesterday, 2:18 PM', isMe: false },
-        { id: 3, sender: 'Me', content: "Thank you, Dr. Chen. I'll make sure to update his care plan and inform the team about the changes.", time: 'Yesterday, 2:25 PM', isMe: true },
-        { id: 4, sender: 'Dr. Michael Chen', content: 'Great. Please monitor for any side effects and let me know how he responds to the adjusted dosage.', time: 'Yesterday, 2:30 PM', isMe: false },
-      ]
-    },
-    {
-      id: '3',
-      name: 'Anna Johnson (Family)',
-      lastMessage: 'How is my father doing today?',
-      time: '2 days ago',
-      unread: 1,
-      isGroup: false,
-      status: 'away',
-      messages: [
-        { id: 1, sender: 'Anna Johnson', content: 'Hi Sarah, how is my father doing today?', time: '2 days ago, 11:05 AM', isMe: false },
-        { id: 2, sender: 'Me', content: 'Hello Anna! Your father had a good morning. He had breakfast in the garden and really enjoyed the sunshine.', time: '2 days ago, 11:15 AM', isMe: true },
-        { id: 3, sender: 'Anna Johnson', content: "That's wonderful to hear! He always loved being outdoors. Did he take his medication without any issues?", time: '2 days ago, 11:20 AM', isMe: false },
-        { id: 4, sender: 'Me', content: "Yes, no problems with medication. He's looking forward to your visit this weekend.", time: '2 days ago, 11:30 AM', isMe: true },
-      ]
-    }
+  // Mock data
+  const contacts = [
+    { id: 1, name: 'Jane Wilson', role: 'Caregiver', status: 'online', unread: 1, lastMessage: 'Yes, I can visit tomorrow morning', lastMessageTime: '10:32 AM' },
+    { id: 2, name: 'Sarah Johnson', role: 'Service User', status: 'offline', unread: 0, lastMessage: 'Thank you for your help', lastMessageTime: 'Yesterday' },
+    { id: 3, name: 'Michael Brown', role: 'Caregiver', status: 'online', unread: 3, lastMessage: 'We need to discuss Mr. Smith\'s care plan', lastMessageTime: '09:15 AM' },
+    { id: 4, name: 'Robert Davis', role: 'Service User', status: 'away', unread: 0, lastMessage: 'Appointment confirmed', lastMessageTime: 'Monday' },
+    { id: 5, name: 'David Thompson', role: 'Manager', status: 'online', unread: 0, lastMessage: 'I\'ll review the report today', lastMessageTime: 'Yesterday' },
   ];
 
-  // Filter conversations based on search term
-  const filteredConversations = searchTerm
-    ? conversations.filter(c => 
-        c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        c.lastMessage.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : conversations;
+  const messages = [
+    { id: 1, senderId: 1, text: 'Good morning! How are you today?', timestamp: '09:15 AM', isRead: true },
+    { id: 2, senderId: 'me', text: 'I\'m doing well, thank you! How about you?', timestamp: '09:17 AM', isRead: true },
+    { id: 3, senderId: 1, text: 'I\'m good as well. I wanted to check if we\'re still on for the care plan review this afternoon?', timestamp: '09:20 AM', isRead: true },
+    { id: 4, senderId: 'me', text: 'Yes, definitely. Let\'s meet at 2:00 PM as planned.', timestamp: '09:22 AM', isRead: true },
+    { id: 5, senderId: 1, text: 'Perfect! I\'ll bring the updated assessment documentation.', timestamp: '09:25 AM', isRead: true },
+    { id: 6, senderId: 'me', text: 'Great, thanks. Also, could you update me on Mr. Smith\'s medication compliance?', timestamp: '09:30 AM', isRead: true },
+    { id: 7, senderId: 1, text: 'Yes, I can visit tomorrow morning at 10:00 AM to check on that.', timestamp: '10:32 AM', isRead: false },
+  ];
 
-  // Currently selected conversation
-  const currentConversation = conversations.find(c => c.id === selectedConversation);
-
-  // Handle send message
   const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
-    
+    if (messageInput.trim() === '') return;
     // In a real app, this would send the message to the API
-    console.log('Sending message:', newMessage);
-    
-    // Clear the input
-    setNewMessage('');
+    // For now, we just clear the input
+    setMessageInput('');
   };
 
-  return (
-    <AppShell>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <PageHeader 
-          title="Messages"
-          description="Communicate with your team and families"
-          actions={
-            <Button className="flex items-center">
-              <Edit className="mr-2 h-4 w-4" />
-              New Message
-            </Button>
-          }
-        />
+  const getStatusIndicator = (status: string) => {
+    switch(status) {
+      case 'online':
+        return <span className="w-2.5 h-2.5 bg-green-500 rounded-full inline-block"></span>;
+      case 'away':
+        return <span className="w-2.5 h-2.5 bg-yellow-500 rounded-full inline-block"></span>;
+      default:
+        return <span className="w-2.5 h-2.5 bg-gray-300 rounded-full inline-block"></span>;
+    }
+  };
 
-        <div className="py-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-250px)] min-h-[500px]">
-            {/* Conversations List */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <Input
-                    type="text"
-                    placeholder="Search conversations..."
-                    className="pl-10"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
+  const selectedContactData = contacts.find(c => c.id === selectedContact);
+
+  return (
+    <div className="flex flex-col h-[calc(100vh-8rem)]">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Messages</h1>
+          <p className="text-gray-600">Communicate with caregivers and service users</p>
+        </div>
+        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+          <Plus size={18} />
+          <span>New Message</span>
+        </button>
+      </div>
+
+      <div className="flex flex-1 bg-white rounded-lg shadow overflow-hidden">
+        {/* Contacts sidebar */}
+        <div className="w-80 border-r border-gray-200 flex flex-col">
+          <div className="p-3 border-b border-gray-200">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <Search className="w-4 h-4 text-gray-400" />
               </div>
-              
-              <ScrollArea className="h-[calc(100vh-350px)] min-h-[400px]">
-                <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {filteredConversations.map((conversation) => (
-                    <div
-                      key={conversation.id}
-                      className={cn(
-                        "p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer",
-                        selectedConversation === conversation.id && "bg-primary-50 dark:bg-primary-900/20"
-                      )}
-                      onClick={() => setSelectedConversation(conversation.id)}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-center">
-                          {conversation.isGroup ? (
-                            <div className="h-10 w-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                              <Users className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                            </div>
-                          ) : (
-                            <AvatarWithStatus
-                              src=""
-                              alt={conversation.name}
-                              fallback={conversation.name.substring(0, 2)}
-                              status={conversation.status as any}
-                            />
-                          )}
-                          <div className="ml-3">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white">
-                              {conversation.name}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">
-                              {conversation.lastMessage}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end">
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {conversation.time}
-                          </p>
-                          {conversation.unread > 0 && (
-                            <Badge className="mt-1 bg-primary-500">
-                              {conversation.unread}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </div>
-            
-            {/* Message Thread */}
-            <div className="col-span-1 lg:col-span-2">
-              {selectedConversation ? (
-                <Card className="h-full flex flex-col">
-                  <CardHeader className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center">
-                        {currentConversation?.isGroup ? (
-                          <div className="h-10 w-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                            <Users className="h-5 w-5 text-primary-600 dark:text-primary-400" />
-                          </div>
-                        ) : (
-                          <AvatarWithStatus
-                            src=""
-                            alt={currentConversation?.name || ""}
-                            fallback={currentConversation?.name.substring(0, 2) || ""}
-                            status={currentConversation?.status as any}
-                          />
-                        )}
-                        <div className="ml-3">
-                          <CardTitle className="text-base">{currentConversation?.name}</CardTitle>
-                          {currentConversation?.isGroup && (
-                            <CardDescription className="text-xs">
-                              {currentConversation?.members?.join(', ')}
-                            </CardDescription>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="p-4 flex-grow overflow-y-auto flex flex-col-reverse">
-                    <ScrollArea className="h-full pr-4">
-                      <div className="space-y-4">
-                        {currentConversation?.messages.map((message) => (
-                          <div
-                            key={message.id}
-                            className={cn(
-                              "flex",
-                              message.isMe ? "justify-end" : "justify-start"
-                            )}
-                          >
-                            <div
-                              className={cn(
-                                "max-w-[75%] rounded-lg px-4 py-2 text-sm",
-                                message.isMe
-                                  ? "bg-primary-500 text-white"
-                                  : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                              )}
-                            >
-                              {!message.isMe && (
-                                <p className="font-medium text-xs mb-1">
-                                  {message.sender}
-                                </p>
-                              )}
-                              <p>{message.content}</p>
-                              <p
-                                className={cn(
-                                  "text-right text-xs mt-1",
-                                  message.isMe
-                                    ? "text-primary-100"
-                                    : "text-gray-500 dark:text-gray-400"
-                                )}
-                              >
-                                {message.time}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </CardContent>
-                  
-                  <CardFooter className="p-4 border-t border-gray-200 dark:border-gray-700 gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="icon"
-                      className="flex-shrink-0"
-                    >
-                      <Paperclip className="h-5 w-5" />
-                    </Button>
-                    <Textarea
-                      placeholder="Type a message..."
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      className="min-h-0 h-10 resize-none py-2"
-                    />
-                    <Button 
-                      className="flex-shrink-0"
-                      onClick={handleSendMessage}
-                      disabled={!newMessage.trim()}
-                    >
-                      <Send className="h-5 w-5" />
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ) : (
-                <Card className="h-full flex items-center justify-center">
-                  <CardContent className="text-center pt-6">
-                    <Users className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-white">
-                      Select a conversation
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                      Choose a conversation from the list or start a new one.
-                    </p>
-                    <Button className="mt-4">
-                      <Edit className="mr-2 h-4 w-4" />
-                      New Message
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
+              <input
+                type="text"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2"
+                placeholder="Search contacts"
+              />
             </div>
           </div>
+          
+          <div className="overflow-y-auto flex-1">
+            {contacts.map(contact => (
+              <div 
+                key={contact.id}
+                className={`p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${selectedContact === contact.id ? 'bg-indigo-50' : ''}`}
+                onClick={() => setSelectedContact(contact.id)}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="relative">
+                    <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold">
+                      {contact.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div className="absolute -bottom-0.5 -right-0.5">
+                      {getStatusIndicator(contact.status)}
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start">
+                      <p className="font-medium text-gray-800 truncate">{contact.name}</p>
+                      <span className="text-xs text-gray-500">{contact.lastMessageTime}</span>
+                    </div>
+                    <p className="text-sm text-gray-600 truncate">{contact.lastMessage}</p>
+                  </div>
+                  {contact.unread > 0 && (
+                    <div className="bg-indigo-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {contact.unread}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+        
+        {/* Chat area */}
+        {selectedContact ? (
+          <div className="flex-1 flex flex-col">
+            <div className="p-3 border-b border-gray-200 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold">
+                  {selectedContactData?.name.split(' ').map(n => n[0]).join('')}
+                </div>
+                <div>
+                  <p className="font-medium text-gray-800">{selectedContactData?.name}</p>
+                  <div className="flex items-center gap-1.5">
+                    {getStatusIndicator(selectedContactData?.status || '')}
+                    <span className="text-xs text-gray-500">{selectedContactData?.status}</span>
+                  </div>
+                </div>
+              </div>
+              <button className="text-gray-500 hover:text-gray-700">
+                <MoreHorizontal size={20} />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {messages.map(message => (
+                <div 
+                  key={message.id}
+                  className={`flex ${message.senderId === 'me' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div 
+                    className={`max-w-xs md:max-w-md px-4 py-2 rounded-lg ${
+                      message.senderId === 'me' 
+                        ? 'bg-indigo-600 text-white rounded-br-none' 
+                        : 'bg-gray-100 text-gray-800 rounded-bl-none'
+                    }`}
+                  >
+                    <p>{message.text}</p>
+                    <div className={`text-xs mt-1 ${message.senderId === 'me' ? 'text-indigo-200' : 'text-gray-500'}`}>
+                      {message.timestamp}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="p-3 border-t border-gray-200">
+              <div className="flex items-center gap-2">
+                <button className="text-gray-500 hover:text-gray-700">
+                  <Paperclip size={20} />
+                </button>
+                <input
+                  type="text"
+                  className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Type a message..."
+                  value={messageInput}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                />
+                <button 
+                  className={`p-2 rounded-full ${
+                    messageInput.trim() === '' 
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  }`}
+                  onClick={handleSendMessage}
+                  disabled={messageInput.trim() === ''}
+                >
+                  <Send size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 flex items-center justify-center text-gray-500">
+            <div className="text-center">
+              <MessageSquare className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+              <p>Select a conversation to start messaging</p>
+            </div>
+          </div>
+        )}
       </div>
-    </AppShell>
+    </div>
   );
 }
