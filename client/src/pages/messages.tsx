@@ -1,10 +1,26 @@
 import React, { useState } from 'react';
-import { MessageSquare, Plus, Search, Send, UserPlus, Paperclip, MoreHorizontal } from 'lucide-react';
+import { MessageSquare, Plus, Search, Send, UserPlus, Paperclip, MoreHorizontal, X } from 'lucide-react';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle,
+  DialogFooter
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function Messages() {
   const [selectedContact, setSelectedContact] = useState<number | null>(1);
   const [messageInput, setMessageInput] = useState('');
   const [newMessageModalOpen, setNewMessageModalOpen] = useState(false);
+  
+  // State for new message dialog
+  const [newMessageRecipient, setNewMessageRecipient] = useState('');
+  const [newMessageSubject, setNewMessageSubject] = useState('');
+  const [newMessageContent, setNewMessageContent] = useState('');
 
   // Mock data
   const contacts = [
@@ -31,6 +47,22 @@ export default function Messages() {
     // For now, we just clear the input
     setMessageInput('');
   };
+  
+  const handleNewMessage = () => {
+    // In a real app, this would send the new message to an API
+    if (newMessageRecipient.trim() === '' || newMessageContent.trim() === '') return;
+    
+    // Reset the form
+    setNewMessageRecipient('');
+    setNewMessageSubject('');
+    setNewMessageContent('');
+    
+    // Close the modal
+    setNewMessageModalOpen(false);
+    
+    // Show success message
+    alert(`Message sent to ${newMessageRecipient}`);
+  };
 
   const getStatusIndicator = (status: string) => {
     switch(status) {
@@ -52,10 +84,13 @@ export default function Messages() {
           <h1 className="text-2xl font-bold text-gray-800">Messages</h1>
           <p className="text-gray-600">Communicate with caregivers and service users</p>
         </div>
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
-          <Plus size={18} />
-          <span>New Message</span>
-        </button>
+        <Button 
+          className="bg-indigo-600 hover:bg-indigo-700 text-white" 
+          onClick={() => setNewMessageModalOpen(true)}
+        >
+          <Plus size={18} className="mr-2" />
+          New Message
+        </Button>
       </div>
 
       <div className="flex flex-1 bg-white rounded-lg shadow overflow-hidden">
@@ -187,6 +222,60 @@ export default function Messages() {
           </div>
         )}
       </div>
+      
+      {/* New Message Modal */}
+      <Dialog open={newMessageModalOpen} onOpenChange={setNewMessageModalOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>New Message</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="recipient">Recipient</Label>
+              <Input
+                id="recipient"
+                placeholder="Enter recipient name or select from contacts"
+                value={newMessageRecipient}
+                onChange={(e) => setNewMessageRecipient(e.target.value)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="subject">Subject (optional)</Label>
+              <Input
+                id="subject"
+                placeholder="Enter message subject"
+                value={newMessageSubject}
+                onChange={(e) => setNewMessageSubject(e.target.value)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="content">Message</Label>
+              <Textarea
+                id="content"
+                placeholder="Type your message here..."
+                className="min-h-[120px]"
+                value={newMessageContent}
+                onChange={(e) => setNewMessageContent(e.target.value)}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNewMessageModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleNewMessage}
+              disabled={newMessageRecipient.trim() === '' || newMessageContent.trim() === ''}
+            >
+              Send Message
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
