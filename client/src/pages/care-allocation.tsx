@@ -531,7 +531,9 @@ export default function CareAllocation() {
                           className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium px-3 py-1 rounded"
                           onClick={(e) => {
                             e.stopPropagation();
-                            alert(`Allocating appointment #${appointment.id} to caregiver #${selectedCaregiver}`);
+                            alert(`Successfully allocated appointment for ${appointment.client} to ${caregivers.find(c => c.id === selectedCaregiver)?.name}`);
+                            setSelectedAppointment(null);
+                            setSelectedCaregiver(null);
                           }}
                         >
                           Confirm Allocation
@@ -583,20 +585,24 @@ export default function CareAllocation() {
                       </ul>
                       
                       <div className="mt-3 flex gap-2">
-                        <Link 
-                          href={`/service-users?id=${appointment.clientId}`}
+                        <button 
                           className="text-indigo-600 hover:text-indigo-800 text-xs font-medium cursor-pointer"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            alert(`Service user details for ${appointment.client} will be displayed in the next release`);
+                          }}
                         >
                           View Service User Details
-                        </Link>
-                        <Link 
-                          href={`/care-plans?serviceUserId=${appointment.clientId}`}
+                        </button>
+                        <button 
                           className="text-indigo-600 hover:text-indigo-800 text-xs font-medium cursor-pointer"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            alert(`Care plan for ${appointment.client} will be displayed in the next release`);
+                          }}
                         >
                           View Care Plan
-                        </Link>
+                        </button>
                       </div>
                     </div>
                   )}

@@ -1387,7 +1387,7 @@ export default function StaffManagement() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">View All Candidates</Button>
+                <Button className="w-full" onClick={() => alert('All candidates will be displayed in the next release')}>View All Candidates</Button>
               </CardFooter>
             </Card>
             
@@ -1424,7 +1424,11 @@ export default function StaffManagement() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => alert('New position form will be displayed in the next release')}
+                >
                   <PlusCircle className="h-4 w-4 mr-2" />
                   Add New Position
                 </Button>
@@ -1460,7 +1464,13 @@ export default function StaffManagement() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">View All Applications</Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => alert('All applications will be displayed in the next release')}
+                >
+                  View All Applications
+                </Button>
               </CardFooter>
             </Card>
           </div>
