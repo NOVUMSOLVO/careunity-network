@@ -20,7 +20,7 @@ import RouteOptimizer from '@/pages/route-optimizer';
 import NotFound from '@/pages/not-found';
 import PredictiveHealth from '@/pages/predictive-health';
 import HealthcareIntegration from '@/pages/healthcare-integration';
-import CommunityResources from '@/pages/community-resources';
+import CommunityResources from '@/pages/community-resources-new';
 
 // Test page to verify API connectivity
 function TestPage() {
