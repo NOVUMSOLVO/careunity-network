@@ -41,6 +41,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(testHtmlPath);
   });
   
+  // Add a static HTML page with minimal JS
+  app.get("/static", (req, res) => {
+    console.log("Request received at /static");
+    res.sendFile(path.join(process.cwd(), "client/public/static.html"));
+  });
+  
   // Setup authentication routes
   setupAuth(app);
 
