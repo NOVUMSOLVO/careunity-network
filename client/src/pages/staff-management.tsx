@@ -782,7 +782,13 @@ export default function StaffManagement() {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          onClick={() => alert('Missed visits review will be displayed in the next release')}
+                          onClick={() => setReviewModalData({ 
+                            isOpen: true, 
+                            staffName: "David Thompson", 
+                            staffId: "dt1",
+                            missedVisits: 2,
+                            month: "May" 
+                          })}
                         >
                           Review
                         </Button>
@@ -806,7 +812,11 @@ export default function StaffManagement() {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          onClick={() => alert('Supervision scheduling will be available in the next release')}
+                          onClick={() => setSupervisionModalData({ 
+                            isOpen: true, 
+                            staffName: "Michael Brown", 
+                            staffId: "mb1" 
+                          })}
                         >
                           Schedule
                         </Button>
@@ -825,7 +835,11 @@ export default function StaffManagement() {
                         <Button 
                           variant="outline" 
                           size="sm"
-                          onClick={() => alert('Supervision scheduling will be available in the next release')}
+                          onClick={() => setSupervisionModalData({ 
+                            isOpen: true, 
+                            staffName: "David Thompson", 
+                            staffId: "dt1" 
+                          })}
                         >
                           Schedule
                         </Button>
