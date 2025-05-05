@@ -9,6 +9,7 @@ import CareAllocation from '@/pages/care-allocation';
 import CQCCompliance from '@/pages/cqc-compliance';
 import Messages from '@/pages/messages';
 import Settings from '@/pages/settings';
+import IncidentReporting from '@/pages/incident-reporting';
 import NotFound from '@/pages/not-found';
 
 // Test page to verify API connectivity
@@ -102,6 +103,7 @@ function App() {
           <Route path="/cqc-compliance" component={CQCCompliance} />
           <Route path="/messages" component={Messages} />
           <Route path="/settings" component={Settings} />
+          <Route path="/incident-reporting" component={IncidentReporting} />
           <Route component={NotFound} />
         </Switch>
       </Layout>
