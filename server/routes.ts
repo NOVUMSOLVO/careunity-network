@@ -1,6 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import path from "path";
+import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { z } from "zod";
@@ -103,6 +104,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Seed initial data if none exists
   await storage.seedInitialData();
+  
+  // Create HTTP server
+  const httpServer = createServer(app);
+  
+  // Setup WebSocket server on a separate path to avoid conflicts with Vite HMR
+  const wss = new WebSocketServer({ 
+    server: httpServer,
+    path: '/ws'
+  });
+  
+  wss.on('connection', (ws) => {
+    console.log('WebSocket client connected');
+    
+    // Send a welcome message
+    ws.send(JSON.stringify({
+      type: 'connected',
+      message: 'Connected to CareUnity WebSocket server',
+      timestamp: new Date().toISOString()
+    }));
+    
+    // Handle messages from clients
+    ws.on('message', (message) => {
+      console.log(`Received WebSocket message: ${message}`);
+      try {
+        // Echo the message back for now
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({
+            type: 'echo',
+            message: message.toString(),
+            timestamp: new Date().toISOString()
+          }));
+        }
+      } catch (error) {
+        console.error('WebSocket message error:', error);
+      }
+    });
+    
+    // Handle disconnection
+    ws.on('close', () => {
+      console.log('WebSocket client disconnected');
+    });
+    
+    // Handle errors
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+    });
+  });
 
   // Service User endpoints
   app.get("/api/service-users", ensureAuthenticated, async (req, res) => {
@@ -514,6 +562,5 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
   return httpServer;
 }

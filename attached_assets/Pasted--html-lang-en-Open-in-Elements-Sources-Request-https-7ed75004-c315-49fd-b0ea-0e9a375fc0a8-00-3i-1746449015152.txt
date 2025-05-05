@@ -1,0 +1,425 @@
+<html lang="en">
+Open in Elements Sources
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/
+Further Reading
+Learn more about this axe rule at Deque University
+Learn why this is important and how to fix it on webhint.io
+Compatibility
+'-webkit-text-size-adjust' is not supported by Chrome, Chrome Android, Edge 79+, Firefox, Safari. Add 'text-size-adjust' to support Chrome 54+, Chrome Android 54+, Edge 79+.
+html,
+:host {
+    -webkit-text-size-adjust: 100%;
+}
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/
+Further Reading
+Learn more about this CSS feature on MDN
+Learn why this is important and how to fix it on webhint.io
+The 'viewport' meta element 'content' attribute value should not contain 'maximum-scale'.
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+Open in Elements Sources
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+'content-type' header media type value should be 'application/javascript', not 'text/javascript'.
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/vite/dist/client/env.mjs
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+'content-type' header media type value should be 'image/x-icon', not 'text/html'.
+Content-Type: text/html; charset=utf-8
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/favicon.ico
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+'content-type' header media type value should be 'text/css', not 'text/javascript'.
+'content-type' header media type value should be 'text/x-typescript', not 'text/javascript'.
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/main.tsx?v=aO8vKwdghFo98OIB5nGXI
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/App.tsx?v=aO8vKwdghFo98OIB5nGXI
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/providers.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/lib/protected-route.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/pages/auth-page.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/pages/not-found.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/pages/dashboard.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/pages/service-users.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/pages/care-plans.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/pages/calendar.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/pages/reports.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/pages/messages.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/pages/cqc-compliance.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/pages/care-allocation.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/ui/error-boundary.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/hooks/use-notifications.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/ui/tooltip.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/ui/toaster.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/lib/queryClient.ts
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/lib/sync-service.ts
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/lib/utils.ts
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/ui/tabs.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/ui/select.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/ui/page-header.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/lib/api-client.ts
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/ui/button.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/ui/input.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/ui/card.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/ui/form.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/layout/app-shell.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/dashboard/dashboard-stats.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/dashboard/appointment-list.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/dashboard/recent-service-users.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/dashboard/task-list.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Content-Type: text/javascript
+Open in
+Network
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/ui/voice-recorder.tsx
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Performance
+A 'cache-control' header is missing or empty.
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/favicon.ico
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+'height' changes to this property will trigger: 'Layout', which can impact performance when used inside @keyframes.
+@keyframes accordion-up {
+    from {
+        height: var(--radix-accordion-content-height);
+    }
+}
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Resource should use cache busting but URL does not match configured patterns.
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@vite/client
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://replit.com/public/js/replit-dev-banner.js
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-dom_client.js?v=66090d3a
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@react-refresh
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/index.css?v=aO8vKwdghFo98OIB5nGXI
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=66090d3a
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WOOG5QLI.js?v=66090d3a
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-QCHXOAYK.js?v=66090d3a
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=66090d3a
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=66090d3a
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/next-themes.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react.js?v=66090d3a
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-hook-form.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@hookform_resolvers_zod.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/zod.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/date-fns.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/lucide-react.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=66090d3a
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/uuid.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/date-fns.js?v=66090d3a
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-WOOG5QLI.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-QCHXOAYK.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-KBTYAULA.js?v=55fc0c85
+Further Reading
+Learn why this is important and how to fix it on webhint.io
+Request
+https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/lucide-react.js?v=66090d3a
+Further Reading
+Learn why this is important and how to fix it on webhint.io
