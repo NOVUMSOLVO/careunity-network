@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FilePlus, Search, Clipboard, CheckCircle, Clock, AlertCircle, UserPlus, CalendarRange, Activity, PencilLine, FileCheck, ListChecks } from 'lucide-react';
+import { FilePlus, Search, Clipboard, CheckCircle, Clock, AlertCircle, UserPlus, CalendarRange, Activity, PencilLine, FileCheck, ListChecks, PlusCircle } from 'lucide-react';
 import { Link } from 'wouter';
 import {
   Dialog,
@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
