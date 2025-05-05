@@ -76,7 +76,9 @@ const sampleUsers = [
     email: 'sarah.johnson@careunity.com',
     roleId: 3,
     status: 'active',
-    branch: 'London East',
+    country: 'UK',
+    region: 'London',
+    branch: 'East London Branch',
     lastLogin: '2023-05-18 09:23 AM'
   },
   { 
@@ -85,7 +87,9 @@ const sampleUsers = [
     email: 'michael.brown@careunity.com',
     roleId: 6,
     status: 'active',
-    branch: 'London East',
+    country: 'UK',
+    region: 'London',
+    branch: 'East London Branch',
     lastLogin: '2023-05-18 08:15 AM'
   },
   { 
@@ -94,6 +98,8 @@ const sampleUsers = [
     email: 'james.wilson@careunity.com',
     roleId: 1,
     status: 'active',
+    country: 'Global',
+    region: 'All Regions',
     branch: 'All Branches',
     lastLogin: '2023-05-17 04:45 PM'
   },
@@ -103,7 +109,9 @@ const sampleUsers = [
     email: 'emily.roberts@careunity.com',
     roleId: 5,
     status: 'active',
-    branch: 'London East',
+    country: 'US',
+    region: 'California',
+    branch: 'San Francisco Office',
     lastLogin: '2023-05-17 02:30 PM'
   },
   { 
@@ -112,7 +120,9 @@ const sampleUsers = [
     email: 'david.thompson@careunity.com',
     roleId: 4,
     status: 'inactive',
-    branch: 'London East',
+    country: 'Australia',
+    region: 'New South Wales',
+    branch: 'Sydney Central',
     lastLogin: '2023-05-10 11:05 AM'
   },
 ];
@@ -328,7 +338,12 @@ export default function SimpleRbacManagement() {
                         </div>
                       </TableCell>
                       <TableCell>{formatRoleBadge(user.roleId)}</TableCell>
-                      <TableCell>{user.branch}</TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{user.branch}</div>
+                          <div className="text-xs text-gray-500">{user.region}, {user.country}</div>
+                        </div>
+                      </TableCell>
                       <TableCell>
                         {user.status === 'active' ? (
                           <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
@@ -520,18 +535,38 @@ export default function SimpleRbacManagement() {
             </div>
             
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="branch">Branch</Label>
-              <Select defaultValue="london_east">
-                <SelectTrigger id="branch">
-                  <SelectValue placeholder="Select branch" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="london_east">London East</SelectItem>
-                  <SelectItem value="london_west">London West</SelectItem>
-                  <SelectItem value="manchester">Manchester</SelectItem>
-                  <SelectItem value="birmingham">Birmingham</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="branch">Branch Location</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="country">Country</Label>
+                  <Select defaultValue="uk">
+                    <SelectTrigger id="country">
+                      <SelectValue placeholder="Select country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="uk">United Kingdom</SelectItem>
+                      <SelectItem value="us">United States</SelectItem>
+                      <SelectItem value="ca">Canada</SelectItem>
+                      <SelectItem value="au">Australia</SelectItem>
+                      <SelectItem value="nz">New Zealand</SelectItem>
+                      <SelectItem value="fr">France</SelectItem>
+                      <SelectItem value="de">Germany</SelectItem>
+                      <SelectItem value="ie">Ireland</SelectItem>
+                      <SelectItem value="it">Italy</SelectItem>
+                      <SelectItem value="es">Spain</SelectItem>
+                      <SelectItem value="custom">Other (specify)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="region">Region/State</Label>
+                  <Input id="region" placeholder="e.g. London, California" />
+                </div>
+              </div>
+              <div className="mt-2">
+                <Label htmlFor="branchName">Branch Name</Label>
+                <Input id="branchName" placeholder="e.g. Downtown Office, North District" className="mt-1" />
+              </div>
             </div>
             
             <div className="flex items-center space-x-2">
