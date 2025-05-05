@@ -679,7 +679,14 @@ const Dashboard = () => {
                     Track, manage, and resolve incidents with our comprehensive
                     incident reporting system.
                   </p>
-                  <Button>View Incident Reports</Button>
+                  <Button
+                    onClick={() => {
+                      // In a real app, this would navigate to the incident reports page
+                      window.alert("Navigating to incident reports management page");
+                    }}
+                  >
+                    View Incident Reports
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -695,7 +702,14 @@ const Dashboard = () => {
                   <CardTitle>AI-Powered Recommendations</CardTitle>
                   <CardDescription>Smart suggestions for optimal care delivery</CardDescription>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    // In a real app, this would refresh the AI recommendations data
+                    window.alert("Refreshing AI recommendations data");
+                  }}
+                >
                   <RotateCw className="h-4 w-4 mr-2" />
                   Refresh Insights
                 </Button>
@@ -740,8 +754,23 @@ const Dashboard = () => {
             </CardContent>
             <CardFooter>
               <div className="w-full flex items-center justify-between">
-                <Button variant="outline">AI Settings</Button>
-                <Button>View All Recommendations</Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    // In a real app, this would open AI settings configuration
+                    window.alert("Opening AI settings configuration panel");
+                  }}
+                >
+                  AI Settings
+                </Button>
+                <Button
+                  onClick={() => {
+                    // In a real app, this would navigate to the full recommendations page
+                    window.alert("Navigating to complete AI recommendations page");
+                  }}
+                >
+                  View All Recommendations
+                </Button>
               </div>
             </CardFooter>
           </Card>
@@ -810,7 +839,16 @@ const Dashboard = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">View Full Staffing Forecast</Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    // In a real app, this would navigate to detailed staffing forecast
+                    window.alert("Navigating to detailed staffing forecast analysis");
+                  }}
+                >
+                  View Full Staffing Forecast
+                </Button>
               </CardFooter>
             </Card>
             
@@ -826,7 +864,14 @@ const Dashboard = () => {
                   <p className="text-gray-500 mb-4 max-w-md">
                     Optimize travel routes for your care staff to minimize travel time and maximize care delivery.
                   </p>
-                  <Button>Plan Optimal Routes</Button>
+                  <Button
+                    onClick={() => {
+                      // In a real app, this would open the route optimization tool
+                      window.alert("Opening route optimization planning interface");
+                    }}
+                  >
+                    Plan Optimal Routes
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -881,7 +926,15 @@ const Dashboard = () => {
                           {alert.priority === "high" ? "Urgent" : "Attention Needed"}
                         </Badge>
                         <div className="mt-3 flex justify-end">
-                          <Button size="sm">Resolve</Button>
+                          <Button 
+                            size="sm"
+                            onClick={() => {
+                              // In a real app, this would open a dialog to resolve the medication alert
+                              window.alert(`Resolving medication alert for ${alert.serviceUser}`);
+                            }}
+                          >
+                            Resolve
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -889,7 +942,16 @@ const Dashboard = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">View All Medication Alerts</Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    // In a real app, this would navigate to medication alerts listing
+                    window.alert("Navigating to complete medication alerts listing");
+                  }}
+                >
+                  View All Medication Alerts
+                </Button>
               </CardFooter>
             </Card>
             
@@ -962,7 +1024,15 @@ const Dashboard = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">Medication Management</Button>
+                <Button 
+                  className="w-full"
+                  onClick={() => {
+                    // In a real app, this would navigate to the full medication management interface
+                    window.alert("Navigating to comprehensive medication management interface");
+                  }}
+                >
+                  Medication Management
+                </Button>
               </CardFooter>
             </Card>
           </div>
@@ -1031,7 +1101,15 @@ const Dashboard = () => {
                 <div className="text-center">
                   <BarChart className="h-12 w-12 text-gray-300 mx-auto mb-2" />
                   <p className="text-gray-500">Interactive chart showing medication compliance over time</p>
-                  <Button variant="outline" size="sm" className="mt-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="mt-4"
+                    onClick={() => {
+                      // In a real app, this would navigate to detailed compliance reports
+                      window.alert("Navigating to detailed medication compliance reports");
+                    }}
+                  >
                     <ExternalLink className="h-4 w-4 mr-2" />
                     View Detailed Reports
                   </Button>
