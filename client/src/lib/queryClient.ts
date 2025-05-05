@@ -117,7 +117,7 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       // Using type assertion to avoid TypeScript errors
-      queryFn: createQueryFn({ on401: "throw" }) as QueryFunction<unknown>,
+      queryFn: getQueryFn({ on401: "throw" }) as QueryFunction<unknown>,
       // Simplified settings
       refetchInterval: false,
       refetchOnWindowFocus: true,

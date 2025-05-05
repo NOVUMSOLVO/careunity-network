@@ -47,6 +47,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(process.cwd(), "client/public/static.html"));
   });
   
+  // Add a direct HTML response route
+  app.get("/direct", (req, res) => {
+    console.log("Request received at /direct");
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>CareUnity Direct Response</title>
+        <style>
+          body {
+            background-color: #8b5cf6;
+            font-family: -apple-system, system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+          }
+          .card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+          }
+          h1 { color: #4f46e5; }
+          p { color: #4b5563; }
+          .status { 
+            background: #f3f4f6; 
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <h1>CareUnity Direct Response</h1>
+          <p>This HTML was sent directly from the server as a response, not from a file.</p>
+          <p>If you can see this page, the server and Express routes are working correctly.</p>
+          <div class="status">
+            Server time: ${new Date().toLocaleString()}
+          </div>
+        </div>
+      </body>
+      </html>
+    `);
+  });
+  
   // Setup authentication routes
   setupAuth(app);
 
