@@ -1229,7 +1229,11 @@ export default function StaffManagement() {
                             <div className="text-xs text-gray-500">7% late arrivals</div>
                           </div>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => alert('Supervision session will be scheduled in the next release')}
+                        >
                           Supervise
                         </Button>
                       </div>
@@ -1244,7 +1248,11 @@ export default function StaffManagement() {
                             <div className="text-xs text-gray-500">11% late arrivals</div>
                           </div>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => alert('Supervision session will be scheduled in the next release')}
+                        >
                           Supervise
                         </Button>
                       </div>
@@ -1264,7 +1272,11 @@ export default function StaffManagement() {
                             <div className="text-xs text-gray-500">2 missed visits in May</div>
                           </div>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => alert('Missed visits review will be displayed in the next release')}
+                        >
                           Review
                         </Button>
                       </div>
@@ -1279,7 +1291,11 @@ export default function StaffManagement() {
                             <div className="text-xs text-gray-500">2 missed visits in May</div>
                           </div>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => alert('Missed visits review will be displayed in the next release')}
+                        >
                           Review
                         </Button>
                       </div>
