@@ -1,26 +1,11 @@
 import React from 'react';
-import { Link, Route, Switch } from 'wouter';
+import { Route, Switch } from 'wouter';
+import { Layout } from '@/components/layout/layout';
+import Dashboard from '@/pages/dashboard';
+import ServiceUsers from '@/pages/service-users';
+import NotFound from '@/pages/not-found';
 
-function HomePage() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 flex flex-col items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
-        <h1 className="text-3xl font-bold text-center text-indigo-700 mb-6">CareUnity</h1>
-        
-        <p className="text-gray-700 mb-4">
-          Welcome to the CareUnity care management platform. This is a simple application with no complex dependencies.
-        </p>
-        
-        <div className="flex justify-center mt-6">
-          <Link href="/test" className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
-            Go to Test Page
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
-
+// Test page to verify API connectivity
 function TestPage() {
   const [message, setMessage] = React.useState('Click the button to test API');
 
@@ -36,38 +21,55 @@ function TestPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-500 to-indigo-600 flex flex-col items-center justify-center p-4">
+    <div className="p-6 max-w-xl mx-auto bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold text-purple-700 mb-4">API Test Page</h1>
+      
+      <p className="text-gray-700 mb-4">
+        This is a test page to verify that React and API connections are working correctly.
+      </p>
+      
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button 
+          onClick={() => alert('React events are working!')}
+          className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+        >
+          Test React
+        </button>
+        
+        <button 
+          onClick={testApi}
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+        >
+          Test API
+        </button>
+      </div>
+      
+      <div className="p-4 bg-gray-100 rounded">
+        <h2 className="font-semibold mb-2">API Response:</h2>
+        <p className="text-gray-700 break-all">{message}</p>
+      </div>
+    </div>
+  );
+}
+
+// Landing page for non-authenticated users
+function LandingPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 flex flex-col items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
-        <h1 className="text-3xl font-bold text-center text-purple-700 mb-6">Test Page</h1>
+        <h1 className="text-3xl font-bold text-center text-indigo-700 mb-6">CareUnity</h1>
         
         <p className="text-gray-700 mb-4">
-          This is a test page to verify that React and API connections are working correctly.
+          Welcome to the CareUnity care management platform, designed to improve care coordination and delivery.
         </p>
         
-        <div className="flex justify-center mt-6 flex-wrap gap-2">
-          <button 
-            onClick={() => alert('React events are working!')}
-            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
-          >
-            Test React
-          </button>
-          
-          <button 
-            onClick={testApi}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-          >
-            Test API
-          </button>
-        </div>
-        
-        <div className="mt-4 p-4 bg-gray-100 rounded">
-          <p className="text-gray-700">{message}</p>
-        </div>
-        
-        <div className="mt-6 text-center">
-          <Link href="/" className="text-indigo-600 hover:underline">
-            Back to Home
-          </Link>
+        <div className="flex justify-center mt-6 space-x-4">
+          <a href="/auth" className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
+            Login
+          </a>
+          <a href="/auth?register=true" className="px-4 py-2 border border-indigo-600 text-indigo-600 rounded hover:bg-indigo-50 transition">
+            Register
+          </a>
         </div>
       </div>
     </div>
@@ -75,12 +77,39 @@ function TestPage() {
 }
 
 function App() {
-  return (
-    <Switch>
-      <Route path="/" component={HomePage} />
-      <Route path="/test" component={TestPage} />
-    </Switch>
-  );
+  // Check if we're in the admin area or main application where layout is needed
+  const needsLayout = (pathname: string) => {
+    return !['/landing', '/auth', '/login', '/register'].includes(pathname);
+  };
+
+  // Main application with layout
+  const AppWithLayout = () => {
+    return (
+      <Layout>
+        <Switch>
+          <Route path="/" component={Dashboard} />
+          <Route path="/test" component={TestPage} />
+          <Route path="/service-users" component={ServiceUsers} />
+          {/* Add other routes here */}
+          <Route component={NotFound} />
+        </Switch>
+      </Layout>
+    );
+  };
+
+  // App without layout (for auth pages, etc.)
+  const AppWithoutLayout = () => {
+    return (
+      <Switch>
+        <Route path="/landing" component={LandingPage} />
+        <Route component={LandingPage} />
+      </Switch>
+    );
+  };
+
+  // For this demo, we'll always use the layout
+  // In a real application, you would conditionally render based on route or auth status
+  return <AppWithLayout />;
 }
 
 export default App;

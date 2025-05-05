@@ -1,141 +1,119 @@
-import React, { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { AppShell } from '@/components/layout/app-shell';
-import { PageHeader } from '@/components/ui/page-header';
-import { DashboardStats } from '@/components/dashboard/dashboard-stats';
-import { AppointmentList } from '@/components/dashboard/appointment-list';
-import { RecentServiceUsers } from '@/components/dashboard/recent-service-users';
-import { TaskList } from '@/components/dashboard/task-list';
-import { VoiceRecorder } from '@/components/ui/voice-recorder';
-import { apiRequest } from '@/lib/queryClient';
-import { useToast } from '@/hooks/use-toast';
-
-interface User {
-  id: number;
-  username: string;
-  fullName: string;
-  email: string;
-  role: string;
-  // Add any other user fields you need
-}
+import React from 'react';
+import { Users, FilePlus, Calendar, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
 
 export default function Dashboard() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthLoading, setIsAuthLoading] = useState<boolean>(true);
-  const { toast } = useToast();
-  
-  // Fetch user data directly
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch('/api/user', {
-          credentials: 'include',
-        });
-        
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.error("Failed to fetch user:", error);
-        setUser(null);
-      } finally {
-        setIsAuthLoading(false);
-      }
-    };
-    
-    fetchUser();
-  }, []);
+  // These would normally be fetched from the API
+  const stats = [
+    { name: 'Service Users', value: '24', icon: <Users className="h-6 w-6" />, color: 'bg-blue-500' },
+    { name: 'Care Plans', value: '36', icon: <FilePlus className="h-6 w-6" />, color: 'bg-green-500' },
+    { name: 'Appointments Today', value: '12', icon: <Calendar className="h-6 w-6" />, color: 'bg-purple-500' },
+    { name: 'Upcoming Tasks', value: '8', icon: <Clock className="h-6 w-6" />, color: 'bg-yellow-500' },
+  ];
 
-  // Fetch dashboard data
-  const { data, isLoading } = useQuery({
-    queryKey: ['/api/dashboard/stats'],
-    enabled: !!user
-  });
+  const recentAlerts = [
+    { id: 1, type: 'risk', message: 'Medication compliance concern for John Smith', time: '2 hours ago' },
+    { id: 2, type: 'info', message: 'Care plan updated for Sarah Johnson', time: '3 hours ago' },
+    { id: 3, type: 'task', message: 'New appointment scheduled with Dr. Williams', time: '5 hours ago' },
+    { id: 4, type: 'risk', message: 'Mobility assessment due for Robert Davis', time: '8 hours ago' },
+  ];
 
-  // Fetch service users for voice recorder
-  const { data: serviceUsers, isLoading: isLoadingServiceUsers } = useQuery({
-    queryKey: ['/api/service-users'],
-    enabled: !!user
-  });
-
-  const handleSaveNote = async (note: { content: string; serviceUserId: number }) => {
-    try {
-      await apiRequest('POST', '/api/notes', {
-        serviceUserId: note.serviceUserId,
-        content: note.content,
-        category: 'general',
-        isVoiceRecorded: true
-      });
-      
-      toast({
-        title: 'Note saved',
-        description: 'Your voice note has been saved successfully.',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error saving note',
-        description: 'There was a problem saving your note. Please try again.',
-        variant: 'destructive'
-      });
-    }
-  };
-
-  // For demo purposes, transform service users data for voice recorder
-  const serviceUserOptions = serviceUsers?.map(user => ({
-    id: user.id,
-    name: user.fullName
-  })) || [];
+  const upcomingAppointments = [
+    { id: 1, name: 'John Smith', type: 'Medication Review', time: '10:00 AM', date: 'Today' },
+    { id: 2, name: 'Sarah Johnson', type: 'Care Plan Review', time: '11:30 AM', date: 'Today' },
+    { id: 3, name: 'Robert Davis', type: 'Physical Assessment', time: '2:00 PM', date: 'Today' },
+    { id: 4, name: 'Emily Wilson', type: 'Home Visit', time: '9:15 AM', date: 'Tomorrow' },
+  ];
 
   return (
-    <AppShell>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <PageHeader 
-          title={`Welcome back, ${user?.fullName || 'User'}`}
-          description="Here's what's happening in your care schedule today"
-        />
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+        <p className="text-gray-600">Welcome to CareUnity, your care management platform.</p>
+      </div>
 
-        <div className="py-4">
-          {/* Dashboard Stats */}
-          <DashboardStats
-            careHours={data?.careHours || '0'}
-            serviceUsersCount={data?.serviceUsersCount || 0}
-            carePlanCompliance={data?.carePlanCompliance || '0%'}
-            isLoading={isLoading}
-          />
-
-          {/* Today's Schedule */}
-          <div className="mb-6 mt-6">
-            <AppointmentList
-              appointments={data?.todayAppointments || []}
-              isLoading={isLoading}
-            />
+      {/* Stats overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, index) => (
+          <div key={index} className="bg-white rounded-lg shadow p-4 flex items-center">
+            <div className={`${stat.color} rounded-full p-3 mr-4 text-white`}>
+              {stat.icon}
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">{stat.name}</p>
+              <p className="text-2xl font-semibold">{stat.value}</p>
+            </div>
           </div>
+        ))}
+      </div>
 
-          {/* Recent Service Users & Tasks */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <RecentServiceUsers
-              serviceUsers={data?.recentServiceUsers || []}
-              isLoading={isLoading}
-            />
-            
-            <TaskList
-              tasks={data?.pendingTasks || []}
-              isLoading={isLoading}
-            />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Alerts */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="px-4 py-3 border-b border-gray-200">
+            <h2 className="font-semibold text-gray-800">Recent Alerts</h2>
           </div>
+          <div className="p-4">
+            <ul className="divide-y divide-gray-200">
+              {recentAlerts.map((alert) => (
+                <li key={alert.id} className="py-3 flex items-start">
+                  <div className="flex-shrink-0 mt-1">
+                    {alert.type === 'risk' ? (
+                      <AlertTriangle className="h-5 w-5 text-red-500" />
+                    ) : (
+                      <CheckCircle className="h-5 w-5 text-green-500" />
+                    )}
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <p className="text-sm font-medium text-gray-800">{alert.message}</p>
+                    <p className="text-xs text-gray-500">{alert.time}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
-          {/* Voice Notes */}
-          <div className="mt-6">
-            <VoiceRecorder
-              serviceUsers={serviceUserOptions}
-              onSave={handleSaveNote}
-            />
+        {/* Upcoming appointments */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="px-4 py-3 border-b border-gray-200">
+            <h2 className="font-semibold text-gray-800">Upcoming Appointments</h2>
+          </div>
+          <div className="p-4">
+            <ul className="divide-y divide-gray-200">
+              {upcomingAppointments.map((appointment) => (
+                <li key={appointment.id} className="py-3">
+                  <div className="flex justify-between">
+                    <p className="text-sm font-medium text-gray-800">{appointment.name}</p>
+                    <p className="text-sm text-gray-500">{appointment.time}, {appointment.date}</p>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">{appointment.type}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
-    </AppShell>
+
+      {/* CQC compliance summary */}
+      <div className="bg-white rounded-lg shadow p-4">
+        <h2 className="font-semibold text-gray-800 mb-3">CQC Compliance Overview</h2>
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+          {['Safe', 'Effective', 'Caring', 'Responsive', 'Well-Led'].map((area, index) => (
+            <div key={index} className="bg-gray-50 p-3 rounded border border-gray-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">{area}</span>
+                <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">Good</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div 
+                  className="bg-green-600 h-2.5 rounded-full" 
+                  style={{ width: `${Math.floor(Math.random() * 30) + 70}%` }}
+                ></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
