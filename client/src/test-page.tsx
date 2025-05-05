@@ -1,8 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
+// Simple component export to avoid circular dependencies
+import React, { useState } from 'react';
 
-function TestPage() {
+export default function TestPage() {
+  const [serverStatus, setServerStatus] = useState<string>('Not checked yet');
+
+  const checkServer = async () => {
+    setServerStatus('Checking server...');
+    try {
+      const response = await fetch('/api/healthcheck');
+      const data = await response.json();
+      setServerStatus(`Success! Server responded with: ${JSON.stringify(data)}`);
+    } catch (err) {
+      setServerStatus(`Error: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 flex flex-col items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
@@ -23,20 +35,10 @@ function TestPage() {
         
         <div className="mt-8 p-4 bg-gray-100 rounded">
           <h2 className="text-lg font-semibold text-gray-800 mb-2">Server status:</h2>
-          <div id="server-status" className="text-gray-600">Not checked yet</div>
+          <div className="text-gray-600">{serverStatus}</div>
           
           <button 
-            onClick={async () => {
-              try {
-                const response = await fetch('/api/healthcheck');
-                const data = await response.json();
-                document.getElementById('server-status')!.innerText = 
-                  `Success! Server responded with: ${JSON.stringify(data)}`;
-              } catch (err) {
-                document.getElementById('server-status')!.innerText = 
-                  `Error: ${err instanceof Error ? err.message : String(err)}`;
-              }
-            }}
+            onClick={checkServer}
             className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
           >
             Check Server
@@ -46,9 +48,3 @@ function TestPage() {
     </div>
   );
 }
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <TestPage />
-  </React.StrictMode>
-);

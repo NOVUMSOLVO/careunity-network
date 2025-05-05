@@ -2,11 +2,7 @@ import React from 'react';
 import TestPage from "./test-page";
 
 function App() {
-  return (
-    <div className="app">
-      <TestPage />
-    </div>
-  );
+  return <TestPage />;
 }
 
 export default App;
