@@ -16,14 +16,29 @@ const ensureAuthenticated = (req: Request, res: Response, next: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Add a direct route to test.html file at the root
-  app.get("/", (req, res) => {
-    res.sendFile(path.join(process.cwd(), "client/public/test.html"));
+  // Add diagnostic routes for testing server connection
+  app.get("/api/healthcheck", (req, res) => {
+    res.json({ status: "ok", message: "Server is running", timestamp: new Date().toISOString() });
   });
   
-  // Add a direct route to test.html file at /test path
+  // Add routes to serve test.html directly
+  const testHtmlPath = path.join(process.cwd(), "client/public/test.html");
+  console.log(`Test HTML path: ${testHtmlPath}`);
+  
+  // Serve test.html at multiple paths to ensure it can be accessed
+  app.get("/", (req, res) => {
+    console.log("Request received at /");
+    res.sendFile(testHtmlPath);
+  });
+  
   app.get("/test", (req, res) => {
-    res.sendFile(path.join(process.cwd(), "client/public/test.html"));
+    console.log("Request received at /test");
+    res.sendFile(testHtmlPath);
+  });
+  
+  app.get("/test.html", (req, res) => {
+    console.log("Request received at /test.html");
+    res.sendFile(testHtmlPath);
   });
   
   // Setup authentication routes
