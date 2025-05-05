@@ -14,6 +14,8 @@ import StaffManagement from '@/pages/staff-management';
 import RbacManagementSimple from '@/pages/rbac-management-simple';
 import Reports from '@/pages/reports';
 import AuthPage from '@/pages/auth-page';
+import FamilyPortal from '@/pages/family-portal';
+import RouteOptimizer from '@/pages/route-optimizer';
 import NotFound from '@/pages/not-found';
 
 // Test page to verify API connectivity
@@ -119,6 +121,10 @@ function App() {
           {/* User Tools */}
           <Route path="/messages" component={Messages} />
           <Route path="/settings" component={Settings} />
+          
+          {/* Advanced Features */}
+          <Route path="/family-portal" component={FamilyPortal} />
+          <Route path="/route-optimizer" component={RouteOptimizer} />
           
           {/* Testing & Authentication */}
           <Route path="/test" component={TestPage} />
