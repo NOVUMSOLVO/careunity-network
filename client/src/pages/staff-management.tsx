@@ -258,7 +258,22 @@ export default function StaffManagement() {
             <UserPlus className="h-4 w-4 mr-2" />
             Add Staff
           </Button>
-          <Button className="flex-1 sm:flex-none">
+          <Button 
+            className="flex-1 sm:flex-none"
+            onClick={() => {
+              const csvData = staffList.map(staff => 
+                `${staff.name},${staff.role},${staff.email},${staff.phone},${staff.joinDate}`
+              ).join('\n');
+              const blob = new Blob([`Name,Role,Email,Phone,Join Date\n${csvData}`], { type: 'text/csv' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = 'staff-export.csv';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
+          >
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>

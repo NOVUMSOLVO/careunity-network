@@ -130,7 +130,55 @@ export default function CQCCompliance() {
           <h1 className="text-2xl font-bold text-gray-800">CQC Compliance</h1>
           <p className="text-gray-600">Monitor and improve compliance with CQC standards</p>
         </div>
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <button 
+          onClick={() => {
+            // Generate a full PDF report with all the CQC compliance data
+            const htmlContent = `
+              <html>
+                <head>
+                  <title>CQC Compliance Report - ${new Date().toLocaleDateString()}</title>
+                  <style>
+                    body { font-family: Arial, sans-serif; padding: 20px; }
+                    h1 { color: #4f46e5; }
+                    h2 { margin-top: 20px; color: #374151; }
+                    .section { margin-bottom: 30px; }
+                    .requirement { display: flex; margin: 8px 0; }
+                    .status { margin-right: 10px; }
+                    .complete { color: green; }
+                    .incomplete { color: orange; }
+                  </style>
+                </head>
+                <body>
+                  <h1>CQC Compliance Full Report</h1>
+                  <p>Generated on ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
+                  ${cqcAreas.map(area => `
+                    <div class="section">
+                      <h2>${area.name} - ${area.status.charAt(0).toUpperCase() + area.status.slice(1)}</h2>
+                      <p>${area.description}</p>
+                      <p>Score: ${area.score}% - ${area.evidenceCount}/${area.requirementsCount} Requirements Met</p>
+                      <p>Last Reviewed: ${new Date(area.lastReviewed).toLocaleDateString()}</p>
+                      <h3>Key Requirements:</h3>
+                      ${area.keyRequirements.map(req => `
+                        <div class="requirement">
+                          <span class="status ${req.completed ? 'complete' : 'incomplete'}">${req.completed ? '✓' : '!'}</span>
+                          <span>${req.name}</span>
+                        </div>
+                      `).join('')}
+                    </div>
+                  `).join('')}
+                </body>
+              </html>
+            `;
+            
+            // Create a Blob with the HTML content
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            // Open the report in a new tab
+            window.open(url, '_blank');
+          }}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+        >
           <BarChart3 size={18} />
           <span>View Full Report</span>
         </button>
@@ -205,11 +253,66 @@ export default function CQCCompliance() {
                 </ul>
                 
                 <div className="flex justify-between">
-                  <button className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent collapse when clicking button
+                      // Show a prompt to add evidence
+                      const evidenceDescription = prompt(`Add evidence for ${area.name}:`, '');
+                      if (evidenceDescription) {
+                        // In a real application, this would send data to an API
+                        // For now, we just show an alert that the evidence was added
+                        alert(`Evidence added to ${area.name}:\n${evidenceDescription}`);
+                      }
+                    }}
+                    className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center"
+                  >
                     <Plus className="h-4 w-4 mr-1" />
                     Add Evidence
                   </button>
-                  <button className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent collapse when clicking this button
+                      // Create a requirements report for this specific area
+                      const htmlContent = `
+                        <html>
+                          <head>
+                            <title>${area.name} Requirements Report</title>
+                            <style>
+                              body { font-family: Arial, sans-serif; padding: 20px; }
+                              h1 { color: #4f46e5; }
+                              .section { margin-bottom: 15px; }
+                              .requirement { margin: 8px 0; padding: 8px; border: 1px solid #e5e7eb; border-radius: 4px; }
+                              .complete { color: green; }
+                              .incomplete { color: orange; }
+                            </style>
+                          </head>
+                          <body>
+                            <h1>${area.name} Requirements Report</h1>
+                            <p>Description: ${area.description}</p>
+                            <p>Current Status: ${area.status.charAt(0).toUpperCase() + area.status.slice(1)}</p>
+                            <p>Score: ${area.score}%</p>
+                            <p>Requirements Met: ${area.evidenceCount}/${area.requirementsCount}</p>
+                            <div class="section">
+                              <h2>Key Requirements:</h2>
+                              ${area.keyRequirements.map(req => `
+                                <div class="requirement">
+                                  <h3 class="${req.completed ? 'complete' : 'incomplete'}">
+                                    ${req.completed ? '✓' : '!'} ${req.name}
+                                  </h3>
+                                  <p>Status: ${req.completed ? 'Completed' : 'Pending'}</p>
+                                </div>
+                              `).join('')}
+                            </div>
+                          </body>
+                        </html>
+                      `;
+                      
+                      const blob = new Blob([htmlContent], { type: 'text/html' });
+                      const url = URL.createObjectURL(blob);
+                      window.open(url, '_blank');
+                    }}
+                    className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center"
+                  >
                     <FileText className="h-4 w-4 mr-1" />
                     View All Requirements
                   </button>

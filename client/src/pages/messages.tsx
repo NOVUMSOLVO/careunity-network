@@ -4,6 +4,7 @@ import { MessageSquare, Plus, Search, Send, UserPlus, Paperclip, MoreHorizontal 
 export default function Messages() {
   const [selectedContact, setSelectedContact] = useState<number | null>(1);
   const [messageInput, setMessageInput] = useState('');
+  const [newMessageModalOpen, setNewMessageModalOpen] = useState(false);
 
   // Mock data
   const contacts = [
