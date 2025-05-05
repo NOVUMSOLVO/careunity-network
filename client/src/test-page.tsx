@@ -1,58 +1,54 @@
 import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
 
-const TestPage = () => {
+function TestPage() {
   return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      height: '100vh',
-      background: 'linear-gradient(to right, #6366f1, #8b5cf6)'
-    }}>
-      <div style={{
-        background: 'white',
-        padding: '2rem',
-        borderRadius: '0.5rem',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        maxWidth: '500px',
-        width: '100%',
-        textAlign: 'center'
-      }}>
-        <h1 style={{ 
-          fontSize: '2rem', 
-          marginBottom: '1rem',
-          color: '#4f46e5'
-        }}>
-          CareUnity Test Page
-        </h1>
-        <p style={{ marginBottom: '1.5rem', color: '#4b5563' }}>
-          If you can see this page, the application is loading correctly.
+    <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 flex flex-col items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+        <h1 className="text-3xl font-bold text-center text-indigo-700 mb-6">CareUnity Test Page</h1>
+        
+        <p className="text-gray-700 mb-4">
+          This is a simple React test page to verify that Vite and React are working correctly.
         </p>
-        <div style={{ marginBottom: '1.5rem' }}>
-          <button style={{
-            background: '#4f46e5',
-            color: 'white',
-            border: 'none',
-            padding: '0.5rem 1rem',
-            borderRadius: '0.25rem',
-            cursor: 'pointer'
-          }}>
-            Test Button
+        
+        <div className="flex justify-center mt-6">
+          <button 
+            onClick={() => alert('React event handlers are working!')}
+            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+          >
+            Test React
           </button>
         </div>
-        <div style={{
-          padding: '1rem',
-          background: '#f3f4f6',
-          borderRadius: '0.25rem',
-          color: '#374151',
-          fontSize: '0.875rem'
-        }}>
-          Server status: Checking...
+        
+        <div className="mt-8 p-4 bg-gray-100 rounded">
+          <h2 className="text-lg font-semibold text-gray-800 mb-2">Server status:</h2>
+          <div id="server-status" className="text-gray-600">Not checked yet</div>
+          
+          <button 
+            onClick={async () => {
+              try {
+                const response = await fetch('/api/healthcheck');
+                const data = await response.json();
+                document.getElementById('server-status')!.innerText = 
+                  `Success! Server responded with: ${JSON.stringify(data)}`;
+              } catch (err) {
+                document.getElementById('server-status')!.innerText = 
+                  `Error: ${err instanceof Error ? err.message : String(err)}`;
+              }
+            }}
+            className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          >
+            Check Server
+          </button>
         </div>
       </div>
     </div>
   );
-};
+}
 
-export default TestPage;
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <TestPage />
+  </React.StrictMode>
+);
