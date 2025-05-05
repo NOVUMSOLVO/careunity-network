@@ -482,7 +482,14 @@ const Dashboard = () => {
                       <SelectItem value="low">Low Priority</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      // In a real app, this would mark all alerts as read
+                      alert("All alerts have been marked as read");
+                    }}
+                  >
                     Mark All Read
                   </Button>
                 </div>
@@ -562,7 +569,13 @@ const Dashboard = () => {
                             {alert.type === "qualification" && "Qualification Alert"}
                             {alert.type === "incident" && "Incident Report Alert"}
                           </span>
-                          <Button size="sm">
+                          <Button 
+                            size="sm"
+                            onClick={() => {
+                              // In a real app, this would open a dialog to address the alert
+                              window.alert(`Taking action on alert: ${alert.message}`);
+                            }}
+                          >
                             Take Action
                           </Button>
                         </div>
@@ -574,11 +587,24 @@ const Dashboard = () => {
             </CardContent>
             <CardFooter>
               <div className="w-full flex items-center justify-between">
-                <Button variant="outline" className="gap-1">
+                <Button 
+                  variant="outline" 
+                  className="gap-1"
+                  onClick={() => {
+                    // In a real app, this would open notification preferences
+                    window.alert("Opening notification settings panel");
+                  }}
+                >
                   <Bell className="h-4 w-4" />
                   Notification Settings
                 </Button>
-                <Button className="gap-1">
+                <Button 
+                  className="gap-1"
+                  onClick={() => {
+                    // In a real app, this would navigate to the alerts management page
+                    window.alert("Navigating to comprehensive alerts management page");
+                  }}
+                >
                   <ArrowRight className="h-4 w-4" />
                   View All Alerts
                 </Button>
@@ -627,7 +653,16 @@ const Dashboard = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="w-full">View All Service Users</Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    // In a real app, this would navigate to the service users page
+                    window.alert("Navigating to service users directory");
+                  }}
+                >
+                  View All Service Users
+                </Button>
               </CardFooter>
             </Card>
             
