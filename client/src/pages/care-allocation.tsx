@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Users2, Calendar, Filter, ArrowDown, ArrowUp, Clock, MapPin, Route, Brain, ChevronDown, ChevronUp, Layers, BarChart2 } from 'lucide-react';
+import { Link } from 'wouter';
 
 export default function CareAllocation() {
   const [showAllocationTools, setShowAllocationTools] = useState(false);
@@ -219,10 +220,10 @@ export default function CareAllocation() {
             <MapPin size={18} />
             <span>{showMap ? 'Hide Map' : 'Show Map'}</span>
           </button>
-          <button className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-4 py-2 rounded-lg flex items-center gap-2">
+          <Link href="/calendar" className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
             <Calendar size={18} />
             <span>View Schedule</span>
-          </button>
+          </Link>
         </div>
       </div>
 

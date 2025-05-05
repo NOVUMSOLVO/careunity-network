@@ -153,7 +153,7 @@ export default function ServiceUsers() {
                     <FileText className="h-4 w-4 mr-1" />
                     Care Plans
                   </Link>
-                  <Link href={`/service-users/${user.id}`} className="text-indigo-600 hover:text-indigo-800 flex items-center text-sm">
+                  <Link href={`/service-users?id=${user.id}`} className="text-indigo-600 hover:text-indigo-800 flex items-center text-sm">
                     View
                   </Link>
                 </div>
