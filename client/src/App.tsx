@@ -12,6 +12,8 @@ import Settings from '@/pages/settings';
 import IncidentReporting from '@/pages/incident-reporting';
 import StaffManagement from '@/pages/staff-management';
 import RbacManagementSimple from '@/pages/rbac-management-simple';
+import Reports from '@/pages/reports';
+import AuthPage from '@/pages/auth-page';
 import NotFound from '@/pages/not-found';
 
 // Test page to verify API connectivity
@@ -96,18 +98,33 @@ function App() {
     return (
       <Layout>
         <Switch>
+          {/* Dashboard */}
           <Route path="/" component={Dashboard} />
-          <Route path="/test" component={TestPage} />
+          
+          {/* Main Application Pages */}
           <Route path="/service-users" component={ServiceUsers} />
           <Route path="/calendar" component={Calendar} />
           <Route path="/care-plans" component={CarePlans} />
           <Route path="/care-allocation" component={CareAllocation} />
+          
+          {/* Compliance & Reporting */}
           <Route path="/cqc-compliance" component={CQCCompliance} />
-          <Route path="/messages" component={Messages} />
-          <Route path="/settings" component={Settings} />
+          <Route path="/reports" component={Reports} />
           <Route path="/incident-reporting" component={IncidentReporting} />
+          
+          {/* Administration */}
           <Route path="/staff-management" component={StaffManagement} />
           <Route path="/rbac-management" component={RbacManagementSimple} />
+          
+          {/* User Tools */}
+          <Route path="/messages" component={Messages} />
+          <Route path="/settings" component={Settings} />
+          
+          {/* Testing & Authentication */}
+          <Route path="/test" component={TestPage} />
+          <Route path="/auth" component={AuthPage} />
+          
+          {/* 404 Page */}
           <Route component={NotFound} />
         </Switch>
       </Layout>

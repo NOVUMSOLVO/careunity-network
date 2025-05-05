@@ -13,12 +13,21 @@ import {
   X, 
   AlertTriangle,
   Briefcase,
-  ShieldCheck
+  ShieldCheck,
+  FileText
 } from 'lucide-react';
 
 interface LayoutProps {
   children: ReactNode;
 }
+
+// Navigation item type definition
+type NavItem = {
+  href: string;
+  icon: React.ReactNode;
+  label: string;
+  group: 'overview' | 'care' | 'admin' | 'compliance' | 'user';
+};
 
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
@@ -28,19 +37,67 @@ export function Layout({ children }: LayoutProps) {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const navItems = [
-    { href: '/', icon: <Home size={20} />, label: 'Dashboard' },
-    { href: '/calendar', icon: <Calendar size={20} />, label: 'Calendar' },
-    { href: '/service-users', icon: <Users size={20} />, label: 'Service Users' },
-    { href: '/care-plans', icon: <FilePlus size={20} />, label: 'Care Plans' },
-    { href: '/care-allocation', icon: <Users2 size={20} />, label: 'Care Allocation' },
-    { href: '/staff-management', icon: <Briefcase size={20} />, label: 'Staff Management' },
-    { href: '/incident-reporting', icon: <AlertTriangle size={20} />, label: 'Incident Reporting' },
-    { href: '/cqc-compliance', icon: <BarChart3 size={20} />, label: 'CQC Compliance' },
-    { href: '/rbac-management', icon: <ShieldCheck size={20} />, label: 'Access Control' },
-    { href: '/messages', icon: <MessageSquare size={20} />, label: 'Messages' },
-    { href: '/settings', icon: <Settings size={20} />, label: 'Settings' },
+  // All navigation items with logical grouping
+  const navItems: NavItem[] = [
+    // Overview and Planning
+    { href: '/', icon: <Home size={20} />, label: 'Dashboard', group: 'overview' },
+    { href: '/calendar', icon: <Calendar size={20} />, label: 'Calendar', group: 'overview' },
+    
+    // Service User Management
+    { href: '/service-users', icon: <Users size={20} />, label: 'Service Users', group: 'care' },
+    { href: '/care-plans', icon: <FilePlus size={20} />, label: 'Care Plans', group: 'care' },
+    { href: '/care-allocation', icon: <Users2 size={20} />, label: 'Care Allocation', group: 'care' },
+    
+    // Staff and Administration
+    { href: '/staff-management', icon: <Briefcase size={20} />, label: 'Staff Management', group: 'admin' },
+    { href: '/rbac-management', icon: <ShieldCheck size={20} />, label: 'Access Control', group: 'admin' },
+    
+    // Compliance and Reporting
+    { href: '/incident-reporting', icon: <AlertTriangle size={20} />, label: 'Incidents', group: 'compliance' },
+    { href: '/cqc-compliance', icon: <BarChart3 size={20} />, label: 'CQC Compliance', group: 'compliance' },
+    { href: '/reports', icon: <FileText size={20} />, label: 'Reports', group: 'compliance' },
+    
+    // User Tools and Settings
+    { href: '/messages', icon: <MessageSquare size={20} />, label: 'Messages', group: 'user' },
+    { href: '/settings', icon: <Settings size={20} />, label: 'Settings', group: 'user' },
   ];
+
+  // Group nav items by category
+  const overviewItems = navItems.filter(item => item.group === 'overview');
+  const careItems = navItems.filter(item => item.group === 'care');
+  const adminItems = navItems.filter(item => item.group === 'admin');
+  const complianceItems = navItems.filter(item => item.group === 'compliance');
+  const userItems = navItems.filter(item => item.group === 'user');
+
+  // Navigation link component
+  const NavLink = ({ item }: { item: NavItem }) => (
+    <li>
+      <Link 
+        href={item.href}
+        className={`flex items-center px-4 py-2 text-gray-100 rounded-lg hover:bg-indigo-600 transition-colors ${
+          location === item.href ? 'bg-indigo-800 font-medium' : ''
+        }`}
+        onClick={() => setIsSidebarOpen(false)}
+      >
+        <span className="mr-3">{item.icon}</span>
+        <span>{item.label}</span>
+      </Link>
+    </li>
+  );
+
+  // Section component
+  const NavSection = ({ title, items }: { title: string, items: NavItem[] }) => (
+    <div>
+      <h3 className="text-xs uppercase font-semibold text-indigo-200 tracking-wider px-3 mb-2">
+        {title}
+      </h3>
+      <ul className="space-y-1">
+        {items.map((item) => (
+          <NavLink key={item.href} item={item} />
+        ))}
+      </ul>
+    </div>
+  );
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -72,22 +129,13 @@ export function Layout({ children }: LayoutProps) {
           <h2 className="text-white text-2xl font-semibold">CareUnity</h2>
         </div>
         <nav className="px-2 py-4">
-          <ul className="space-y-1">
-            {navItems.map((item) => (
-              <li key={item.href}>
-                <Link 
-                  href={item.href}
-                  className={`flex items-center px-4 py-3 text-gray-100 rounded-lg hover:bg-indigo-600 transition-colors ${
-                    location === item.href ? 'bg-indigo-800 font-medium' : ''
-                  }`}
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  <span className="mr-3">{item.icon}</span>
-                  <span>{item.label}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div className="space-y-6">
+            <NavSection title="Dashboard" items={overviewItems} />
+            <NavSection title="Care Management" items={careItems} />
+            <NavSection title="Administration" items={adminItems} />
+            <NavSection title="Compliance & Reporting" items={complianceItems} />
+            <NavSection title="User" items={userItems} />
+          </div>
         </nav>
       </aside>
 
