@@ -18,7 +18,8 @@ import {
   Home,
   Map,
   Navigation,
-  Heart
+  Heart,
+  ShieldCheck
 } from 'lucide-react';
 
 interface User {
@@ -74,6 +75,7 @@ export function Sidebar() {
     { name: 'Calendar', icon: <Calendar className="h-5 w-5" />, id: 'calendar', path: '/calendar' },
     { name: 'Care Allocation', icon: <CalendarClock className="h-5 w-5" />, id: 'care-allocation', path: '/care-allocation' },
     { name: 'Staff Management', icon: <Briefcase className="h-5 w-5" />, id: 'staff-management', path: '/staff-management' },
+    { name: 'RBAC Management', icon: <ShieldCheck className="h-5 w-5" />, id: 'rbac-management', path: '/rbac-management' },
     { name: 'Route Optimizer', icon: <Navigation className="h-5 w-5" />, id: 'route-optimizer', path: '/route-optimizer' },
     { name: 'Family Portal', icon: <Heart className="h-5 w-5" />, id: 'family-portal', path: '/family-portal' },
     { name: 'Incident Reporting', icon: <AlertTriangle className="h-5 w-5" />, id: 'incident-reporting', path: '/incident-reporting' },
