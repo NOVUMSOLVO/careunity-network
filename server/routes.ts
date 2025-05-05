@@ -1,5 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
+import path from "path";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { z } from "zod";
@@ -15,6 +16,16 @@ const ensureAuthenticated = (req: Request, res: Response, next: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Add a direct route to test.html file at the root
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(process.cwd(), "client/public/test.html"));
+  });
+  
+  // Add a direct route to test.html file at /test path
+  app.get("/test", (req, res) => {
+    res.sendFile(path.join(process.cwd(), "client/public/test.html"));
+  });
+  
   // Setup authentication routes
   setupAuth(app);
 
