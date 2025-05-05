@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'wouter';
 import { 
   Users, 
   FilePlus, 
@@ -189,9 +190,12 @@ export default function Dashboard() {
           <div className="bg-white rounded-lg shadow">
             <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
               <h2 className="font-semibold text-gray-800">Recent Alerts</h2>
-              <button className="text-indigo-600 hover:text-indigo-800 text-sm flex items-center">
+              <Link 
+                to="/incident-reporting" 
+                className="text-indigo-600 hover:text-indigo-800 text-sm flex items-center cursor-pointer"
+              >
                 View All <ArrowRight className="h-4 w-4 ml-1" />
-              </button>
+              </Link>
             </div>
             <div className="p-4">
               <ul className="divide-y divide-gray-200">
@@ -223,9 +227,12 @@ export default function Dashboard() {
           <div className="bg-white rounded-lg shadow">
             <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
               <h2 className="font-semibold text-gray-800">Upcoming Appointments</h2>
-              <button className="text-indigo-600 hover:text-indigo-800 text-sm flex items-center">
+              <Link 
+                to="/calendar" 
+                className="text-indigo-600 hover:text-indigo-800 text-sm flex items-center cursor-pointer"
+              >
                 View Calendar <ArrowRight className="h-4 w-4 ml-1" />
-              </button>
+              </Link>
             </div>
             <div className="p-4">
               <ul className="divide-y divide-gray-200">
@@ -284,10 +291,13 @@ export default function Dashboard() {
                 ))}
               </div>
               <div className="mt-4 pt-4 border-t border-gray-200">
-                <button className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center">
+                <Link
+                  to="/staff-management"
+                  className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center cursor-pointer"
+                >
                   <UserCheck className="h-4 w-4 mr-1" />
                   View Full Staff Schedule
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -349,10 +359,13 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-gray-200">
-                <button className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center">
+                <Link
+                  to="/reports"
+                  className="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center cursor-pointer"
+                >
                   <BarChart2 className="h-4 w-4 mr-1" />
                   View Detailed Metrics
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -364,22 +377,34 @@ export default function Dashboard() {
             </div>
             <div className="p-4">
               <div className="grid grid-cols-2 gap-3">
-                <button className="p-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg flex flex-col items-center justify-center text-center">
+                <Link
+                  to="/care-allocation"
+                  className="p-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg flex flex-col items-center justify-center text-center cursor-pointer"
+                >
                   <Route className="h-6 w-6 mb-2" />
                   <span className="text-sm font-medium">Optimize Routes</span>
-                </button>
-                <button className="p-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg flex flex-col items-center justify-center text-center">
+                </Link>
+                <Link
+                  to="/care-allocation"
+                  className="p-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg flex flex-col items-center justify-center text-center cursor-pointer"
+                >
                   <UserCheck className="h-6 w-6 mb-2" />
                   <span className="text-sm font-medium">Auto-Allocate</span>
-                </button>
-                <button className="p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg flex flex-col items-center justify-center text-center">
+                </Link>
+                <Link
+                  to="/calendar"
+                  className="p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg flex flex-col items-center justify-center text-center cursor-pointer"
+                >
                   <Layers className="h-6 w-6 mb-2" />
                   <span className="text-sm font-medium">Shift Planner</span>
-                </button>
-                <button className="p-3 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg flex flex-col items-center justify-center text-center">
+                </Link>
+                <Link
+                  to="/care-allocation"
+                  className="p-3 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg flex flex-col items-center justify-center text-center cursor-pointer"
+                >
                   <Maximize className="h-6 w-6 mb-2" />
                   <span className="text-sm font-medium">View Map</span>
-                </button>
+                </Link>
               </div>
               <div className="mt-6 pt-4 border-t border-gray-200">
                 <h3 className="text-sm font-medium text-gray-800 mb-2">AI Insights</h3>
@@ -401,9 +426,12 @@ export default function Dashboard() {
       <div className="bg-white rounded-lg shadow p-4">
         <div className="flex justify-between items-center mb-3">
           <h2 className="font-semibold text-gray-800">CQC Compliance Overview</h2>
-          <button className="text-indigo-600 hover:text-indigo-800 text-sm flex items-center">
+          <Link 
+            to="/cqc-compliance" 
+            className="text-indigo-600 hover:text-indigo-800 text-sm flex items-center cursor-pointer"
+          >
             View Full Report <ArrowRight className="h-4 w-4 ml-1" />
-          </button>
+          </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
           {[
