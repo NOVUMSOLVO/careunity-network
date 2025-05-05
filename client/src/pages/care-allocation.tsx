@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AppShell } from '@/components/layout/app-shell';
 import { PageHeader } from '@/components/ui/page-header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Calendar } from '@/components/ui/calendar';
+import { Progress } from '@/components/ui/progress';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useQuery } from '@tanstack/react-query';
+import useVoiceRecognition from '@/lib/useVoiceRecognition';
 import {
   CalendarDays,
   Clock,
@@ -24,7 +27,12 @@ import {
   Home,
   UserCheck,
   Star,
-  Clock4
+  Clock4,
+  Mic,
+  MicOff,
+  RefreshCcw,
+  Brain,
+  HeartHandshake
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -63,6 +71,29 @@ export default function CareAllocationPage() {
   const [view, setView] = useState<'calendar' | 'list'>('calendar');
   const [selectedStaff, setSelectedStaff] = useState<number | null>(null);
   const [selectedServiceUser, setSelectedServiceUser] = useState<number | null>(null);
+  const [showVoiceAssistant, setShowVoiceAssistant] = useState<boolean>(false);
+  const [voiceCommand, setVoiceCommand] = useState<string>('');
+  const [isProcessingCommand, setIsProcessingCommand] = useState<boolean>(false);
+  const [assistantResponse, setAssistantResponse] = useState<string>('');
+  
+  // Voice recognition hook
+  const { 
+    text, 
+    isRecording, 
+    startRecording, 
+    stopRecording, 
+    resetTranscript,
+    supported: isVoiceSupported,
+    status: voiceStatus,
+    error: voiceError
+  } = useVoiceRecognition();
+  
+  // Update voice command when text changes
+  useEffect(() => {
+    if (text) {
+      setVoiceCommand(text);
+    }
+  }, [text]);
   
   // Simulating fetching data with React Query
   const { data: staff = mockStaff, isLoading: isLoadingStaff } = useQuery({
@@ -116,6 +147,114 @@ export default function CareAllocationPage() {
     alert('In a real implementation, this would automatically allocate all unallocated visits based on predefined rules');
   };
   
+  // Calculate compatibility score between staff and visits
+  const calculateCompatibilityScore = (staffId: number, visitId: number): number => {
+    const staffMember = staff.find(s => s.id === staffId);
+    const visit = visits.find(v => v.id === visitId);
+    
+    if (!staffMember || !visit) return 0;
+    
+    let score = 0;
+    
+    // Check qualifications match
+    const qualificationMatch = visit.requiresQualifications.filter(
+      q => staffMember.qualifications.includes(q)
+    ).length;
+    
+    // Score based on qualifications match percentage
+    const qualificationScore = visit.requiresQualifications.length > 0 
+      ? (qualificationMatch / visit.requiresQualifications.length) * 50 
+      : 50;
+    
+    score += qualificationScore;
+    
+    // Score based on availability (staff not overloaded)
+    const availabilityScore = 
+      staffMember.currentHours < staffMember.maxHoursPerWeek * 0.9 ? 20 : 
+      staffMember.currentHours < staffMember.maxHoursPerWeek ? 10 : 0;
+    
+    score += availabilityScore;
+    
+    // Score based on location proximity (simplified)
+    const locationScore = staffMember.location.includes(visit.address.split(',').pop()?.trim() || '') ? 20 : 10;
+    
+    score += locationScore;
+    
+    // Staff status affects score
+    const statusScore = 
+      staffMember.status === 'available' ? 10 : 
+      staffMember.status === 'busy' ? 5 : 0;
+    
+    score += statusScore;
+    
+    return Math.min(100, score);
+  };
+  
+  // Process voice command
+  const processVoiceCommand = useCallback(() => {
+    if (!voiceCommand) return;
+    
+    setIsProcessingCommand(true);
+    
+    // Simulate AI processing
+    setTimeout(() => {
+      const command = voiceCommand.toLowerCase();
+      
+      // Find best matches for different command types
+      if (command.includes('find') || command.includes('allocate')) {
+        const staffMatches = staff.filter(s => 
+          command.toLowerCase().includes(s.name.toLowerCase()) ||
+          command.toLowerCase().includes(s.role.toLowerCase())
+        );
+        
+        const visitMatches = visits.filter(v => 
+          command.toLowerCase().includes(v.serviceUserName.toLowerCase()) ||
+          command.toLowerCase().includes(v.visitType.toLowerCase())
+        );
+        
+        if (staffMatches.length > 0 && visitMatches.length > 0) {
+          const bestStaff = staffMatches[0];
+          const bestVisit = visitMatches[0];
+          
+          setSelectedStaff(bestStaff.id);
+          setSelectedServiceUser(bestVisit.id);
+          
+          setAssistantResponse(`I've found ${bestStaff.name} who can be allocated to ${bestVisit.serviceUserName}'s ${bestVisit.visitType.toLowerCase()} visit. Compatibility Score: ${calculateCompatibilityScore(bestStaff.id, bestVisit.id)}%. Would you like me to allocate them?`);
+        } else if (staffMatches.length > 0) {
+          setSelectedStaff(staffMatches[0].id);
+          setAssistantResponse(`I've selected ${staffMatches[0].name} based on your request. Please select a visit to allocate them to.`);
+        } else if (visitMatches.length > 0) {
+          setSelectedServiceUser(visitMatches[0].id);
+          setAssistantResponse(`I've selected ${visitMatches[0].serviceUserName}'s visit. Please select a staff member to allocate.`);
+        } else {
+          setAssistantResponse(`I couldn't find a match for your request. Please try being more specific or use different keywords.`);
+        }
+      } else if (command.includes('auto') || command.includes('automatic')) {
+        setAssistantResponse("I'll run the auto-allocation process for all unallocated visits. This will use AI to find the best matches based on qualifications, location, and availability.");
+        handleAutoAllocate();
+      } else if (command.includes('show') || command.includes('list')) {
+        if (command.includes('unallocated')) {
+          setAssistantResponse(`There are ${unallocatedVisits} unallocated visits that need staff members assigned.`);
+        } else if (command.includes('staff') || command.includes('carer')) {
+          setAssistantResponse(`There are ${staff.length} staff members available for allocation.`);
+        } else {
+          setAssistantResponse(`There are ${totalVisits} total visits scheduled, with an allocation rate of ${allocationPercentage}%.`);
+        }
+      } else {
+        setAssistantResponse("I'm not sure what you're asking. You can ask me to find staff for a service user, automatically allocate visits, or show statistics.");
+      }
+      
+      setIsProcessingCommand(false);
+    }, 1500);
+  }, [voiceCommand, staff, visits, unallocatedVisits, allocationPercentage, totalVisits, handleAutoAllocate]);
+  
+  // Process voice command when recording stops
+  useEffect(() => {
+    if (!isRecording && voiceCommand) {
+      processVoiceCommand();
+    }
+  }, [isRecording, voiceCommand, processVoiceCommand]);
+  
   return (
     <AppShell>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -141,9 +280,127 @@ export default function CareAllocationPage() {
                 <ArrowRightLeft className="h-4 w-4 mr-2" />
                 Auto-Allocate
               </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      onClick={() => setShowVoiceAssistant(!showVoiceAssistant)}
+                      className={showVoiceAssistant ? 'bg-accent text-accent-foreground' : ''}
+                    >
+                      {isRecording ? <Mic className="h-4 w-4 text-red-500" /> : <Mic className="h-4 w-4" />}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Smart Allocation Assistant</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           }
         />
+        
+        {/* Smart Allocation Assistant */}
+        {showVoiceAssistant && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>
+                <div className="flex items-center">
+                  <Brain className="h-5 w-5 mr-2 text-primary" />
+                  Smart Allocation Assistant
+                </div>
+              </CardTitle>
+              <CardDescription>
+                Use voice commands to allocate staff. Try saying "Find a qualified carer for Elizabeth" or "Show unallocated visits"
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant={isRecording ? "destructive" : "default"} 
+                    size="sm"
+                    onClick={isRecording ? stopRecording : startRecording}
+                    disabled={!isVoiceSupported || isProcessingCommand}
+                  >
+                    {isRecording ? (
+                      <>
+                        <MicOff className="h-4 w-4 mr-2" />
+                        Stop Recording
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="h-4 w-4 mr-2" />
+                        Start Recording
+                      </>
+                    )}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={resetTranscript}
+                    disabled={!voiceCommand || isProcessingCommand}
+                  >
+                    <RefreshCcw className="h-4 w-4 mr-2" />
+                    Clear
+                  </Button>
+                </div>
+                
+                {!isVoiceSupported && (
+                  <div className="p-3 bg-amber-50 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300 rounded-md text-sm">
+                    Speech recognition is not supported in your browser. Please try Chrome, Edge, or Safari.
+                  </div>
+                )}
+                
+                {voiceCommand && (
+                  <div className="p-4 bg-muted rounded-md">
+                    <p className="text-sm font-medium mb-1">You said:</p>
+                    <p className="text-sm">{voiceCommand}</p>
+                  </div>
+                )}
+                
+                {assistantResponse && (
+                  <div className="p-4 bg-primary/5 border border-primary/20 rounded-md">
+                    <div className="flex items-start">
+                      <div className="bg-primary/10 rounded-full p-2 mr-3">
+                        <Brain className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium mb-1">Assistant:</p>
+                        <p className="text-sm">{assistantResponse}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {selectedStaff && selectedServiceUser && (
+                  <div>
+                    <p className="text-sm font-medium mb-2">Staff-Client Compatibility:</p>
+                    <div className="flex items-center space-x-3">
+                      <Progress 
+                        value={calculateCompatibilityScore(selectedStaff, selectedServiceUser)} 
+                        className="h-2" 
+                      />
+                      <span className="text-sm font-medium">
+                        {calculateCompatibilityScore(selectedStaff, selectedServiceUser)}%
+                      </span>
+                    </div>
+                    <div className="mt-3">
+                      <Button 
+                        size="sm" 
+                        onClick={() => handleAllocate(selectedStaff, selectedServiceUser)}
+                      >
+                        <HeartHandshake className="h-4 w-4 mr-2" />
+                        Confirm Allocation
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
         
         {/* Dashboard Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
