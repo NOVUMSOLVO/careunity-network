@@ -1315,7 +1315,11 @@ export default function StaffManagement() {
                             <div className="text-xs text-gray-500">Last supervision: 28 Mar 2023</div>
                           </div>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => alert('Supervision scheduling will be available in the next release')}
+                        >
                           Schedule
                         </Button>
                       </div>
@@ -1330,7 +1334,11 @@ export default function StaffManagement() {
                             <div className="text-xs text-gray-500">Last supervision: 15 Mar 2023</div>
                           </div>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => alert('Supervision scheduling will be available in the next release')}
+                        >
                           Schedule
                         </Button>
                       </div>
