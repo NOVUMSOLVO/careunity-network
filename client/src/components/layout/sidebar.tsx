@@ -21,7 +21,8 @@ import {
   Heart,
   ShieldCheck,
   Lock,
-  Activity
+  Activity,
+  Globe
 } from 'lucide-react';
 
 interface User {
@@ -80,6 +81,7 @@ export function Sidebar() {
     { name: 'RBAC Management', icon: <ShieldCheck className="h-5 w-5" />, id: 'rbac-management', path: '/rbac-management' },
     { name: 'Permissions', icon: <Lock className="h-5 w-5" />, id: 'permissions-management', path: '/permissions-management' },
     { name: 'Predictive Health', icon: <Activity className="h-5 w-5" />, id: 'predictive-health', path: '/predictive-health' },
+    { name: 'Healthcare Integration', icon: <Globe className="h-5 w-5" />, id: 'healthcare-integration', path: '/healthcare-integration' },
     { name: 'Route Optimizer', icon: <Navigation className="h-5 w-5" />, id: 'route-optimizer', path: '/route-optimizer' },
     { name: 'Family Portal', icon: <Heart className="h-5 w-5" />, id: 'family-portal', path: '/family-portal' },
     { name: 'Incident Reporting', icon: <AlertTriangle className="h-5 w-5" />, id: 'incident-reporting', path: '/incident-reporting' },

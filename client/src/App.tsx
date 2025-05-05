@@ -19,6 +19,7 @@ import FamilyPortal from '@/pages/family-portal';
 import RouteOptimizer from '@/pages/route-optimizer';
 import NotFound from '@/pages/not-found';
 import PredictiveHealth from '@/pages/predictive-health';
+import HealthcareIntegration from '@/pages/healthcare-integration';
 
 // Test page to verify API connectivity
 function TestPage() {
@@ -129,6 +130,7 @@ function App() {
           <Route path="/family-portal" component={FamilyPortal} />
           <Route path="/route-optimizer" component={RouteOptimizer} />
           <Route path="/predictive-health" component={PredictiveHealth} />
+          <Route path="/healthcare-integration" component={HealthcareIntegration} />
           
           {/* Testing & Authentication */}
           <Route path="/test" component={TestPage} />
