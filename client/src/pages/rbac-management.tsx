@@ -1355,7 +1355,7 @@ export default function RbacManagement() {
               Cancel
             </Button>
             <Button onClick={() => {
-              alert('In a real application, this would create a new user account');
+              window.alert('In a real application, this would create a new user account');
               setShowAddUserDialog(false);
             }}>
               Create User
@@ -1480,7 +1480,7 @@ export default function RbacManagement() {
             </Button>
             <Button 
               onClick={() => {
-                alert('In a real application, this would save role changes');
+                window.alert('In a real application, this would save role changes');
                 setShowEditRoleDialog(false);
               }}
               disabled={selectedRole === 1 || selectedRole === null} // Can't modify System Admin role or if no role selected
