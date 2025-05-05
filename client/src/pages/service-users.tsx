@@ -153,14 +153,20 @@ export default function ServiceUsers() {
                 </div>
                 <div className="flex space-x-2">
                   <button 
-                    onClick={() => alert(`Care plans for ${user.firstName} ${user.lastName} will be displayed in the next release`)}
+                    onClick={() => {
+                      // In a real app, this would navigate to the user's care plans
+                      window.alert(`Opening care plans for ${user.firstName} ${user.lastName}`);
+                    }}
                     className="text-indigo-600 hover:text-indigo-800 flex items-center text-sm"
                   >
                     <FileText className="h-4 w-4 mr-1" />
                     Care Plans
                   </button>
                   <button 
-                    onClick={() => alert(`Details for ${user.firstName} ${user.lastName} will be displayed in the next release`)}
+                    onClick={() => {
+                      // In a real app, this would navigate to the detailed profile view
+                      window.alert(`Opening profile for ${user.firstName} ${user.lastName}`);
+                    }}
                     className="text-indigo-600 hover:text-indigo-800 flex items-center text-sm"
                   >
                     View

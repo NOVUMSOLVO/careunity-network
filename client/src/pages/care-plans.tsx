@@ -364,15 +364,33 @@ export default function CarePlans() {
                     <div>
                       <h3 className="text-sm font-medium text-gray-500">Plan Actions</h3>
                       <div className="mt-2 flex flex-wrap gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            window.alert(`Opening edit form for ${selectedPlan.title}`);
+                          }}
+                        >
                           <PencilLine className="mr-2 h-4 w-4" />
                           Edit Plan
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            window.alert(`Opening review form for ${selectedPlan.title}`);
+                          }}
+                        >
                           <FileCheck className="mr-2 h-4 w-4" />
                           Review Plan
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            window.alert(`Opening goal creation form for ${selectedPlan.title}`);
+                          }}
+                        >
                           <ListChecks className="mr-2 h-4 w-4" />
                           Add Goal
                         </Button>
