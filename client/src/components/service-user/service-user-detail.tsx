@@ -64,26 +64,36 @@ export function ServiceUserDetail({
   }
 
   // Calculate age from date of birth
-  const calculateAge = (dateOfBirth: string) => {
-    const dob = new Date(dateOfBirth);
-    const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const monthDiff = today.getMonth() - dob.getMonth();
+  const calculateAge = (dateOfBirth?: string) => {
+    if (!dateOfBirth) return 'Unknown';
     
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-      age--;
+    try {
+      const dob = new Date(dateOfBirth);
+      if (isNaN(dob.getTime())) return 'Unknown';
+      
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const monthDiff = today.getMonth() - dob.getMonth();
+      
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        age--;
+      }
+      
+      return age;
+    } catch (e) {
+      return 'Unknown';
     }
-    
-    return age;
   };
 
   // Generate initials for avatar fallback
-  const initials = fullName
-    .split(' ')
-    .map(part => part[0])
-    .join('')
-    .toUpperCase()
-    .substring(0, 2);
+  const initials = fullName 
+    ? fullName
+        .split(' ')
+        .map(part => part[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2)
+    : 'SU';
 
   // Parse preferences if they exist
   const parsedPreferences = preferences || { likes: [], dislikes: [] };
@@ -103,7 +113,7 @@ export function ServiceUserDetail({
               {fullName}
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              ID: {uniqueId} • {calculateAge(dateOfBirth)} years
+              ID: {uniqueId || 'Unknown'} {dateOfBirth ? `• ${calculateAge(dateOfBirth)} years` : ''}
             </p>
           </div>
         </div>

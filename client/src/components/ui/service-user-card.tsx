@@ -33,11 +33,13 @@ export function ServiceUserCard({
 }: ServiceUserCardProps) {
   // Generate initials for avatar fallback
   const initials = name
-    .split(' ')
-    .map(part => part[0])
-    .join('')
-    .toUpperCase()
-    .substring(0, 2);
+    ? name
+        .split(' ')
+        .map(part => part[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2)
+    : 'SU';
     
   return (
     <Card className={cn("overflow-hidden", className)}>
