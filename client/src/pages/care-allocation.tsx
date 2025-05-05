@@ -362,17 +362,26 @@ export default function CareAllocation() {
                 <span>Auto-Allocate All</span>
               </button>
               
-              <button className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-4 py-2 rounded-lg flex items-center gap-2">
+              <button 
+                className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-4 py-2 rounded-lg flex items-center gap-2"
+                onClick={() => alert('Optimizing routes based on proximity and travel time')}
+              >
                 <Route className="h-4 w-4" />
                 <span>Optimize Routes</span>
               </button>
               
-              <button className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-4 py-2 rounded-lg flex items-center gap-2">
+              <button 
+                className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-4 py-2 rounded-lg flex items-center gap-2"
+                onClick={() => alert('Advanced allocation options will be available in the next release')}
+              >
                 <Layers className="h-4 w-4" />
                 <span>Advanced Options</span>
               </button>
               
-              <button className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-4 py-2 rounded-lg flex items-center gap-2">
+              <button 
+                className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 px-4 py-2 rounded-lg flex items-center gap-2"
+                onClick={() => alert('AI prediction report will be available in the next release')}
+              >
                 <BarChart2 className="h-4 w-4" />
                 <span>View Predictions</span>
               </button>
@@ -461,12 +470,20 @@ export default function CareAllocation() {
                     </div>
                     
                     <div className="mt-3 flex gap-2">
-                      <button className="text-indigo-600 hover:text-indigo-800 text-xs font-medium">
+                      <Link 
+                        href={`/staff-management?id=${caregiver.id}`} 
+                        className="text-indigo-600 hover:text-indigo-800 text-xs font-medium cursor-pointer"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         View Full Profile
-                      </button>
-                      <button className="text-indigo-600 hover:text-indigo-800 text-xs font-medium">
+                      </Link>
+                      <Link 
+                        href={`/calendar?staffId=${caregiver.id}`} 
+                        className="text-indigo-600 hover:text-indigo-800 text-xs font-medium cursor-pointer"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         View Schedule
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 )}
@@ -566,12 +583,20 @@ export default function CareAllocation() {
                       </ul>
                       
                       <div className="mt-3 flex gap-2">
-                        <button className="text-indigo-600 hover:text-indigo-800 text-xs font-medium">
+                        <Link 
+                          href={`/service-users?id=${appointment.clientId}`}
+                          className="text-indigo-600 hover:text-indigo-800 text-xs font-medium cursor-pointer"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           View Service User Details
-                        </button>
-                        <button className="text-indigo-600 hover:text-indigo-800 text-xs font-medium">
+                        </Link>
+                        <Link 
+                          href={`/care-plans?serviceUserId=${appointment.clientId}`}
+                          className="text-indigo-600 hover:text-indigo-800 text-xs font-medium cursor-pointer"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           View Care Plan
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   )}
