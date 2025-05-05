@@ -12,10 +12,8 @@ function HomePage() {
         </p>
         
         <div className="flex justify-center mt-6">
-          <Link href="/test">
-            <a className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
-              Go to Test Page
-            </a>
+          <Link href="/test" className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
+            Go to Test Page
           </Link>
         </div>
       </div>
@@ -67,10 +65,8 @@ function TestPage() {
         </div>
         
         <div className="mt-6 text-center">
-          <Link href="/">
-            <a className="text-indigo-600 hover:underline">
-              Back to Home
-            </a>
+          <Link href="/" className="text-indigo-600 hover:underline">
+            Back to Home
           </Link>
         </div>
       </div>
