@@ -20,7 +20,8 @@ import {
   Navigation,
   Heart,
   ShieldCheck,
-  Lock
+  Lock,
+  Activity
 } from 'lucide-react';
 
 interface User {
