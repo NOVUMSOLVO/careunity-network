@@ -375,7 +375,11 @@ export default function StaffManagement() {
           <p className="text-gray-600">Manage staff records, training, and performance</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-2"
+            onClick={() => alert('Export functionality will be implemented soon')}
+          >
             <Download size={16} />
             <span>Export</span>
           </Button>
@@ -525,10 +529,20 @@ export default function StaffManagement() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <Button variant="ghost" size="sm" className="text-indigo-600 hover:text-indigo-900">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-indigo-600 hover:text-indigo-900"
+                        onClick={() => alert(`Edit staff member ${staff.name}`)}
+                      >
                         Edit
                       </Button>
-                      <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-900">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-blue-600 hover:text-blue-900"
+                        onClick={() => setSelectedStaff(staff.id)}
+                      >
                         View
                       </Button>
                     </td>

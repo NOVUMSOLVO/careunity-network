@@ -91,10 +91,10 @@ export default function ServiceUsers() {
           <h1 className="text-2xl font-bold text-gray-800">Service Users</h1>
           <p className="text-gray-600">Manage service user profiles and care plans</p>
         </div>
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+        <Link href="/service-users/new" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 cursor-pointer">
           <UserPlus size={18} />
           <span>Add Service User</span>
-        </button>
+        </Link>
       </div>
 
       {/* Search and filter */}
