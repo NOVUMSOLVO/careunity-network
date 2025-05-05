@@ -26,10 +26,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const testHtmlPath = path.join(process.cwd(), "client/public/test.html");
   console.log(`Test HTML path: ${testHtmlPath}`);
   
-  // Serve minimal.html at root to ensure it can be accessed
-  app.get("/", (req, res) => {
+  // Let Vite handle the index.html
+  app.get("/", (req, res, next) => {
     console.log("Request received at /");
-    res.sendFile(path.join(process.cwd(), "client/public/minimal.html"));
+    next();
   });
   
   app.get("/test", (req, res) => {
@@ -113,6 +113,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Setup authentication routes
   setupAuth(app);
+  
+  // Simple health check API route that doesn't require authentication
+  app.get("/api/healthcheck", (req, res) => {
+    res.json({ 
+      status: "ok", 
+      timestamp: new Date().toISOString(),
+      message: "CareUnity API is working properly"
+    });
+  });
 
   // Seed initial data if none exists
   await storage.seedInitialData();
