@@ -55,7 +55,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import {
   AlertCircle,
   CheckCircle2,
@@ -345,7 +345,7 @@ export default function PermissionsManagement() {
   });
 
   // Handle drag end for permissions
-  const handleDragEnd = (result: { source: { droppableId: string, index: number }, destination?: { droppableId: string, index: number } }) => {
+  const handleDragEnd = (result: DropResult) => {
     const { source, destination } = result;
     
     // Dropped outside the list
@@ -1640,14 +1640,14 @@ export default function PermissionsManagement() {
               </div>
             )}
             
-            {selectedRole?.usersCount > 0 && (
+            {selectedRole && selectedRole.usersCount > 0 && (
               <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mt-4 text-amber-800 text-sm">
                 <div className="flex">
                   <AlertCircle className="h-5 w-5 mr-2 text-amber-500" />
                   <div>
                     <strong>Cannot delete this role</strong>
                     <p className="mt-1">
-                      This role has {selectedRole?.usersCount} users assigned to it.
+                      This role has {selectedRole && selectedRole.usersCount} users assigned to it.
                       Reassign these users to another role before deleting.
                     </p>
                   </div>
@@ -1677,7 +1677,7 @@ export default function PermissionsManagement() {
             <Button 
               variant="destructive"
               onClick={handleDeleteRole}
-              disabled={selectedRole?.isSystemRole || selectedRole?.usersCount > 0}
+              disabled={selectedRole?.isSystemRole || (selectedRole?.usersCount || 0) > 0}
             >
               Delete Role
             </Button>
