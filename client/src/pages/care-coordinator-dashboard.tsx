@@ -81,13 +81,18 @@ interface StaffAlert {
   status: 'pending' | 'resolved';
 }
 
+// Define more precise union types to avoid type errors
+type ServiceUserAlertType = 'missed-medication' | 'fall' | 'emergency-contact' | 'hospital-admission';
+type ServiceUserAlertPriority = 'critical' | 'high' | 'medium' | 'low';
+type ServiceUserAlertStatus = 'pending' | 'in-progress' | 'resolved';
+
 interface ServiceUserAlert {
   id: number;
   serviceUserName: string;
-  type: 'missed-medication' | 'fall' | 'emergency-contact' | 'hospital-admission';
+  type: ServiceUserAlertType;
   timeReported: string;
-  priority: 'critical' | 'high' | 'medium' | 'low';
-  status: 'pending' | 'in-progress' | 'resolved';
+  priority: ServiceUserAlertPriority;
+  status: ServiceUserAlertStatus;
 }
 
 interface CareMetric {
@@ -561,18 +566,29 @@ export default function CareCoordinatorDashboard() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-semibold">{alert.serviceUserName}</span>
-                          {alert.priority === 'critical' && <Badge className="bg-red-100 text-red-800 border-red-200">Critical</Badge>}
-                          {alert.priority === 'high' && <Badge className="bg-orange-100 text-orange-800 border-orange-200">High</Badge>}
-                          {alert.priority === 'medium' && <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Medium</Badge>}
-                          {alert.priority === 'low' && <Badge className="bg-blue-100 text-blue-800 border-blue-200">Low</Badge>}
+                          <Badge className={
+                            alert.priority === 'critical' ? "bg-red-100 text-red-800 border-red-200" :
+                            alert.priority === 'high' ? "bg-orange-100 text-orange-800 border-orange-200" :
+                            alert.priority === 'medium' ? "bg-yellow-100 text-yellow-800 border-yellow-200" :
+                            "bg-blue-100 text-blue-800 border-blue-200"
+                          }>
+                            {alert.priority === 'critical' ? 'Critical' :
+                             alert.priority === 'high' ? 'High' :
+                             alert.priority === 'medium' ? 'Medium' : 'Low'}
+                          </Badge>
                         </div>
                         <div className="text-sm text-gray-500 mt-1 md:mt-0">
                           <span className="inline-flex items-center gap-1 mr-3">
                             <AlertTriangle size={14} />
-                            {alert.type === 'missed-medication' && 'Missed Medication'}
-                            {alert.type === 'fall' && 'Fall Incident'}
-                            {alert.type === 'emergency-contact' && 'Emergency Contact Activated'}
-                            {alert.type === 'hospital-admission' && 'Hospital Admission'}
+                            {(() => {
+                              switch(alert.type) {
+                                case 'missed-medication': return 'Missed Medication';
+                                case 'fall': return 'Fall Incident';
+                                case 'emergency-contact': return 'Emergency Contact Activated';
+                                case 'hospital-admission': return 'Hospital Admission';
+                                default: return '';
+                              }
+                            })()}
                           </span>
                           <span className="inline-flex items-center gap-1">
                             <Clock size={14} />
@@ -588,9 +604,14 @@ export default function CareCoordinatorDashboard() {
                               ? 'bg-blue-100 text-blue-800 border-blue-200'
                               : 'bg-green-100 text-green-800 border-green-200'
                         }>
-                          {alert.status === 'pending' && 'Pending'}
-                          {alert.status === 'in-progress' && 'In Progress'}
-                          {alert.status === 'resolved' && 'Resolved'}
+                          {(() => {
+                            switch(alert.status) {
+                              case 'pending': return 'Pending';
+                              case 'in-progress': return 'In Progress';
+                              case 'resolved': return 'Resolved';
+                              default: return '';
+                            }
+                          })()}
                         </Badge>
                         <Button size="sm">View Details</Button>
                       </div>
