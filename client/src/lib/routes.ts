@@ -51,9 +51,15 @@ export const appRoutes = {
 
 // Helper function to navigate to a route
 export const navigateTo = (path: string) => {
+  console.log(`Navigating to ${path}`);
   window.history.pushState({}, '', path);
   // Dispatch a custom event that our routing system can listen for
   window.dispatchEvent(new CustomEvent('route-change', { detail: { path } }));
+  
+  // For debugging
+  setTimeout(() => {
+    console.log(`Current location after navigation: ${window.location.pathname}`);
+  }, 0);
 };
 
 // Type for the routes object
