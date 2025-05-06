@@ -40,6 +40,9 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
+import { AllocationMethodsCard } from '@/components/care-allocation/allocation-methods-card';
+import { SmartAllocationAssistant } from '@/components/care-allocation/smart-allocation-assistant';
+import { InteractiveMap } from '@/components/care-allocation/interactive-map';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 
@@ -699,6 +702,17 @@ export default function CareCoordinatorDashboard() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Advanced Allocation Tools */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <SmartAllocationAssistant />
+        <AllocationMethodsCard />
+      </div>
+
+      {/* Interactive Map Section */}
+      <div className="mb-8">
+        <InteractiveMap />
+      </div>
 
       {/* Key Performance Indicators */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
