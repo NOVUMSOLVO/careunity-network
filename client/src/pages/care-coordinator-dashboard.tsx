@@ -13,7 +13,8 @@ import {
   UserCog,
   Layers,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  PoundSterling
 } from 'lucide-react';
 import { 
   Card, 
