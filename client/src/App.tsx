@@ -22,6 +22,7 @@ import PredictiveHealth from '@/pages/predictive-health';
 import HealthcareIntegration from '@/pages/healthcare-integration';
 import CommunityResources from '@/pages/community-resources-new';
 import Alerts from '@/pages/alerts';
+import CareCoordinatorDashboard from '@/pages/care-coordinator-dashboard';
 
 // Test page to verify API connectivity
 function TestPage() {
@@ -107,6 +108,7 @@ function App() {
         <Switch>
           {/* Dashboard */}
           <Route path="/" component={Dashboard} />
+          <Route path="/coordinator-dashboard" component={CareCoordinatorDashboard} />
           
           {/* Main Application Pages */}
           <Route path="/service-users" component={ServiceUsers} />
