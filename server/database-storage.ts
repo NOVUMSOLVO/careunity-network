@@ -16,7 +16,7 @@ import {
   resourceBookmarks, ResourceBookmark, InsertResourceBookmark
 } from "@shared/schema";
 import { db, pool } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, or, sql } from "drizzle-orm";
 import { hashPassword } from "./auth";
 import { IStorage } from "./storage";
 
@@ -259,6 +259,235 @@ export class DatabaseStorage implements IStorage {
       .where(eq(riskAssessments.id, id))
       .returning();
     return updatedRiskAssessment;
+  }
+  
+  // Resource Location operations
+  async getAllResourceLocations(): Promise<ResourceLocation[]> {
+    return await db.select().from(resourceLocations);
+  }
+  
+  async getResourceLocation(id: number): Promise<ResourceLocation | undefined> {
+    const result = await db.select().from(resourceLocations).where(eq(resourceLocations.id, id));
+    return result[0];
+  }
+  
+  async createResourceLocation(location: InsertResourceLocation): Promise<ResourceLocation> {
+    const [resourceLocation] = await db.insert(resourceLocations).values(location).returning();
+    return resourceLocation;
+  }
+  
+  async updateResourceLocation(id: number, locationUpdate: Partial<InsertResourceLocation>): Promise<ResourceLocation | undefined> {
+    const [updatedLocation] = await db
+      .update(resourceLocations)
+      .set(locationUpdate)
+      .where(eq(resourceLocations.id, id))
+      .returning();
+    return updatedLocation;
+  }
+  
+  // Community Resource operations
+  async getAllCommunityResources(): Promise<CommunityResource[]> {
+    return await db.select().from(communityResources);
+  }
+  
+  async getCommunityResourcesByCategory(category: string): Promise<CommunityResource[]> {
+    // Filter by category - using array_contains postgres function
+    return await db
+      .select()
+      .from(communityResources)
+      .where(sql`${communityResources.categories} @> ARRAY[${category}]::text[]`);
+  }
+  
+  async getCommunityResourcesByLocation(locationId: number): Promise<CommunityResource[]> {
+    return await db
+      .select()
+      .from(communityResources)
+      .where(eq(communityResources.locationId, locationId));
+  }
+  
+  async getCommunityResource(id: number): Promise<CommunityResource | undefined> {
+    const result = await db.select().from(communityResources).where(eq(communityResources.id, id));
+    return result[0];
+  }
+  
+  async createCommunityResource(resource: InsertCommunityResource): Promise<CommunityResource> {
+    const resourceWithDefaults = {
+      ...resource,
+      reviewCount: 0,
+      rating: null
+    };
+    const [communityResource] = await db.insert(communityResources).values(resourceWithDefaults).returning();
+    return communityResource;
+  }
+  
+  async updateCommunityResource(id: number, resourceUpdate: Partial<InsertCommunityResource>): Promise<CommunityResource | undefined> {
+    const [updatedResource] = await db
+      .update(communityResources)
+      .set(resourceUpdate)
+      .where(eq(communityResources.id, id))
+      .returning();
+    return updatedResource;
+  }
+  
+  async searchCommunityResources(query: string, filters?: any): Promise<CommunityResource[]> {
+    // Build the query dynamically based on filters
+    let baseQuery = db.select().from(communityResources);
+    
+    // Text search
+    if (query && query.trim() !== '') {
+      const searchText = `%${query.toLowerCase()}%`;
+      baseQuery = baseQuery.where(
+        or(
+          sql`LOWER(${communityResources.name}) LIKE ${searchText}`,
+          sql`LOWER(${communityResources.description}) LIKE ${searchText}`
+        )
+      );
+    }
+    
+    // Apply filters
+    if (filters) {
+      if (filters.isFree !== undefined) {
+        baseQuery = baseQuery.where(eq(communityResources.isFree, filters.isFree));
+      }
+      
+      if (filters.isReferralRequired !== undefined) {
+        baseQuery = baseQuery.where(eq(communityResources.isReferralRequired, filters.isReferralRequired));
+      }
+      
+      if (filters.status) {
+        baseQuery = baseQuery.where(eq(communityResources.status, filters.status));
+      }
+      
+      if (filters.categories && filters.categories.length > 0) {
+        // Check if any of the filter categories is in the resource categories array
+        baseQuery = baseQuery.where(
+          sql`${communityResources.categories} && ARRAY[${filters.categories}]::text[]`
+        );
+      }
+    }
+    
+    return await baseQuery;
+  }
+  
+  // Resource Referral operations
+  async getReferrals(serviceUserId?: number, resourceId?: number): Promise<ResourceReferral[]> {
+    let query = db.select().from(resourceReferrals);
+    
+    if (serviceUserId !== undefined) {
+      query = query.where(eq(resourceReferrals.serviceUserId, serviceUserId));
+    }
+    
+    if (resourceId !== undefined) {
+      if (serviceUserId !== undefined) {
+        query = query.where(and(
+          eq(resourceReferrals.serviceUserId, serviceUserId),
+          eq(resourceReferrals.resourceId, resourceId)
+        ));
+      } else {
+        query = query.where(eq(resourceReferrals.resourceId, resourceId));
+      }
+    }
+    
+    return await query;
+  }
+  
+  async getReferral(id: number): Promise<ResourceReferral | undefined> {
+    const result = await db.select().from(resourceReferrals).where(eq(resourceReferrals.id, id));
+    return result[0];
+  }
+  
+  async createReferral(referral: InsertResourceReferral): Promise<ResourceReferral> {
+    const [resourceReferral] = await db.insert(resourceReferrals).values(referral).returning();
+    return resourceReferral;
+  }
+  
+  async updateReferral(id: number, referralUpdate: Partial<InsertResourceReferral>): Promise<ResourceReferral | undefined> {
+    const [updatedReferral] = await db
+      .update(resourceReferrals)
+      .set(referralUpdate)
+      .where(eq(resourceReferrals.id, id))
+      .returning();
+    return updatedReferral;
+  }
+  
+  // Resource Review operations
+  async getReviews(resourceId: number): Promise<ResourceReview[]> {
+    return await db
+      .select()
+      .from(resourceReviews)
+      .where(eq(resourceReviews.resourceId, resourceId));
+  }
+  
+  async getReview(id: number): Promise<ResourceReview | undefined> {
+    const result = await db.select().from(resourceReviews).where(eq(resourceReviews.id, id));
+    return result[0];
+  }
+  
+  async createReview(review: InsertResourceReview): Promise<ResourceReview> {
+    const [resourceReview] = await db.insert(resourceReviews).values(review).returning();
+    
+    // Update rating and review count in the community resource
+    const reviews = await this.getReviews(review.resourceId);
+    const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+    const avgRating = reviews.length > 0 ? totalRating / reviews.length : 0;
+    
+    await this.updateCommunityResource(review.resourceId, {
+      rating: avgRating,
+      reviewCount: reviews.length
+    });
+    
+    return resourceReview;
+  }
+  
+  async updateReview(id: number, reviewUpdate: Partial<InsertResourceReview>): Promise<ResourceReview | undefined> {
+    const existingReview = await this.getReview(id);
+    if (!existingReview) return undefined;
+    
+    const [updatedReview] = await db
+      .update(resourceReviews)
+      .set(reviewUpdate)
+      .where(eq(resourceReviews.id, id))
+      .returning();
+    
+    // If rating was updated, recalculate the average rating for the resource
+    if (reviewUpdate.rating !== undefined && reviewUpdate.rating !== existingReview.rating) {
+      const reviews = await this.getReviews(existingReview.resourceId);
+      const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+      const avgRating = reviews.length > 0 ? totalRating / reviews.length : 0;
+      
+      await this.updateCommunityResource(existingReview.resourceId, {
+        rating: avgRating
+      });
+    }
+    
+    return updatedReview;
+  }
+  
+  // Resource Bookmark operations
+  async getBookmarks(userId: number): Promise<ResourceBookmark[]> {
+    return await db
+      .select()
+      .from(resourceBookmarks)
+      .where(eq(resourceBookmarks.userId, userId));
+  }
+  
+  async getBookmark(id: number): Promise<ResourceBookmark | undefined> {
+    const result = await db.select().from(resourceBookmarks).where(eq(resourceBookmarks.id, id));
+    return result[0];
+  }
+  
+  async createBookmark(bookmark: InsertResourceBookmark): Promise<ResourceBookmark> {
+    const [resourceBookmark] = await db.insert(resourceBookmarks).values(bookmark).returning();
+    return resourceBookmark;
+  }
+  
+  async deleteBookmark(id: number): Promise<boolean> {
+    const result = await db
+      .delete(resourceBookmarks)
+      .where(eq(resourceBookmarks.id, id))
+      .returning({ id: resourceBookmarks.id });
+    
+    return result.length > 0;
   }
 
   // Seed initial data
