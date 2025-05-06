@@ -929,6 +929,3 @@ export default function CareCoordinatorDashboard() {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
-}
