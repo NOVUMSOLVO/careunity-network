@@ -73,6 +73,7 @@ export function Sidebar() {
   
   const navigationItems: NavigationItem[] = [
     { name: 'Dashboard', icon: <BarChart3 className="h-5 w-5" />, id: 'dashboard', path: '/' },
+    { name: 'Care Coordinator', icon: <CheckCircle className="h-5 w-5" />, id: 'coordinator-dashboard', path: '/coordinator-dashboard' },
     { name: 'Service Users', icon: <Users className="h-5 w-5" />, id: 'service-users', path: '/service-users' },
     { name: 'Care Plans', icon: <ClipboardList className="h-5 w-5" />, id: 'care-plans', path: '/care-plans' },
     { name: 'Calendar', icon: <Calendar className="h-5 w-5" />, id: 'calendar', path: '/calendar' },

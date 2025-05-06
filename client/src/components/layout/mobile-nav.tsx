@@ -5,7 +5,8 @@ import {
   Users,
   ClipboardList,
   Calendar,
-  MoreHorizontal
+  MoreHorizontal,
+  CheckCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -14,9 +15,9 @@ export function MobileNav() {
   
   const navigationItems = [
     { name: 'Dashboard', icon: <BarChart3 className="text-lg" />, id: 'dashboard', path: '/' },
+    { name: 'Care Coord.', icon: <CheckCircle className="text-lg" />, id: 'coordinator-dashboard', path: '/coordinator-dashboard' },
     { name: 'Service Users', icon: <Users className="text-lg" />, id: 'service-users', path: '/service-users' },
     { name: 'Care Plans', icon: <ClipboardList className="text-lg" />, id: 'care-plans', path: '/care-plans' },
-    { name: 'Calendar', icon: <Calendar className="text-lg" />, id: 'calendar', path: '/calendar' },
     { name: 'More', icon: <MoreHorizontal className="text-lg" />, id: 'more', path: '/more' }
   ];
   
