@@ -1,5 +1,6 @@
 import React, { ReactNode, useState, useEffect } from 'react';
-import { Link, useLocation } from 'wouter';
+import { RouterLink } from '@/components/router/router-provider';
+import { useRouter } from '@/components/router/router-provider';
 import { 
   Home, 
   Calendar, 
@@ -43,7 +44,7 @@ type NavItem = {
 };
 
 export function Layout({ children }: LayoutProps) {
-  const [location] = useLocation();
+  const { currentPath } = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [isTablet, setIsTablet] = useState<boolean>(false);
@@ -122,16 +123,16 @@ export function Layout({ children }: LayoutProps) {
   // Navigation link component
   const NavLink = ({ item }: { item: NavItem }) => (
     <li>
-      <Link 
-        href={item.href}
+      <RouterLink 
+        to={item.href}
         className={`flex items-center px-4 py-2 text-gray-100 rounded-lg hover:bg-indigo-600 transition-colors ${
-          location === item.href ? 'bg-indigo-800 font-medium' : ''
+          currentPath === item.href ? 'bg-indigo-800 font-medium' : ''
         }`}
         onClick={() => setIsSidebarOpen(false)}
       >
         <span className="mr-3">{item.icon}</span>
         <span className={isMobile ? "text-sm" : ""}>{item.label}</span>
-      </Link>
+      </RouterLink>
     </li>
   );
 
@@ -163,14 +164,14 @@ export function Layout({ children }: LayoutProps) {
       <div className="fixed bottom-0 left-0 right-0 bg-indigo-800 shadow-lg z-10 sm:hidden">
         <div className="flex justify-around">
           {mobileNavItems.map((item) => (
-            <Link 
+            <RouterLink 
               key={item.href}
-              href={item.href}
-              className={`flex flex-col items-center py-2 px-1 ${location === item.href ? 'text-white' : 'text-indigo-200'}`}
+              to={item.href}
+              className={`flex flex-col items-center py-2 px-1 ${currentPath === item.href ? 'text-white' : 'text-indigo-200'}`}
             >
               <span className="p-1">{item.icon}</span>
               <span className="text-xs">{item.label}</span>
-            </Link>
+            </RouterLink>
           ))}
         </div>
       </div>
@@ -236,8 +237,8 @@ export function Layout({ children }: LayoutProps) {
           <div className="hidden sm:block">
             {/* Breadcrumb for tablet/desktop */}
             <div className="text-sm text-gray-600">
-              {location === '/' ? 'Dashboard' : 
-                location.split('/').map((part, index, array) => {
+              {currentPath === '/' ? 'Dashboard' : 
+                currentPath.split('/').map((part, index, array) => {
                   if (!part) return null;
                   const path = array.slice(0, index + 1).join('/');
                   const formattedPart = part.split('-').map(word => 
@@ -249,7 +250,7 @@ export function Layout({ children }: LayoutProps) {
                       {index > 0 && <span className="mx-2">/</span>}
                       {index === array.length - 1 ? 
                         <span className="font-medium text-gray-900">{formattedPart}</span> : 
-                        <Link href={path} className="text-indigo-600 hover:text-indigo-800">{formattedPart}</Link>
+                        <RouterLink to={path} className="text-indigo-600 hover:text-indigo-800">{formattedPart}</RouterLink>
                       }
                     </span>
                   );
