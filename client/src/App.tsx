@@ -21,6 +21,7 @@ import NotFound from '@/pages/not-found';
 import PredictiveHealth from '@/pages/predictive-health';
 import HealthcareIntegration from '@/pages/healthcare-integration';
 import CommunityResources from '@/pages/community-resources-new';
+import CommunityResourcesDirectory from '@/pages/community-resources-directory';
 import Alerts from '@/pages/alerts';
 import CareCoordinatorDashboard from '@/pages/care-coordinator-dashboard';
 
@@ -137,6 +138,7 @@ function App() {
           <Route path="/predictive-health" component={PredictiveHealth} />
           <Route path="/healthcare-integration" component={HealthcareIntegration} />
           <Route path="/community-resources" component={CommunityResources} />
+          <Route path="/community-resources-directory" component={CommunityResourcesDirectory} />
           
           {/* Testing & Authentication */}
           <Route path="/test" component={TestPage} />
