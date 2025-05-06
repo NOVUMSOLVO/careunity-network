@@ -7,6 +7,19 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
+import { 
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  Legend,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -109,6 +122,9 @@ const carers = [
   { id: 4, name: 'Michael Brown', role: 'Care Worker', skills: ['Mobility Support', 'Social Care'], availability: 'Full-time', preferredArea: 'East' },
   { id: 5, name: 'David Clark', role: 'Senior Carer', skills: ['Medication', 'Personal Care', 'Dementia Care'], availability: 'Full-time', preferredArea: 'West' },
 ];
+
+// Colors for charts
+const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088fe'];
 
 export function BulkAllocation({ className }: BulkAllocationProps) {
   const [activeTab, setActiveTab] = useState<string>('setup');
@@ -997,7 +1013,7 @@ export function BulkAllocation({ className }: BulkAllocationProps) {
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="name" angle={-45} textAnchor="end" height={70} />
                             <YAxis />
-                            <Tooltip />
+                            <RechartsTooltip />
                             <Bar dataKey="visits" fill="#8884d8" />
                           </BarChart>
                         </ResponsiveContainer>
@@ -1030,11 +1046,11 @@ export function BulkAllocation({ className }: BulkAllocationProps) {
                               fill="#8884d8"
                               dataKey="value"
                             >
-                              {COLORS.map((color, index) => (
+                              {COLORS.map((color: string, index: number) => (
                                 <Cell key={`cell-${index}`} fill={color} />
                               ))}
                             </Pie>
-                            <Tooltip />
+                            <RechartsTooltip />
                           </PieChart>
                         </ResponsiveContainer>
                       </div>
