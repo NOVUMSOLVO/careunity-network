@@ -43,6 +43,9 @@ import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 import { AllocationMethodsCard } from '@/components/care-allocation/allocation-methods-card';
 import { SmartAllocationAssistant } from '@/components/care-allocation/smart-allocation-assistant';
 import { InteractiveMap } from '@/components/care-allocation/interactive-map';
+import { AllocationAnalytics } from '@/components/care-allocation/allocation-analytics';
+import { BulkAllocation } from '@/components/care-allocation/bulk-allocation';
+import { PayrollTracking } from '@/components/admin/payroll-tracking';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 
