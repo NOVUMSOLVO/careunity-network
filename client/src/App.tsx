@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, Link } from 'wouter';
+import { Switch, Route } from '@/components/router';
 import { Layout } from '@/components/layout/layout';
 import Dashboard from '@/pages/dashboard';
 import ServiceUsers from '@/pages/service-users';

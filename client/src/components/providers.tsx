@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/shared-query-client';
-import { Router } from 'wouter';
+import { RouterProvider } from '@/components/router';
 import { LoadingProvider } from '@/contexts/loading-context';
 import { WebSocketProvider } from '@/contexts/websocket-context';
 
@@ -15,13 +15,13 @@ interface AppProvidersProps {
 export function AppProviders({ children }: AppProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router>
+      <RouterProvider>
         <WebSocketProvider>
           <LoadingProvider>
             {children}
           </LoadingProvider>
         </WebSocketProvider>
-      </Router>
+      </RouterProvider>
     </QueryClientProvider>
   );
 }
