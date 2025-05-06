@@ -49,8 +49,7 @@ import {
   CheckCircle,
   Plus,
   RefreshCcw,
-  Filter,
-  Phone2
+  Filter
 } from 'lucide-react';
 
 // Types

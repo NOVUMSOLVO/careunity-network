@@ -19,7 +19,10 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('online', () => {
     // Trigger sync for any local data
     navigator.serviceWorker.ready.then(registration => {
-      registration.sync.register('sync-messages');
+      // Use type assertion to handle the sync property
+      if ('sync' in registration) {
+        (registration as any).sync.register('sync-messages');
+      }
     });
     
     document.dispatchEvent(new CustomEvent('app:online'));
@@ -37,8 +40,8 @@ export const isOnline = (): boolean => {
   return navigator.onLine;
 };
 
-// Create a custom event for online/offline status changes
-export const onOnlineStatusChange = (callback: (online: boolean) => void): () => void => {
+// Create a custom event for online/offline status changes (used internally)
+const onOnlineStatusChange = (callback: (online: boolean) => void): () => void => {
   const handleOnline = () => callback(true);
   const handleOffline = () => callback(false);
   
