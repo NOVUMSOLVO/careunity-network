@@ -6,7 +6,12 @@ import {
   tasks, Task, InsertTask,
   appointments, Appointment, InsertAppointment,
   notes, Note, InsertNote,
-  riskAssessments, RiskAssessment, InsertRiskAssessment
+  riskAssessments, RiskAssessment, InsertRiskAssessment,
+  resourceLocations, ResourceLocation, InsertResourceLocation,
+  communityResources, CommunityResource, InsertCommunityResource,
+  resourceReferrals, ResourceReferral, InsertResourceReferral,
+  resourceReviews, ResourceReview, InsertResourceReview,
+  resourceBookmarks, ResourceBookmark, InsertResourceBookmark
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -61,6 +66,39 @@ export interface IStorage {
   getRiskAssessment(id: number): Promise<RiskAssessment | undefined>;
   createRiskAssessment(riskAssessment: InsertRiskAssessment): Promise<RiskAssessment>;
   updateRiskAssessment(id: number, riskAssessment: Partial<InsertRiskAssessment>): Promise<RiskAssessment | undefined>;
+  
+  // Resource Location operations
+  getAllResourceLocations(): Promise<ResourceLocation[]>;
+  getResourceLocation(id: number): Promise<ResourceLocation | undefined>;
+  createResourceLocation(location: InsertResourceLocation): Promise<ResourceLocation>;
+  updateResourceLocation(id: number, location: Partial<InsertResourceLocation>): Promise<ResourceLocation | undefined>;
+  
+  // Community Resource operations
+  getAllCommunityResources(): Promise<CommunityResource[]>;
+  getCommunityResourcesByCategory(category: string): Promise<CommunityResource[]>;
+  getCommunityResourcesByLocation(locationId: number): Promise<CommunityResource[]>;
+  getCommunityResource(id: number): Promise<CommunityResource | undefined>;
+  createCommunityResource(resource: InsertCommunityResource): Promise<CommunityResource>;
+  updateCommunityResource(id: number, resource: Partial<InsertCommunityResource>): Promise<CommunityResource | undefined>;
+  searchCommunityResources(query: string, filters?: any): Promise<CommunityResource[]>;
+  
+  // Resource Referral operations
+  getReferrals(serviceUserId?: number, resourceId?: number): Promise<ResourceReferral[]>;
+  getReferral(id: number): Promise<ResourceReferral | undefined>;
+  createReferral(referral: InsertResourceReferral): Promise<ResourceReferral>;
+  updateReferral(id: number, referral: Partial<InsertResourceReferral>): Promise<ResourceReferral | undefined>;
+  
+  // Resource Review operations
+  getReviews(resourceId: number): Promise<ResourceReview[]>;
+  getReview(id: number): Promise<ResourceReview | undefined>;
+  createReview(review: InsertResourceReview): Promise<ResourceReview>;
+  updateReview(id: number, review: Partial<InsertResourceReview>): Promise<ResourceReview | undefined>;
+  
+  // Resource Bookmark operations
+  getBookmarks(userId: number): Promise<ResourceBookmark[]>;
+  getBookmark(id: number): Promise<ResourceBookmark | undefined>;
+  createBookmark(bookmark: InsertResourceBookmark): Promise<ResourceBookmark>;
+  deleteBookmark(id: number): Promise<boolean>;
   
   // Session store
   sessionStore: session.Store;
