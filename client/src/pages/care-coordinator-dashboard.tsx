@@ -566,15 +566,24 @@ export default function CareCoordinatorDashboard() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-semibold">{alert.serviceUserName}</span>
-                          <Badge className={
-                            alert.priority === 'critical' ? "bg-red-100 text-red-800 border-red-200" :
-                            alert.priority === 'high' ? "bg-orange-100 text-orange-800 border-orange-200" :
-                            alert.priority === 'medium' ? "bg-yellow-100 text-yellow-800 border-yellow-200" :
-                            "bg-blue-100 text-blue-800 border-blue-200"
-                          }>
-                            {alert.priority === 'critical' ? 'Critical' :
-                             alert.priority === 'high' ? 'High' :
-                             alert.priority === 'medium' ? 'Medium' : 'Low'}
+                          <Badge className={(() => {
+                            switch(alert.priority) {
+                              case 'critical': return "bg-red-100 text-red-800 border-red-200";
+                              case 'high': return "bg-orange-100 text-orange-800 border-orange-200";
+                              case 'medium': return "bg-yellow-100 text-yellow-800 border-yellow-200";
+                              case 'low': return "bg-blue-100 text-blue-800 border-blue-200";
+                              default: return "bg-gray-100 text-gray-800 border-gray-200";
+                            }
+                          })()}>
+                            {(() => {
+                              switch(alert.priority) {
+                                case 'critical': return 'Critical';
+                                case 'high': return 'High';
+                                case 'medium': return 'Medium';
+                                case 'low': return 'Low';
+                                default: return 'Unknown';
+                              }
+                            })()}
                           </Badge>
                         </div>
                         <div className="text-sm text-gray-500 mt-1 md:mt-0">
@@ -586,7 +595,7 @@ export default function CareCoordinatorDashboard() {
                                 case 'fall': return 'Fall Incident';
                                 case 'emergency-contact': return 'Emergency Contact Activated';
                                 case 'hospital-admission': return 'Hospital Admission';
-                                default: return '';
+                                default: return 'Alert';
                               }
                             })()}
                           </span>
@@ -597,19 +606,20 @@ export default function CareCoordinatorDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 mt-3 md:mt-0 ml-0 md:ml-4">
-                        <Badge className={
-                          alert.status === 'pending' 
-                            ? 'bg-gray-100 text-gray-800 border-gray-200' 
-                            : alert.status === 'in-progress' 
-                              ? 'bg-blue-100 text-blue-800 border-blue-200'
-                              : 'bg-green-100 text-green-800 border-green-200'
-                        }>
+                        <Badge className={(() => {
+                          switch(alert.status) {
+                            case 'pending': return 'bg-gray-100 text-gray-800 border-gray-200';
+                            case 'in-progress': return 'bg-blue-100 text-blue-800 border-blue-200';
+                            case 'resolved': return 'bg-green-100 text-green-800 border-green-200';
+                            default: return 'bg-gray-100 text-gray-800 border-gray-200';
+                          }
+                        })()}>
                           {(() => {
                             switch(alert.status) {
                               case 'pending': return 'Pending';
                               case 'in-progress': return 'In Progress';
                               case 'resolved': return 'Resolved';
-                              default: return '';
+                              default: return 'Unknown';
                             }
                           })()}
                         </Badge>
