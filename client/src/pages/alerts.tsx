@@ -47,6 +47,7 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
 
 // Alert type definition
 interface Alert {

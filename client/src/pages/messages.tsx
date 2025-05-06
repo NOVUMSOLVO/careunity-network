@@ -49,7 +49,8 @@ import {
   CheckCircle,
   Plus,
   RefreshCcw,
-  Filter
+  Filter,
+  MessageSquare as MessageSquareIcon
 } from 'lucide-react';
 
 // Types
@@ -1176,7 +1177,7 @@ export default function Messages() {
           ) : (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center">
-                <MessageSquare className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                <MessageSquareIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-medium">No conversation selected</h3>
                 <p className="text-gray-500 mt-1">Select a conversation from the list or start a new one</p>
                 <Button 
