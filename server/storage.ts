@@ -116,6 +116,11 @@ export class MemStorage implements IStorage {
   private appointmentsStore: Map<number, Appointment>;
   private notesStore: Map<number, Note>;
   private riskAssessmentsStore: Map<number, RiskAssessment>;
+  private resourceLocationsStore: Map<number, ResourceLocation>;
+  private communityResourcesStore: Map<number, CommunityResource>;
+  private resourceReferralsStore: Map<number, ResourceReferral>;
+  private resourceReviewsStore: Map<number, ResourceReview>;
+  private resourceBookmarksStore: Map<number, ResourceBookmark>;
   
   sessionStore: session.Store;
   
@@ -127,6 +132,11 @@ export class MemStorage implements IStorage {
   appointmentCurrentId: number;
   noteCurrentId: number;
   riskAssessmentCurrentId: number;
+  resourceLocationCurrentId: number;
+  communityResourceCurrentId: number;
+  resourceReferralCurrentId: number;
+  resourceReviewCurrentId: number;
+  resourceBookmarkCurrentId: number;
 
   constructor() {
     this.usersStore = new Map();
@@ -137,6 +147,11 @@ export class MemStorage implements IStorage {
     this.appointmentsStore = new Map();
     this.notesStore = new Map();
     this.riskAssessmentsStore = new Map();
+    this.resourceLocationsStore = new Map();
+    this.communityResourcesStore = new Map();
+    this.resourceReferralsStore = new Map();
+    this.resourceReviewsStore = new Map();
+    this.resourceBookmarksStore = new Map();
     
     this.userCurrentId = 1;
     this.serviceUserCurrentId = 1;
@@ -146,6 +161,11 @@ export class MemStorage implements IStorage {
     this.appointmentCurrentId = 1;
     this.noteCurrentId = 1;
     this.riskAssessmentCurrentId = 1;
+    this.resourceLocationCurrentId = 1;
+    this.communityResourceCurrentId = 1;
+    this.resourceReferralCurrentId = 1;
+    this.resourceReviewCurrentId = 1;
+    this.resourceBookmarkCurrentId = 1;
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // prune expired entries every 24h
@@ -389,6 +409,242 @@ export class MemStorage implements IStorage {
     const updatedRiskAssessment: RiskAssessment = { ...existingRiskAssessment, ...riskAssessmentUpdate };
     this.riskAssessmentsStore.set(id, updatedRiskAssessment);
     return updatedRiskAssessment;
+  }
+  
+  // Resource Location operations
+  async getAllResourceLocations(): Promise<ResourceLocation[]> {
+    return Array.from(this.resourceLocationsStore.values());
+  }
+  
+  async getResourceLocation(id: number): Promise<ResourceLocation | undefined> {
+    return this.resourceLocationsStore.get(id);
+  }
+  
+  async createResourceLocation(location: InsertResourceLocation): Promise<ResourceLocation> {
+    const id = this.resourceLocationCurrentId++;
+    const resourceLocation: ResourceLocation = { ...location, id };
+    this.resourceLocationsStore.set(id, resourceLocation);
+    return resourceLocation;
+  }
+  
+  async updateResourceLocation(id: number, locationUpdate: Partial<InsertResourceLocation>): Promise<ResourceLocation | undefined> {
+    const existingLocation = this.resourceLocationsStore.get(id);
+    if (!existingLocation) {
+      return undefined;
+    }
+    
+    const updatedLocation: ResourceLocation = { ...existingLocation, ...locationUpdate };
+    this.resourceLocationsStore.set(id, updatedLocation);
+    return updatedLocation;
+  }
+  
+  // Community Resource operations
+  async getAllCommunityResources(): Promise<CommunityResource[]> {
+    return Array.from(this.communityResourcesStore.values());
+  }
+  
+  async getCommunityResourcesByCategory(category: string): Promise<CommunityResource[]> {
+    return Array.from(this.communityResourcesStore.values()).filter(
+      (resource) => resource.categories.includes(category)
+    );
+  }
+  
+  async getCommunityResourcesByLocation(locationId: number): Promise<CommunityResource[]> {
+    return Array.from(this.communityResourcesStore.values()).filter(
+      (resource) => resource.locationId === locationId
+    );
+  }
+  
+  async getCommunityResource(id: number): Promise<CommunityResource | undefined> {
+    return this.communityResourcesStore.get(id);
+  }
+  
+  async createCommunityResource(resource: InsertCommunityResource): Promise<CommunityResource> {
+    const id = this.communityResourceCurrentId++;
+    const communityResource: CommunityResource = { 
+      ...resource, 
+      id,
+      reviewCount: 0
+    };
+    this.communityResourcesStore.set(id, communityResource);
+    return communityResource;
+  }
+  
+  async updateCommunityResource(id: number, resourceUpdate: Partial<InsertCommunityResource>): Promise<CommunityResource | undefined> {
+    const existingResource = this.communityResourcesStore.get(id);
+    if (!existingResource) {
+      return undefined;
+    }
+    
+    const updatedResource: CommunityResource = { ...existingResource, ...resourceUpdate };
+    this.communityResourcesStore.set(id, updatedResource);
+    return updatedResource;
+  }
+  
+  async searchCommunityResources(query: string, filters?: any): Promise<CommunityResource[]> {
+    const normalizedQuery = query.toLowerCase().trim();
+    
+    return Array.from(this.communityResourcesStore.values()).filter(resource => {
+      const nameMatch = resource.name.toLowerCase().includes(normalizedQuery);
+      const descriptionMatch = resource.description.toLowerCase().includes(normalizedQuery);
+      
+      // Apply additional filters if provided
+      let matchesFilters = true;
+      if (filters) {
+        if (filters.isFree !== undefined && resource.isFree !== filters.isFree) {
+          matchesFilters = false;
+        }
+        
+        if (filters.isReferralRequired !== undefined && resource.isReferralRequired !== filters.isReferralRequired) {
+          matchesFilters = false;
+        }
+        
+        if (filters.status && resource.status !== filters.status) {
+          matchesFilters = false;
+        }
+        
+        if (filters.categories && filters.categories.length > 0) {
+          const hasMatchingCategory = resource.categories.some(cat => 
+            filters.categories.includes(cat)
+          );
+          if (!hasMatchingCategory) {
+            matchesFilters = false;
+          }
+        }
+      }
+      
+      return (nameMatch || descriptionMatch) && matchesFilters;
+    });
+  }
+  
+  // Resource Referral operations
+  async getReferrals(serviceUserId?: number, resourceId?: number): Promise<ResourceReferral[]> {
+    let referrals = Array.from(this.resourceReferralsStore.values());
+    
+    if (serviceUserId !== undefined) {
+      referrals = referrals.filter(referral => referral.serviceUserId === serviceUserId);
+    }
+    
+    if (resourceId !== undefined) {
+      referrals = referrals.filter(referral => referral.resourceId === resourceId);
+    }
+    
+    return referrals;
+  }
+  
+  async getReferral(id: number): Promise<ResourceReferral | undefined> {
+    return this.resourceReferralsStore.get(id);
+  }
+  
+  async createReferral(referral: InsertResourceReferral): Promise<ResourceReferral> {
+    const id = this.resourceReferralCurrentId++;
+    const resourceReferral: ResourceReferral = { ...referral, id };
+    this.resourceReferralsStore.set(id, resourceReferral);
+    return resourceReferral;
+  }
+  
+  async updateReferral(id: number, referralUpdate: Partial<InsertResourceReferral>): Promise<ResourceReferral | undefined> {
+    const existingReferral = this.resourceReferralsStore.get(id);
+    if (!existingReferral) {
+      return undefined;
+    }
+    
+    const updatedReferral: ResourceReferral = { ...existingReferral, ...referralUpdate };
+    this.resourceReferralsStore.set(id, updatedReferral);
+    return updatedReferral;
+  }
+  
+  // Resource Review operations
+  async getReviews(resourceId: number): Promise<ResourceReview[]> {
+    return Array.from(this.resourceReviewsStore.values()).filter(
+      (review) => review.resourceId === resourceId
+    );
+  }
+  
+  async getReview(id: number): Promise<ResourceReview | undefined> {
+    return this.resourceReviewsStore.get(id);
+  }
+  
+  async createReview(review: InsertResourceReview): Promise<ResourceReview> {
+    const id = this.resourceReviewCurrentId++;
+    const resourceReview: ResourceReview = { ...review, id };
+    this.resourceReviewsStore.set(id, resourceReview);
+    
+    // Update the resource's rating and review count
+    const resourceId = review.resourceId;
+    const resource = this.communityResourcesStore.get(resourceId);
+    if (resource) {
+      const reviews = this.getReviews(resourceId);
+      const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0) + review.rating;
+      const averageRating = totalRating / (reviews.length + 1);
+      
+      const updatedResource: CommunityResource = {
+        ...resource,
+        rating: averageRating,
+        reviewCount: reviews.length + 1
+      };
+      
+      this.communityResourcesStore.set(resourceId, updatedResource);
+    }
+    
+    return resourceReview;
+  }
+  
+  async updateReview(id: number, reviewUpdate: Partial<InsertResourceReview>): Promise<ResourceReview | undefined> {
+    const existingReview = this.resourceReviewsStore.get(id);
+    if (!existingReview) {
+      return undefined;
+    }
+    
+    const updatedReview: ResourceReview = { ...existingReview, ...reviewUpdate };
+    this.resourceReviewsStore.set(id, updatedReview);
+    
+    // If rating changed, update the resource's average rating
+    if (reviewUpdate.rating && reviewUpdate.rating !== existingReview.rating) {
+      const resourceId = existingReview.resourceId;
+      const resource = this.communityResourcesStore.get(resourceId);
+      
+      if (resource) {
+        const reviews = await this.getReviews(resourceId);
+        const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+        const averageRating = totalRating / reviews.length;
+        
+        const updatedResource: CommunityResource = {
+          ...resource,
+          rating: averageRating
+        };
+        
+        this.communityResourcesStore.set(resourceId, updatedResource);
+      }
+    }
+    
+    return updatedReview;
+  }
+  
+  // Resource Bookmark operations
+  async getBookmarks(userId: number): Promise<ResourceBookmark[]> {
+    return Array.from(this.resourceBookmarksStore.values()).filter(
+      (bookmark) => bookmark.userId === userId
+    );
+  }
+  
+  async getBookmark(id: number): Promise<ResourceBookmark | undefined> {
+    return this.resourceBookmarksStore.get(id);
+  }
+  
+  async createBookmark(bookmark: InsertResourceBookmark): Promise<ResourceBookmark> {
+    const id = this.resourceBookmarkCurrentId++;
+    const resourceBookmark: ResourceBookmark = { ...bookmark, id };
+    this.resourceBookmarksStore.set(id, resourceBookmark);
+    return resourceBookmark;
+  }
+  
+  async deleteBookmark(id: number): Promise<boolean> {
+    if (!this.resourceBookmarksStore.has(id)) {
+      return false;
+    }
+    
+    return this.resourceBookmarksStore.delete(id);
   }
   
   // Seed initial data

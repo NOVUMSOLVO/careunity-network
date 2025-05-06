@@ -8,7 +8,12 @@ import {
   tasks, Task, InsertTask, 
   appointments, Appointment, InsertAppointment,
   notes, Note, InsertNote,
-  riskAssessments, RiskAssessment, InsertRiskAssessment
+  riskAssessments, RiskAssessment, InsertRiskAssessment,
+  resourceLocations, ResourceLocation, InsertResourceLocation,
+  communityResources, CommunityResource, InsertCommunityResource,
+  resourceReferrals, ResourceReferral, InsertResourceReferral,
+  resourceReviews, ResourceReview, InsertResourceReview,
+  resourceBookmarks, ResourceBookmark, InsertResourceBookmark
 } from "@shared/schema";
 import { db, pool } from "./db";
 import { eq, and } from "drizzle-orm";

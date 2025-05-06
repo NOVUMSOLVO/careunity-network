@@ -409,7 +409,7 @@ export default function CommunityResourcesDirectory() {
   };
   
   // Format rating
-  const renderRating = (rating?: number) => {
+  const renderRating = (rating?: number, reviewCount: number = 0) => {
     if (!rating) return 'No ratings yet';
     
     const fullStars = Math.floor(rating);
@@ -424,7 +424,7 @@ export default function CommunityResourcesDirectory() {
         {[...Array(5 - fullStars - (hasHalfStar ? 1 : 0))].map((_, i) => (
           <Star key={`empty-${i}`} className="h-4 w-4 text-gray-300" />
         ))}
-        <span className="ml-1 text-sm text-gray-600">{rating.toFixed(1)} ({resource.reviewCount})</span>
+        <span className="ml-1 text-sm text-gray-600">{rating.toFixed(1)} ({reviewCount})</span>
       </div>
     );
   };
@@ -806,7 +806,7 @@ export default function CommunityResourcesDirectory() {
                     </div>
                     
                     <div className="flex items-center mt-1 text-sm">
-                      {renderRating(resource.rating)}
+                      {renderRating(resource.rating, resource.reviewCount)}
                     </div>
                     
                     {resource.isFree ? (
@@ -888,7 +888,7 @@ export default function CommunityResourcesDirectory() {
                 <div>
                   <h3 className="text-md font-medium mb-1">Rating</h3>
                   <div className="flex items-center">
-                    {renderRating(selectedResource.rating)}
+                    {renderRating(selectedResource.rating, selectedResource.reviewCount)}
                     <Button variant="ghost" size="sm" className="ml-auto" onClick={() => {
                       setShowResourceDetailsDialog(false);
                       setTimeout(() => openReviewDialog(selectedResource), 100);
