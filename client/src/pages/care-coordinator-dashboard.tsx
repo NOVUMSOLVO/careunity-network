@@ -405,11 +405,11 @@ export default function CareCoordinatorDashboard() {
                       <SelectItem value="low">Low Priority</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Link href="/care-allocation">
+                  <RouterLink to="/care-allocation">
                     <Button>
                       Go to Allocation
                     </Button>
-                  </Link>
+                  </RouterLink>
                 </div>
               </div>
             </CardHeader>
@@ -610,7 +610,8 @@ export default function CareCoordinatorDashboard() {
                       </div>
                       <div className="flex items-center gap-2 mt-3 md:mt-0 ml-0 md:ml-4">
                         <Badge className={(() => {
-                          switch(alert.status) {
+                          const status = alert.status as ServiceUserAlertStatus;
+                          switch(status) {
                             case 'pending': return 'bg-gray-100 text-gray-800 border-gray-200';
                             case 'in-progress': return 'bg-blue-100 text-blue-800 border-blue-200';
                             case 'resolved': return 'bg-green-100 text-green-800 border-green-200';
@@ -618,7 +619,8 @@ export default function CareCoordinatorDashboard() {
                           }
                         })()}>
                           {(() => {
-                            switch(alert.status) {
+                            const status = alert.status as ServiceUserAlertStatus;
+                            switch(status) {
                               case 'pending': return 'Pending';
                               case 'in-progress': return 'In Progress';
                               case 'resolved': return 'Resolved';
@@ -761,11 +763,11 @@ export default function CareCoordinatorDashboard() {
               )}
             </CardContent>
             <CardFooter>
-              <Link href="/cqc-compliance" className="w-full">
+              <RouterLink to="/cqc-compliance" className="w-full">
                 <Button className="w-full">
                   View Detailed Compliance Report
                 </Button>
-              </Link>
+              </RouterLink>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -882,12 +884,12 @@ export default function CareCoordinatorDashboard() {
             )}
           </CardContent>
           <CardFooter>
-            <Link href="/reports" className="w-full">
+            <RouterLink to="/reports" className="w-full">
               <Button variant="outline" className="w-full">
                 <BarChart4 className="mr-2 h-4 w-4" />
                 View All Reports
               </Button>
-            </Link>
+            </RouterLink>
           </CardFooter>
         </Card>
 
@@ -900,7 +902,7 @@ export default function CareCoordinatorDashboard() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-3">
-              <Link href="/care-allocation" className="w-full">
+              <RouterLink to="/care-allocation" className="w-full">
                 <Button variant="outline" size="lg" className="w-full justify-between font-normal">
                   <div className="flex items-center">
                     <Layers className="h-4 w-4 mr-2" />
@@ -908,9 +910,9 @@ export default function CareCoordinatorDashboard() {
                   </div>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-              </Link>
+              </RouterLink>
               
-              <Link href="/staff-management" className="w-full">
+              <RouterLink to="/staff-management" className="w-full">
                 <Button variant="outline" size="lg" className="w-full justify-between font-normal">
                   <div className="flex items-center">
                     <Users className="h-4 w-4 mr-2" />
@@ -918,9 +920,9 @@ export default function CareCoordinatorDashboard() {
                   </div>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-              </Link>
+              </RouterLink>
               
-              <Link href="/calendar" className="w-full">
+              <RouterLink to="/calendar" className="w-full">
                 <Button variant="outline" size="lg" className="w-full justify-between font-normal">
                   <div className="flex items-center">
                     <Calendar className="h-4 w-4 mr-2" />
@@ -928,9 +930,9 @@ export default function CareCoordinatorDashboard() {
                   </div>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-              </Link>
+              </RouterLink>
               
-              <Link href="/service-users" className="w-full">
+              <RouterLink to="/service-users" className="w-full">
                 <Button variant="outline" size="lg" className="w-full justify-between font-normal">
                   <div className="flex items-center">
                     <User className="h-4 w-4 mr-2" />
@@ -938,9 +940,9 @@ export default function CareCoordinatorDashboard() {
                   </div>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-              </Link>
+              </RouterLink>
               
-              <Link href="/incident-reporting" className="w-full">
+              <RouterLink to="/incident-reporting" className="w-full">
                 <Button variant="outline" size="lg" className="w-full justify-between font-normal">
                   <div className="flex items-center">
                     <AlertCircle className="h-4 w-4 mr-2" />
@@ -948,9 +950,9 @@ export default function CareCoordinatorDashboard() {
                   </div>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-              </Link>
+              </RouterLink>
               
-              <Link href="/route-optimizer" className="w-full">
+              <RouterLink to="/route-optimizer" className="w-full">
                 <Button variant="outline" size="lg" className="w-full justify-between font-normal">
                   <div className="flex items-center">
                     <MapPin className="h-4 w-4 mr-2" />
@@ -958,7 +960,7 @@ export default function CareCoordinatorDashboard() {
                   </div>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-              </Link>
+              </RouterLink>
             </div>
           </CardContent>
         </Card>
