@@ -47,6 +47,7 @@ import { InteractiveMap } from '@/components/care-allocation/interactive-map';
 import { AllocationAnalytics } from '@/components/care-allocation/allocation-analytics';
 import { BulkAllocation } from '@/components/care-allocation/bulk-allocation';
 import { PayrollTracking } from '@/components/admin/payroll-tracking';
+import { PatientOverview } from '@/components/care-coordinator/patient-overview';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 
