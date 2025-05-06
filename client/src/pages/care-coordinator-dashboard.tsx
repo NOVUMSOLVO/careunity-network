@@ -718,6 +718,31 @@ export default function CareCoordinatorDashboard() {
         <InteractiveMap />
       </div>
 
+      {/* Allocation Analytics */}
+      <div className="mb-8">
+        <AllocationAnalytics />
+      </div>
+
+      {/* Advanced Allocation Features */}
+      <Tabs defaultValue="bulk-allocation" className="mb-8">
+        <TabsList className="grid grid-cols-2">
+          <TabsTrigger value="bulk-allocation" className="flex items-center gap-2">
+            <Calendar size={16} />
+            <span>Bulk Allocation Planning</span>
+          </TabsTrigger>
+          <TabsTrigger value="payroll" className="flex items-center gap-2">
+            <PoundSterling size={16} />
+            <span>Payroll & Hours Management</span>
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="bulk-allocation" className="mt-4">
+          <BulkAllocation />
+        </TabsContent>
+        <TabsContent value="payroll" className="mt-4">
+          <PayrollTracking />
+        </TabsContent>
+      </Tabs>
+
       {/* Key Performance Indicators */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
