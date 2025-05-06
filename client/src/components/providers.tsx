@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/shared-query-client';
+import { Router } from 'wouter';
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -12,7 +13,9 @@ interface AppProvidersProps {
 export function AppProviders({ children }: AppProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <Router>
+        {children}
+      </Router>
     </QueryClientProvider>
   );
 }

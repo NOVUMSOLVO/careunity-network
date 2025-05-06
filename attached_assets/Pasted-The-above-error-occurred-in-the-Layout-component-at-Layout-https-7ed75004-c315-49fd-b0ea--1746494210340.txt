@@ -1,0 +1,21 @@
+The above error occurred in the <Layout> component:
+
+    at Layout (https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/layout/layout.tsx:45:26)
+    at AppWithLayout
+    at App
+    at QueryClientProvider (https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=9512c93c:2805:3)
+    at AppProviders (https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/providers.tsx:19:32)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+Cannot read properties of null (reading 'useContext')
+at useContext (https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-QCHXOAYK.js?v=a3d2bf46:1062:29)
+at useRouter (https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=a3d2bf46:257:51)
+at useLocation (https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=a3d2bf46:268:47)
+at Layout (https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/src/components/layout/layout.tsx:47:22)
+at renderWithHooks (https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=9512c93c:11548:26)
+at mountIndeterminateComponent (https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=9512c93c:14926:21)
+at beginWork (https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=9512c93c:15914:22)
+at beginWork$1 (https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=9512c93c:19753:22)
+at performUnitOfWork (https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=9512c93c:19198:20)
+at workLoopSync (https://7ed75004-c315-49fd-b0ea-0e9a375fc0a8-00-3i353vdg89naf.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=9512c93c:19137:13)
