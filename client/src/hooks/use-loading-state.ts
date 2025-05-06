@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { LoaderType } from "@/components/ui/loading-state";
 
 interface UseLoadingStateOptions {
@@ -12,9 +13,10 @@ export function useLoadingState({
   loaderType = "random",
   loadingText = "Loading...",
 }: UseLoadingStateOptions = {}) {
-  const [loading, setLoading] = useState<boolean>(initialState);
-  const [loadingMessage, setLoadingMessage] = useState<string>(loadingText);
+  const [loading, setLoading] = useState(initialState);
+  const [loadingMessage, setLoadingMessage] = useState(loadingText);
   const [loaderStyle, setLoaderStyle] = useState<LoaderType>(loaderType);
+  const { toast } = useToast();
 
   const startLoading = useCallback((message?: string, type?: LoaderType) => {
     setLoading(true);
@@ -24,8 +26,7 @@ export function useLoadingState({
 
   const stopLoading = useCallback(() => {
     setLoading(false);
-    setLoadingMessage(loadingText);
-  }, [loadingText]);
+  }, []);
 
   const updateLoadingMessage = useCallback((message: string) => {
     setLoadingMessage(message);
@@ -35,8 +36,9 @@ export function useLoadingState({
     setLoaderStyle(type);
   }, []);
 
+  // A utility function that wraps an async operation with loading state
   const withLoading = useCallback(
-    async <T,>(
+    async <T>(
       operation: () => Promise<T>,
       options?: {
         loadingMessage?: string;
@@ -47,15 +49,30 @@ export function useLoadingState({
       try {
         startLoading(
           options?.loadingMessage || loadingText,
-          options?.loaderType || loaderStyle
+          options?.loaderType || loaderType
         );
         const result = await operation();
-        return result;
-      } finally {
         stopLoading();
+        
+        if (options?.successMessage) {
+          toast({
+            title: "Success",
+            description: options.successMessage,
+          });
+        }
+        
+        return result;
+      } catch (error) {
+        stopLoading();
+        toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "An unknown error occurred",
+          variant: "destructive",
+        });
+        throw error;
       }
     },
-    [startLoading, stopLoading, loadingText, loaderStyle]
+    [loadingText, loaderType, startLoading, stopLoading, toast]
   );
 
   return {

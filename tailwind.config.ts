@@ -92,9 +92,22 @@ export default {
           "100%": { strokeDasharray: "100", strokeDashoffset: "0" }
         },
         "pulse-line": {
-          "0%": { strokeDashoffset: "180" },
+          "0%": { strokeDashoffset: "200" },
           "50%": { strokeDashoffset: "0" },
-          "100%": { strokeDashoffset: "-180" }
+          "100%": { strokeDashoffset: "-200" }
+        },
+        "pulse-dot": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(200px)" }
+        },
+        "pill-move": {
+          "0%, 100%": { transform: "translateY(0)", opacity: "1" },
+          "50%": { transform: "translateY(-8px)", opacity: "0.5" }
+        },
+        "medical-cross-pulse": {
+          "0%": { transform: "scale(0.8)", opacity: "0.8" },
+          "50%": { transform: "scale(1.1)", opacity: "0.2" },
+          "100%": { transform: "scale(0.8)", opacity: "0.8" }
         },
         "pill-fill": {
           "0%": { opacity: "0.2" },
@@ -114,6 +127,9 @@ export default {
         "heartbeat": "heartbeat 1.5s ease-in-out infinite",
         "draw-path": "draw-path 1.5s ease-in-out forwards",
         "pulse-line": "pulse-line 2s ease-in-out infinite",
+        "pulse-dot": "pulse-dot 2s linear infinite",
+        "pill-move": "pill-move 2s ease-in-out infinite",
+        "medical-cross-pulse": "medical-cross-pulse 2s ease-in-out infinite",
         "pulse-delay": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite 1s",
         "pill-fill": "pill-fill 2s ease-in-out infinite",
         "pill-fill-delay": "pill-fill-delay 2s ease-in-out infinite",

@@ -1,285 +1,173 @@
-import { useState } from "react";
-import { LoadingState, LoaderType } from "@/components/ui/loading-state";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { 
-  HeartBeatLoader, 
-  StethoscopeLoader, 
-  PulseLineLoader,
-  PillLoader,
-  MedicalCrossLoader
-} from "@/components/ui/loaders";
+import React, { useState } from 'react';
+import { useLoading } from '@/contexts/loading-context';
+import { LoadingState } from '@/components/ui/loading-state';
+// Direct imports of the loader components
+import { HeartbeatLoader } from '@/components/ui/loaders/heartbeat-loader';
+import { StethoscopeLoader } from '@/components/ui/loaders/stethoscope-loader';
+import { PulseLineLoader } from '@/components/ui/loaders/pulse-line-loader';
+import { PillLoader } from '@/components/ui/loaders/pill-loader';
+import { MedicalCrossLoader } from '@/components/ui/loaders/medical-cross-loader';
 
 export default function LoadingDemoPage() {
-  const [selectedLoader, setSelectedLoader] = useState<LoaderType>("heartbeat");
-  const [showText, setShowText] = useState(true);
-  const [fullPage, setFullPage] = useState(false);
-  const [customLoaderText, setCustomLoaderText] = useState("Loading...");
-  const [textPosition, setTextPosition] = useState<"top" | "bottom" | "left" | "right">("bottom");
-  const [size, setSize] = useState<"sm" | "md" | "lg">("md");
-  const [color, setColor] = useState("primary");
+  const { 
+    startLoading, 
+    stopLoading, 
+    updateLoadingMessage, 
+    updateLoaderType, 
+    withLoading 
+  } = useLoading();
   
-  const loaderOptions: { label: string; value: LoaderType }[] = [
-    { label: "Heart Beat", value: "heartbeat" },
-    { label: "Stethoscope", value: "stethoscope" },
-    { label: "Pulse Line", value: "pulse-line" },
-    { label: "Pill", value: "pill" },
-    { label: "Medical Cross", value: "medical-cross" },
-    { label: "Random", value: "random" },
-  ];
+  const [demoStatus, setDemoStatus] = useState('');
   
-  const positionOptions = [
-    { label: "Top", value: "top" },
-    { label: "Bottom", value: "bottom" },
-    { label: "Left", value: "left" },
-    { label: "Right", value: "right" },
-  ];
-  
-  const sizeOptions = [
-    { label: "Small", value: "sm" },
-    { label: "Medium", value: "md" },
-    { label: "Large", value: "lg" },
-  ];
-  
-  const colorOptions = [
-    { label: "Primary", value: "primary" },
-    { label: "Secondary", value: "secondary" },
-    { label: "Accent", value: "accent" },
-    { label: "Destructive", value: "destructive" },
-  ];
-  
+  // Simulate a data loading operation
+  const simulateLoadOperation = async () => {
+    // Simulate an API call
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    return { success: true, data: 'Sample data loaded successfully!' };
+  };
+
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Loading State Components</h1>
-        <p className="text-muted-foreground">
-          Healthcare-themed animated loaders for use throughout the CareUnity application
-        </p>
+    <div className="space-y-8 p-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">Loading State Demo</h1>
+        <p className="text-gray-600">Explore the healthcare-themed loading animations in CareUnity</p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-1 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Controls</CardTitle>
-              <CardDescription>Customize the loading state</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label>Loader Type</Label>
-                <RadioGroup 
-                  value={selectedLoader} 
-                  onValueChange={(value) => setSelectedLoader(value as LoaderType)}
-                  className="grid grid-cols-1 gap-2"
-                >
-                  {loaderOptions.map((option) => (
-                    <div key={option.value} className="flex items-center space-x-2">
-                      <RadioGroupItem value={option.value} id={`loader-${option.value}`} />
-                      <Label htmlFor={`loader-${option.value}`}>{option.label}</Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-2">
-                <Label>Text</Label>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="show-text">Show Text</Label>
-                  <Switch 
-                    id="show-text" 
-                    checked={showText}
-                    onCheckedChange={setShowText}
-                  />
-                </div>
-                
-                {showText && (
-                  <div className="pt-2">
-                    <Label htmlFor="loader-text">Custom Text</Label>
-                    <input
-                      id="loader-text"
-                      type="text"
-                      value={customLoaderText}
-                      onChange={(e) => setCustomLoaderText(e.target.value)}
-                      className="w-full p-2 rounded-md border mt-1"
-                    />
-                  </div>
-                )}
-              </div>
-              
-              {showText && (
-                <>
-                  <Separator />
-                  
-                  <div className="space-y-2">
-                    <Label>Text Position</Label>
-                    <RadioGroup 
-                      value={textPosition} 
-                      onValueChange={(value) => setTextPosition(value as any)}
-                      className="grid grid-cols-2 gap-2"
-                    >
-                      {positionOptions.map((option) => (
-                        <div key={option.value} className="flex items-center space-x-2">
-                          <RadioGroupItem value={option.value} id={`position-${option.value}`} />
-                          <Label htmlFor={`position-${option.value}`}>{option.label}</Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  </div>
-                </>
-              )}
-              
-              <Separator />
-              
-              <div className="space-y-2">
-                <Label>Size</Label>
-                <RadioGroup 
-                  value={size} 
-                  onValueChange={(value) => setSize(value as any)}
-                  className="grid grid-cols-3 gap-2"
-                >
-                  {sizeOptions.map((option) => (
-                    <div key={option.value} className="flex items-center space-x-2">
-                      <RadioGroupItem value={option.value} id={`size-${option.value}`} />
-                      <Label htmlFor={`size-${option.value}`}>{option.label}</Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-2">
-                <Label>Color</Label>
-                <RadioGroup 
-                  value={color} 
-                  onValueChange={setColor}
-                  className="grid grid-cols-2 gap-2"
-                >
-                  {colorOptions.map((option) => (
-                    <div key={option.value} className="flex items-center space-x-2">
-                      <RadioGroupItem value={option.value} id={`color-${option.value}`} />
-                      <Label htmlFor={`color-${option.value}`}>{option.label}</Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="full-page">Full Page Overlay</Label>
-                  <Switch 
-                    id="full-page" 
-                    checked={fullPage}
-                    onCheckedChange={setFullPage}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div className="md:col-span-2">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle>Preview</CardTitle>
-              <CardDescription>
-                {fullPage 
-                  ? "Toggle full page overlay on/off" 
-                  : "Customize your loader using the controls"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex items-center justify-center min-h-[400px] relative">
-              {fullPage ? (
-                <Button 
-                  onClick={() => setFullPage(true)}
-                  className="relative z-10"
-                >
-                  Activate Full Page Loader
-                </Button>
-              ) : (
-                <LoadingState
-                  type={selectedLoader}
-                  text={showText ? customLoaderText : ""}
-                  textPosition={textPosition}
-                  size={size}
-                  color={color}
-                />
-              )}
-              
-              {fullPage && (
-                <LoadingState
-                  type={selectedLoader}
-                  text={showText ? customLoaderText : ""}
-                  textPosition={textPosition}
-                  size={size}
-                  color={color}
-                  fullPage
-                />
-              )}
-            </CardContent>
-          </Card>
+      {/* Demo Card */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4">Individual Loaders</h2>
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+          {/* Heartbeat Loader */}
+          <div className="flex flex-col items-center p-4 border rounded-lg">
+            <HeartbeatLoader size="lg" color="text-rose-500" />
+            <p className="mt-3 text-sm font-medium">Heartbeat</p>
+          </div>
+          
+          {/* Stethoscope Loader */}
+          <div className="flex flex-col items-center p-4 border rounded-lg">
+            <StethoscopeLoader size="lg" color="text-blue-500" />
+            <p className="mt-3 text-sm font-medium">Stethoscope</p>
+          </div>
+          
+          {/* Pulse Line Loader */}
+          <div className="flex flex-col items-center p-4 border rounded-lg">
+            <PulseLineLoader size="lg" color="text-green-500" />
+            <p className="mt-3 text-sm font-medium">Pulse Line</p>
+          </div>
+          
+          {/* Pill Loader */}
+          <div className="flex flex-col items-center p-4 border rounded-lg">
+            <PillLoader size="lg" color="text-amber-500" />
+            <p className="mt-3 text-sm font-medium">Pill</p>
+          </div>
+          
+          {/* Medical Cross Loader */}
+          <div className="flex flex-col items-center p-4 border rounded-lg">
+            <MedicalCrossLoader size="lg" color="text-indigo-500" />
+            <p className="mt-3 text-sm font-medium">Medical Cross</p>
+          </div>
         </div>
       </div>
       
-      <div className="mt-10 space-y-6">
-        <h2 className="text-2xl font-bold">Individual Loader Components</h2>
-        <p className="text-muted-foreground">
-          These loader components can be used independently throughout the application
-        </p>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Heart Beat</CardTitle>
-            </CardHeader>
-            <CardContent className="flex items-center justify-center h-40">
-              <HeartBeatLoader size="md" />
-            </CardContent>
-          </Card>
+      {/* Full Page Loading Demo */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4">Full-Page Loading State</h2>
+        <div className="space-y-4">
+          <p className="text-gray-600">Test the global loading overlay with different animations:</p>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Stethoscope</CardTitle>
-            </CardHeader>
-            <CardContent className="flex items-center justify-center h-40">
-              <StethoscopeLoader size="md" />
-            </CardContent>
-          </Card>
+          <div className="flex flex-wrap gap-3">
+            <button 
+              onClick={() => {
+                startLoading('Loading with Heartbeat...', 'heartbeat');
+                setTimeout(() => stopLoading(), 3000);
+              }}
+              className="px-4 py-2 bg-rose-500 text-white rounded-md hover:bg-rose-600"
+            >
+              Heartbeat Loader
+            </button>
+            
+            <button 
+              onClick={() => {
+                startLoading('Checking with Stethoscope...', 'stethoscope');
+                setTimeout(() => stopLoading(), 3000);
+              }}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            >
+              Stethoscope Loader
+            </button>
+            
+            <button 
+              onClick={() => {
+                startLoading('Monitoring Vital Signs...', 'pulse-line');
+                setTimeout(() => stopLoading(), 3000);
+              }}
+              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+            >
+              Pulse Line Loader
+            </button>
+            
+            <button 
+              onClick={() => {
+                startLoading('Preparing Medication...', 'pill');
+                setTimeout(() => stopLoading(), 3000);
+              }}
+              className="px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600"
+            >
+              Pill Loader
+            </button>
+            
+            <button 
+              onClick={() => {
+                startLoading('Providing Medical Care...', 'medical-cross');
+                setTimeout(() => stopLoading(), 3000);
+              }}
+              className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600"
+            >
+              Medical Cross Loader
+            </button>
+            
+            <button 
+              onClick={() => {
+                startLoading('Random Healthcare Loading...', 'random');
+                setTimeout(() => stopLoading(), 3000);
+              }}
+              className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900"
+            >
+              Random Loader
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      {/* withLoading Demo */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold mb-4">withLoading Hook Demo</h2>
+        <div className="space-y-4">
+          <p className="text-gray-600">Test the withLoading hook to wrap async operations:</p>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Pulse Line</CardTitle>
-            </CardHeader>
-            <CardContent className="flex items-center justify-center h-40">
-              <PulseLineLoader width="full" />
-            </CardContent>
-          </Card>
+          <button 
+            onClick={async () => {
+              try {
+                const result = await withLoading(simulateLoadOperation, {
+                  loadingMessage: 'Loading data from server...',
+                  loaderType: 'pulse-line',
+                  successMessage: 'Data loaded successfully!'
+                });
+                setDemoStatus(`Operation completed: ${result.data}`);
+              } catch (error: any) {
+                setDemoStatus(`Error: ${error?.message || 'Unknown error occurred'}`);
+              }
+            }}
+            className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+          >
+            Load Data with Animation
+          </button>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Pill</CardTitle>
-            </CardHeader>
-            <CardContent className="flex items-center justify-center h-40">
-              <PillLoader size="md" />
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Medical Cross</CardTitle>
-            </CardHeader>
-            <CardContent className="flex items-center justify-center h-40">
-              <MedicalCrossLoader size="md" />
-            </CardContent>
-          </Card>
+          {demoStatus && (
+            <div className="mt-4 p-3 bg-gray-100 rounded-md">
+              <p className="text-sm">{demoStatus}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

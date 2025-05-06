@@ -1,49 +1,85 @@
-import { cn } from "@/lib/utils";
+import React from 'react';
 
-interface StethoscopeLoaderProps {
-  className?: string;
-  size?: "sm" | "md" | "lg";
+export interface StethoscopeLoaderProps {
   color?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-export function StethoscopeLoader({
-  className,
-  size = "md",
-  color = "stroke-primary",
-}: StethoscopeLoaderProps) {
-  const sizeClasses = {
-    sm: "w-8 h-8",
-    md: "w-12 h-12",
-    lg: "w-16 h-16",
-  };
+const sizeClasses = {
+  sm: 'w-6 h-6',
+  md: 'w-10 h-10',
+  lg: 'w-16 h-16',
+  xl: 'w-24 h-24'
+};
 
+export function StethoscopeLoader({ 
+  color = 'text-primary', 
+  size = 'md' 
+}: StethoscopeLoaderProps) {
   return (
-    <div className={cn("flex items-center justify-center", className)}>
-      <svg
-        className={cn("animate-pulse", sizeClasses[size])}
-        viewBox="0 0 24 24"
-        fill="none"
+    <div className={`${sizeClasses[size]} relative flex items-center justify-center ${color}`}>
+      <svg 
+        viewBox="0 0 100 100" 
+        fill="none" 
         xmlns="http://www.w3.org/2000/svg"
+        className="w-full h-full"
       >
-        <path
-          className={cn("animate-draw-path stroke-2 fill-none", color)}
-          d="M4.5 12.5L6 11C7.5 9.5 10.5 9.5 12 11L13 12L14 11C15.5 9.5 18.5 9.5 20 11L21.5 12.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+        {/* Stethoscope Bell */}
+        <circle 
+          cx="30" 
+          cy="75" 
+          r="15" 
+          className="stroke-current fill-none" 
+          strokeWidth="6"
         />
-        <circle
-          className={cn("animate-pulse-delay fill-none stroke-2", color)}
-          cx="18"
-          cy="16"
-          r="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+        
+        {/* Stethoscope Diaphragm (pulsing) */}
+        <circle 
+          cx="30" 
+          cy="75" 
+          r="8" 
+          className="fill-current animate-pulse" 
+          opacity="0.5"
         />
-        <path
-          className={cn("animate-draw-path stroke-2 fill-none", color)}
-          d="M18 18V22C18 22 18 22.5 17.5 22.5C17 22.5 16 22.5 16 22.5C16 22.5 12 22.5 10 20.5C10 20.5 2 12.5 2 7C2 4.5 4 2.5 6.5 2.5C9 2.5 10 4 10 4"
+        
+        {/* Stethoscope Tubing */}
+        <path 
+          d="M30 60V40C30 25 40 20 50 20H60C70 20 80 20 80 35V50" 
+          className="stroke-current" 
+          strokeWidth="6" 
           strokeLinecap="round"
-          strokeLinejoin="round"
+          fill="none"
+        />
+        
+        {/* Ear Pieces */}
+        <circle 
+          cx="80" 
+          cy="50" 
+          r="10" 
+          className="stroke-current fill-none" 
+          strokeWidth="6"
+        />
+        
+        {/* Sound Wave Animation (moving along the tube) */}
+        <circle 
+          cx="30" 
+          cy="40" 
+          r="3" 
+          className="fill-current animate-bounce"
+        />
+        <circle 
+          cx="50" 
+          cy="25" 
+          r="3" 
+          className="fill-current animate-bounce" 
+          style={{ animationDelay: '0.2s' }}
+        />
+        <circle 
+          cx="70" 
+          cy="30" 
+          r="3" 
+          className="fill-current animate-bounce" 
+          style={{ animationDelay: '0.4s' }}
         />
       </svg>
     </div>

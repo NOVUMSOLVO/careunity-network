@@ -1,37 +1,70 @@
-import { cn } from "@/lib/utils";
+import React from 'react';
 
-interface MedicalCrossLoaderProps {
-  className?: string;
-  size?: "sm" | "md" | "lg";
+export interface MedicalCrossLoaderProps {
   color?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-export function MedicalCrossLoader({
-  className,
-  size = "md",
-  color = "text-primary",
-}: MedicalCrossLoaderProps) {
-  const sizeClasses = {
-    sm: "w-8 h-8",
-    md: "w-12 h-12",
-    lg: "w-16 h-16",
-  };
+const sizeClasses = {
+  sm: 'w-6 h-6',
+  md: 'w-10 h-10',
+  lg: 'w-16 h-16',
+  xl: 'w-24 h-24'
+};
 
+export function MedicalCrossLoader({ 
+  color = 'text-primary', 
+  size = 'md' 
+}: MedicalCrossLoaderProps) {
   return (
-    <div className={cn("flex items-center justify-center", className)}>
-      <div className={cn("animate-spin-slow", sizeClasses[size])}>
-        <svg 
-          className="w-full h-full" 
-          viewBox="0 0 24 24"
+    <div className={`${sizeClasses[size]} relative flex items-center justify-center ${color}`}>
+      <svg 
+        viewBox="0 0 100 100" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full h-full"
+      >
+        {/* Outer Circle */}
+        <circle 
+          cx="50" 
+          cy="50" 
+          r="40" 
+          className="stroke-current" 
+          strokeWidth="5"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            className={cn("fill-current", color)}
-            d="M14 4H10V10H4V14H10V20H14V14H20V10H14V4Z"
-          />
-        </svg>
-      </div>
+        />
+        
+        {/* Horizontal Bar of Cross */}
+        <rect 
+          x="25" 
+          y="40" 
+          width="50" 
+          height="20" 
+          rx="2" 
+          className="fill-current"
+        />
+        
+        {/* Vertical Bar of Cross */}
+        <rect 
+          x="40" 
+          y="25" 
+          width="20" 
+          height="50" 
+          rx="2" 
+          className="fill-current"
+        />
+        
+        {/* Animated Pulse Effect */}
+        <circle 
+          cx="50" 
+          cy="50" 
+          r="45" 
+          className="stroke-current animate-medical-cross-pulse" 
+          strokeWidth="2"
+          strokeOpacity="0.5"
+          fill="none"
+        />
+      </svg>
     </div>
   );
 }

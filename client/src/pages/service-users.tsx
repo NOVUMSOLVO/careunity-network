@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import { PlusCircle, Search, FileText, UserPlus, AlertCircle, Clock } from 'lucide-react';
+import { LoadingState } from '@/components/ui/loading-state';
 
 // Mock data since we haven't set up auth yet
 const mockServiceUsers = [
@@ -75,10 +76,22 @@ export default function ServiceUsers() {
   //   queryKey: ['/api/service-users'],
   // });
   
+  // For demonstration purposes, let's simulate loading
+  const [demoLoading, setDemoLoading] = useState(true);
+  
   // For now, we'll use mock data
   const serviceUsers = mockServiceUsers;
-  const isLoading = false;
+  const isLoading = demoLoading; // Use our demo loading state
   const error = null;
+  
+  // Simulate loading for demo purposes (2 seconds)
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setDemoLoading(false);
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredUsers = serviceUsers?.filter(user => 
     `${user.firstName} ${user.lastName} ${user.uniqueId}`.toLowerCase().includes(searchTerm.toLowerCase())
@@ -119,8 +132,7 @@ export default function ServiceUsers() {
       {/* Service user list */}
       {isLoading ? (
         <div className="text-center py-10">
-          <Clock className="animate-spin h-8 w-8 mx-auto text-indigo-600" />
-          <p className="mt-2 text-gray-600">Loading service users...</p>
+          <LoadingState type="heartbeat" text="Loading service users..." />
         </div>
       ) : error ? (
         <div className="bg-red-50 p-4 rounded-lg flex items-start gap-3">
