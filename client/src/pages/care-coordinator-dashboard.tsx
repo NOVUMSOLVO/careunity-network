@@ -335,7 +335,7 @@ export default function CareCoordinatorDashboard() {
 
       {/* Tabs for different dashboard sections */}
       <Tabs defaultValue="urgent-allocations" className="space-y-4 mb-6">
-        <TabsList className="grid grid-cols-1 md:grid-cols-4 h-auto">
+        <TabsList className="grid grid-cols-1 md:grid-cols-5 h-auto">
           <TabsTrigger value="urgent-allocations" className="flex items-center gap-2 py-3">
             <AlertTriangle size={16} />
             <span>Urgent Allocations</span>
@@ -356,6 +356,10 @@ export default function CareCoordinatorDashboard() {
             {!serviceUserAlertsLoading && serviceUserAlerts && (
               <Badge className="ml-auto bg-red-600">{serviceUserAlerts.length}</Badge>
             )}
+          </TabsTrigger>
+          <TabsTrigger value="patient-overview" className="flex items-center gap-2 py-3">
+            <Users size={16} />
+            <span>Patient Overview</span>
           </TabsTrigger>
           <TabsTrigger value="cqc-compliance" className="flex items-center gap-2 py-3">
             <ClipboardCheck size={16} />
@@ -597,6 +601,21 @@ export default function CareCoordinatorDashboard() {
         </TabsContent>
 
         {/* CQC Compliance Tab Content */}
+        {/* Patient Overview Tab Content */}
+        <TabsContent value="patient-overview" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Comprehensive Patient Overview</CardTitle>
+              <CardDescription>
+                Detailed view of patient data, history, and care plans
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PatientOverview />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="cqc-compliance" className="space-y-4">
           <Card>
             <CardHeader>
