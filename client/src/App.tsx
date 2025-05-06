@@ -24,6 +24,7 @@ import CommunityResources from '@/pages/community-resources-new';
 import CommunityResourcesDirectory from '@/pages/community-resources-directory';
 import Alerts from '@/pages/alerts';
 import CareCoordinatorDashboard from '@/pages/care-coordinator-dashboard';
+import LoadingDemoPage from '@/pages/loading-demo-page';
 
 // Test page to verify API connectivity
 function TestPage() {
@@ -143,6 +144,7 @@ function App() {
           {/* Testing & Authentication */}
           <Route path="/test" component={TestPage} />
           <Route path="/auth" component={AuthPage} />
+          <Route path="/loading-demo" component={LoadingDemoPage} />
           
           {/* 404 Page */}
           <Route component={NotFound} />
