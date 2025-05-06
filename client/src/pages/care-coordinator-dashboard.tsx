@@ -58,7 +58,7 @@ import { AllocationAnalytics } from '@/components/care-allocation/allocation-ana
 import { BulkAllocation } from '@/components/care-allocation/bulk-allocation';
 import { PayrollTracking } from '@/components/admin/payroll-tracking';
 import { PatientOverview } from '@/components/care-coordinator/patient-overview';
-import { Link } from 'wouter';
+import { RouterLink } from '@/components/router/router-provider';
 import { useQuery } from '@tanstack/react-query';
 
 // Type definitions
@@ -567,7 +567,8 @@ export default function CareCoordinatorDashboard() {
                         <div className="flex items-center gap-2">
                           <span className="font-semibold">{alert.serviceUserName}</span>
                           <Badge className={(() => {
-                            switch(alert.priority) {
+                            const priority = alert.priority as ServiceUserAlertPriority;
+                            switch(priority) {
                               case 'critical': return "bg-red-100 text-red-800 border-red-200";
                               case 'high': return "bg-orange-100 text-orange-800 border-orange-200";
                               case 'medium': return "bg-yellow-100 text-yellow-800 border-yellow-200";
@@ -576,7 +577,8 @@ export default function CareCoordinatorDashboard() {
                             }
                           })()}>
                             {(() => {
-                              switch(alert.priority) {
+                              const priority = alert.priority as ServiceUserAlertPriority;
+                              switch(priority) {
                                 case 'critical': return 'Critical';
                                 case 'high': return 'High';
                                 case 'medium': return 'Medium';
@@ -590,7 +592,8 @@ export default function CareCoordinatorDashboard() {
                           <span className="inline-flex items-center gap-1 mr-3">
                             <AlertTriangle size={14} />
                             {(() => {
-                              switch(alert.type) {
+                              const alertType = alert.type as ServiceUserAlertType;
+                              switch(alertType) {
                                 case 'missed-medication': return 'Missed Medication';
                                 case 'fall': return 'Fall Incident';
                                 case 'emergency-contact': return 'Emergency Contact Activated';

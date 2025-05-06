@@ -2,8 +2,9 @@ import React, { useState, useEffect, ReactNode } from 'react';
 import { appRoutes, RouteKey, matchRoute } from '@/lib/routes';
 
 type RouteProps = {
-  path: string;
-  element: React.ReactNode;
+  path?: string;
+  element?: React.ReactNode;
+  component?: React.ComponentType<any>;
 };
 
 type RouterProps = {
@@ -33,6 +34,11 @@ export function Router({ routes, notFoundElement }: RouterProps) {
   
   // Find the matching route
   const matchingRoute = routes.find(route => {
+    // Skip routes without a path
+    if (!route.path) {
+      return false;
+    }
+    
     // Exact match
     if (route.path === currentPath) {
       return true;
@@ -63,7 +69,12 @@ export function Router({ routes, notFoundElement }: RouterProps) {
 /**
  * Route component to define a route
  */
-export function Route({ path, element }: RouteProps) {
+export function Route({ path, element, component: Component }: RouteProps) {
+  // If a component prop is provided, render it
+  if (Component) {
+    return <Component />;
+  }
+  // Otherwise render the element
   return <>{element}</>;
 }
 
@@ -88,23 +99,45 @@ export function Switch({ children }: { children: React.ReactNode }) {
     .filter(child => React.isValidElement(child) && child.type === Route)
     .map(child => {
       const element = child as React.ReactElement<RouteProps>;
+      
+      // If a component prop is provided, convert it to an element
+      if (element.props.component) {
+        const Component = element.props.component;
+        return {
+          path: element.props.path,
+          element: <Component />
+        };
+      }
+      
+      // Otherwise use the element prop
       return {
         path: element.props.path,
         element: element.props.element
       };
     });
   
-  const notFoundElement = childrenArray
+  const notFoundRoute = childrenArray
     .find(child => 
       React.isValidElement(child) && 
       child.type === Route && 
       !child.props.path
-    );
+    ) as React.ReactElement<RouteProps> | undefined;
+  
+  let notFoundElement = null;
+  
+  if (notFoundRoute) {
+    if (notFoundRoute.props.component) {
+      const Component = notFoundRoute.props.component;
+      notFoundElement = <Component />;
+    } else {
+      notFoundElement = notFoundRoute.props.element;
+    }
+  }
   
   return (
     <Router 
       routes={routes} 
-      notFoundElement={notFoundElement ? (notFoundElement as React.ReactElement).props.element : null} 
+      notFoundElement={notFoundElement} 
     />
   );
 }

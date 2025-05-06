@@ -1,67 +1,101 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import websocketClient from '@/lib/websocket-client';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { WebSocketClient, ConnectionStatus } from '@/lib/websocket-client';
 
-// Define the shape of our context
-interface WebSocketContextType {
-  isConnected: boolean;
+// Context type definition
+type WebSocketContextType = {
+  client: WebSocketClient | null;
+  connected: boolean;
+  connectionStatus: ConnectionStatus;
   lastMessage: any;
   sendMessage: (message: any) => boolean;
-}
+};
 
-// Create the context with default values
+// Initialize context with defaults
 const WebSocketContext = createContext<WebSocketContextType>({
-  isConnected: false,
+  client: null,
+  connected: false,
+  connectionStatus: ConnectionStatus.DISCONNECTED,
   lastMessage: null,
   sendMessage: () => false,
 });
 
-// Provider component
+// Define provider props
 interface WebSocketProviderProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
+/**
+ * Provider component that wraps parts of the app that need WebSocket communication
+ */
 export function WebSocketProvider({ children }: WebSocketProviderProps) {
-  const [isConnected, setIsConnected] = useState<boolean>(false);
+  // Store the WebSocket client
+  const [client, setClient] = useState<WebSocketClient | null>(null);
+  
+  // Connection status state
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(ConnectionStatus.DISCONNECTED);
+  
+  // Store the last received message
   const [lastMessage, setLastMessage] = useState<any>(null);
-
+  
+  // Initialize the WebSocket client
   useEffect(() => {
-    // Set up event listeners when the component mounts
-    const disconnectHandler = websocketClient.on('connect', () => {
-      setIsConnected(true);
+    // Create WebSocket URL using the same host but with ws:// or wss:// protocol
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    
+    console.log(`Initializing WebSocket connection to ${wsUrl}`);
+    
+    // Create new client
+    const newClient = new WebSocketClient(wsUrl);
+    
+    // Subscribe to messages
+    const messageUnsubscribe = newClient.onMessage(message => {
+      console.log('WebSocket message received:', message);
+      setLastMessage(message);
     });
-
-    const messageHandler = websocketClient.on('message', (data: any) => {
-      setLastMessage(data);
+    
+    // Subscribe to status changes
+    const statusUnsubscribe = newClient.onStatusChange(status => {
+      console.log('WebSocket status changed:', status);
+      setConnectionStatus(status);
     });
-
-    const closeHandler = websocketClient.on('disconnect', () => {
-      setIsConnected(false);
-    });
-
-    // Try to connect if not already connected
-    websocketClient.connect();
-
-    // Clean up event listeners when the component unmounts
+    
+    // Connect to the server
+    newClient.connect();
+    
+    // Store the client
+    setClient(newClient);
+    
+    // Clean up on unmount
     return () => {
-      disconnectHandler();
-      messageHandler();
-      closeHandler();
+      messageUnsubscribe();
+      statusUnsubscribe();
+      newClient.disconnect();
     };
   }, []);
-
-  // Function to send a message
+  
+  // Helper function to check if connected
+  const connected = connectionStatus === ConnectionStatus.CONNECTED;
+  
+  // Helper function to send a message
   const sendMessage = (message: any): boolean => {
-    return websocketClient.send(message);
+    if (!client || !connected) {
+      console.warn('Cannot send message, WebSocket not connected');
+      return false;
+    }
+    
+    return client.send(message);
   };
-
-  // Create the context value object
+  
+  // Create the context value
   const contextValue: WebSocketContextType = {
-    isConnected,
+    client,
+    connected,
+    connectionStatus,
     lastMessage,
     sendMessage,
   };
-
-  // Provide the context to children
+  
   return (
     <WebSocketContext.Provider value={contextValue}>
       {children}
@@ -69,11 +103,15 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   );
 }
 
-// Hook for easy consumption of the context
-export const useWebSocket = (): WebSocketContextType => {
+/**
+ * Hook to access the WebSocket context
+ */
+export function useWebSocket() {
   const context = useContext(WebSocketContext);
-  if (context === undefined) {
+  
+  if (!context) {
     throw new Error('useWebSocket must be used within a WebSocketProvider');
   }
+  
   return context;
-};
+}
