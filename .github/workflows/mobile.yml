@@ -1,0 +1,289 @@
+name: CareUnity Mobile App CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'mobile-app/**'
+      - 'shared/**'
+      - '.github/workflows/mobile.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'mobile-app/**'
+      - 'shared/**'
+      - '.github/workflows/mobile.yml'
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint Mobile App
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'mobile-app/package-lock.json'
+      
+      - name: Install dependencies
+        run: |
+          cd mobile-app
+          npm ci
+      
+      - name: Run ESLint
+        run: |
+          cd mobile-app
+          npm run lint
+  
+  test:
+    name: Mobile App Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'mobile-app/package-lock.json'
+      
+      - name: Install dependencies
+        run: |
+          cd mobile-app
+          npm ci
+      
+      - name: Run tests
+        run: |
+          cd mobile-app
+          npm test
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: mobile-test-results
+          path: mobile-app/junit-report.xml
+  
+  build-dev:
+    name: Build Development Version
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/develop' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'mobile-app/package-lock.json'
+      
+      - name: Install dependencies
+        run: |
+          cd mobile-app
+          npm ci
+      
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      
+      - name: Update app.json for development
+        run: |
+          cd mobile-app
+          jq '.expo.name = "CareUnity Dev" | .expo.slug = "careunity-dev"' app.json > app.json.tmp
+          mv app.json.tmp app.json
+      
+      - name: Build Android development version
+        run: |
+          cd mobile-app
+          expo build:android -t apk --release-channel development
+      
+      - name: Build iOS development version
+        run: |
+          cd mobile-app
+          expo build:ios -t simulator --release-channel development
+      
+      - name: Upload development build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: mobile-dev-build
+          path: mobile-app/build/
+  
+  build-prod:
+    name: Build Production Version
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'mobile-app/package-lock.json'
+      
+      - name: Install dependencies
+        run: |
+          cd mobile-app
+          npm ci
+      
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      
+      - name: Build Android production version
+        run: |
+          cd mobile-app
+          expo build:android -t app-bundle --release-channel production
+      
+      - name: Build iOS production version
+        run: |
+          cd mobile-app
+          expo build:ios -t archive --release-channel production
+      
+      - name: Upload production build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: mobile-prod-build
+          path: mobile-app/build/
+  
+  deploy-dev:
+    name: Deploy to Expo Development
+    runs-on: ubuntu-latest
+    needs: build-dev
+    if: github.ref == 'refs/heads/develop' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'mobile-app/package-lock.json'
+      
+      - name: Install dependencies
+        run: |
+          cd mobile-app
+          npm ci
+      
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      
+      - name: Publish to Expo (Development)
+        run: |
+          cd mobile-app
+          expo publish --release-channel development
+      
+      - name: Create QR Code for Development
+        run: |
+          cd mobile-app
+          npx qrcode-terminal "exp://exp.host/@careunity/careunity-dev?release-channel=development"
+  
+  deploy-prod:
+    name: Deploy to Expo Production
+    runs-on: ubuntu-latest
+    needs: build-prod
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'mobile-app/package-lock.json'
+      
+      - name: Install dependencies
+        run: |
+          cd mobile-app
+          npm ci
+      
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      
+      - name: Publish to Expo (Production)
+        run: |
+          cd mobile-app
+          expo publish --release-channel production
+      
+      - name: Create QR Code for Production
+        run: |
+          cd mobile-app
+          npx qrcode-terminal "exp://exp.host/@careunity/careunity?release-channel=production"
+  
+  submit-stores:
+    name: Submit to App Stores
+    runs-on: ubuntu-latest
+    needs: deploy-prod
+    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Download production build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: mobile-prod-build
+          path: mobile-app/build/
+      
+      - name: Setup fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: true
+      
+      - name: Install fastlane
+        run: |
+          cd mobile-app
+          gem install fastlane
+      
+      - name: Submit to Google Play Store
+        run: |
+          cd mobile-app
+          fastlane android deploy
+        env:
+          GOOGLE_PLAY_JSON_KEY: ${{ secrets.GOOGLE_PLAY_JSON_KEY }}
+      
+      - name: Submit to Apple App Store
+        run: |
+          cd mobile-app
+          fastlane ios deploy
+        env:
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}

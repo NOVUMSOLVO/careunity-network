@@ -1,0 +1,198 @@
+name: Visits API Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'server/routes/visits.ts'
+      - 'shared/api-client/services/visit-api.ts'
+      - 'client/src/hooks/use-visits-api.ts'
+      - 'client/src/pages/visits/**'
+      - 'server/tests/visits.test.ts'
+      - '.github/workflows/visits-api-tests.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'server/routes/visits.ts'
+      - 'shared/api-client/services/visit-api.ts'
+      - 'client/src/hooks/use-visits-api.ts'
+      - 'client/src/pages/visits/**'
+      - 'server/tests/visits.test.ts'
+      - '.github/workflows/visits-api-tests.yml'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: careunity_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup database
+        run: npm run db:setup:test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/careunity_test
+          NODE_ENV: test
+
+      - name: Run visits API unit tests
+        run: npx vitest run server/tests/visits.test.ts
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/careunity_test
+          NODE_ENV: test
+
+      - name: Run visits API integration tests
+        run: |
+          # Start the server in test mode
+          npm run start:test &
+          # Wait for the server to start
+          npx wait-on http://localhost:3000
+          # Run API tests against the running server
+          npx newman run server/tests/postman/visits-api.postman_collection.json -e server/tests/postman/test-env.postman_environment.json
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/careunity_test
+          NODE_ENV: test
+          PORT: 3000
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: visits-api-test-results
+          path: |
+            junit-report.xml
+            newman/*.json
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint visits API files
+        run: npx eslint server/routes/visits.ts shared/api-client/services/visit-api.ts client/src/hooks/use-visits-api.ts client/src/pages/visits/**/*.tsx --max-warnings=0
+
+  build-client:
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build client
+        run: npm run build:client
+        env:
+          NODE_ENV: production
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: visits-client-build
+          path: dist/client/
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    needs: [build-client]
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: careunity_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Setup database
+        run: npm run db:setup:test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/careunity_test
+          NODE_ENV: test
+
+      - name: Start server
+        run: npm run start:test &
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/careunity_test
+          NODE_ENV: test
+          PORT: 3000
+
+      - name: Wait for server to start
+        run: npx wait-on http://localhost:3000
+
+      - name: Run E2E tests for visits
+        run: npx playwright test e2e/visits.spec.ts
+        env:
+          BASE_URL: http://localhost:3000
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: visits-e2e-test-results
+          path: playwright-report/

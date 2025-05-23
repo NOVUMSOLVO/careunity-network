@@ -1,0 +1,317 @@
+name: CareUnity CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run visits API tests
+        run: npx vitest run server/tests/visits.test.ts
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-results
+          path: junit-report.xml
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: coverage/
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run vulnerability check
+        run: npm audit --audit-level=high
+
+      - name: Build
+        run: npm run build # Assumes this creates the dist/ folder
+
+      - name: Archive build artifact
+        run: |
+          # Ensure deploy.sh and ecosystem.config.js are in the root of the repository
+          # and package.json, package-lock.json are also at the root.
+          tar -czf artifact.tar.gz dist/ package.json package-lock.json ecosystem.config.js deploy.sh
+        
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: artifact.tar.gz
+
+  e2e-tests:
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    needs: build 
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: careunity_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code # Still needed if e2e tests or scripts are in the repo directly
+        uses: actions/checkout@v3
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifact
+          path: . # Download artifact.tar.gz to current directory
+      
+      - name: Extract artifact for E2E tests
+        run: tar -xzf artifact.tar.gz
+        # This extracts dist/, package.json, package-lock.json, ecosystem.config.js, deploy.sh
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm' # Cache based on the extracted package-lock.json
+
+      - name: Install dependencies for E2E
+        run: npm ci # Uses the extracted package-lock.json
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Setup database for E2E
+        run: npm run db:setup:test # Assumes this script uses files from extracted artifact
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/careunity_test
+          NODE_ENV: test
+
+      - name: Start server for E2E
+        # Start the server from the extracted 'dist' directory.
+        # Assumes 'dist/index.js' is the entry point.
+        run: node dist/index.js &
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/careunity_test
+          NODE_ENV: test 
+          PORT: 3000
+
+      - name: Wait for server to start
+        run: npx wait-on http://localhost:3000
+
+      - name: Run E2E tests
+        run: npm run test:e2e # Assumes this script is in the extracted package.json
+        env:
+          BASE_URL: http://localhost:3000
+
+      - name: Run visits E2E tests
+        run: npx playwright test e2e/visits.spec.ts # Assumes e2e tests are part of checkout
+        env:
+          BASE_URL: http://localhost:3000
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: e2e-test-results
+          path: e2e-results/
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build, e2e-tests]
+    if: github.ref == 'refs/heads/develop'
+    environment:
+      name: staging
+      url: ${{ secrets.STAGING_URL }}
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifact
+          path: . # Downloads artifact.tar.gz to the current directory
+
+      - name: Deploy to Staging EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.STAGING_EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          source: "artifact.tar.gz"
+          target: "/tmp"
+
+      - name: Execute deployment script on Staging EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.STAGING_EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            DEPLOY_ENV=staging
+            APP_NAME="careunity-$DEPLOY_ENV"
+            DEPLOY_DIR_TEMP="/home/${{ secrets.EC2_USERNAME }}/deploy_temp_$DEPLOY_ENV_$(date +%s)"
+            APP_DIR="/var/www/$APP_NAME"
+
+            echo "Creating temporary deployment directory: $DEPLOY_DIR_TEMP"
+            mkdir -p $DEPLOY_DIR_TEMP
+
+            echo "Moving artifact to temporary directory"
+            mv /tmp/artifact.tar.gz $DEPLOY_DIR_TEMP/artifact.tar.gz
+
+            cd $DEPLOY_DIR_TEMP
+            echo "Current directory: $(pwd)"
+            echo "Listing files: $(ls -la)"
+            
+            echo "Extracting deploy.sh from artifact"
+            tar -xzf artifact.tar.gz deploy.sh
+            chmod +x deploy.sh
+
+            echo "Executing deploy.sh $DEPLOY_ENV"
+            # The deploy.sh script expects artifact.tar.gz to be in its CWD for extraction
+            sudo ./deploy.sh $DEPLOY_ENV
+
+            echo "Navigating to application directory: $APP_DIR"
+            cd $APP_DIR
+            
+            echo "Running database migrations for staging"
+            sudo NODE_ENV=$DEPLOY_ENV npm run db:migrate
+
+            echo "Cleaning up temporary deployment directory: $DEPLOY_DIR_TEMP"
+            rm -rf $DEPLOY_DIR_TEMP
+            echo "Staging deployment complete."
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build, e2e-tests] # Consider adding a manual approval step here for production
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: ${{ secrets.PRODUCTION_URL }}
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifact
+          path: .
+
+      - name: Deploy to Production EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.PRODUCTION_EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          source: "artifact.tar.gz"
+          target: "/tmp"
+
+      - name: Execute deployment script on Production EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PRODUCTION_EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            DEPLOY_ENV=production
+            APP_NAME="careunity-$DEPLOY_ENV"
+            DEPLOY_DIR_TEMP="/home/${{ secrets.EC2_USERNAME }}/deploy_temp_$DEPLOY_ENV_$(date +%s)"
+            APP_DIR="/var/www/$APP_NAME"
+
+            echo "Creating temporary deployment directory: $DEPLOY_DIR_TEMP"
+            mkdir -p $DEPLOY_DIR_TEMP
+
+            echo "Moving artifact to temporary directory"
+            mv /tmp/artifact.tar.gz $DEPLOY_DIR_TEMP/artifact.tar.gz
+
+            cd $DEPLOY_DIR_TEMP
+            echo "Current directory: $(pwd)"
+            echo "Listing files: $(ls -la)"
+
+            echo "Extracting deploy.sh from artifact"
+            tar -xzf artifact.tar.gz deploy.sh
+            chmod +x deploy.sh
+            
+            echo "Executing deploy.sh $DEPLOY_ENV"
+            # The deploy.sh script expects artifact.tar.gz to be in its CWD for extraction
+            sudo ./deploy.sh $DEPLOY_ENV
+
+            echo "Navigating to application directory: $APP_DIR"
+            cd $APP_DIR
+
+            echo "Running database migrations for production"
+            sudo NODE_ENV=$DEPLOY_ENV npm run db:migrate
+            
+            echo "Cleaning up temporary deployment directory: $DEPLOY_DIR_TEMP"
+            rm -rf $DEPLOY_DIR_TEMP
+            echo "Production deployment complete."
