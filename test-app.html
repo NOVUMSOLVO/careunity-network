@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareUnity Test Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #4f46e5;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #4338ca;
+            margin-top: 0;
+        }
+        .button {
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .button:hover {
+            background-color: #4338ca;
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .result {
+            background-color: #f3f4f6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            color: #10b981;
+        }
+        .error {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CareUnity App Testing</h1>
+        
+        <div class="card">
+            <h2>Route Testing</h2>
+            <p>Test navigation to different routes in the application.</p>
+            
+            <div class="button-group">
+                <button class="button" onclick="testRoute('/')">Dashboard</button>
+                <button class="button" onclick="testRoute('/service-users')">Service Users</button>
+                <button class="button" onclick="testRoute('/calendar')">Calendar</button>
+                <button class="button" onclick="testRoute('/care-plans')">Care Plans</button>
+                <button class="button" onclick="testRoute('/care-allocation')">Care Allocation</button>
+                <button class="button" onclick="testRoute('/cqc-compliance')">CQC Compliance</button>
+                <button class="button" onclick="testRoute('/messages')">Messages</button>
+                <button class="button" onclick="testRoute('/settings')">Settings</button>
+                <button class="button" onclick="testRoute('/incident-reporting')">Incident Reporting</button>
+                <button class="button" onclick="testRoute('/staff-management')">Staff Management</button>
+                <button class="button" onclick="testRoute('/reports')">Reports</button>
+                <button class="button" onclick="testRoute('/family-portal')">Family Portal</button>
+                <button class="button" onclick="testRoute('/route-optimizer')">Route Optimizer</button>
+                <button class="button" onclick="testRoute('/predictive-health')">Predictive Health</button>
+                <button class="button" onclick="testRoute('/healthcare-integration')">Healthcare Integration</button>
+                <button class="button" onclick="testRoute('/community-resources')">Community Resources</button>
+                <button class="button" onclick="testRoute('/alerts')">Alerts</button>
+            </div>
+            
+            <div class="result" id="route-result">No route tested yet</div>
+        </div>
+        
+        <div class="card">
+            <h2>API Testing</h2>
+            <p>Test API endpoints to ensure they're responding correctly.</p>
+            
+            <div class="button-group">
+                <button class="button" onclick="testApi('/api/healthcheck')">Health Check</button>
+                <button class="button" onclick="testApi('/api/user')">User Info</button>
+                <button class="button" onclick="testApi('/api/service-users')">Service Users</button>
+            </div>
+            
+            <div class="result" id="api-result">No API tested yet</div>
+        </div>
+        
+        <div class="card">
+            <h2>UI Component Testing</h2>
+            <p>Test UI components and interactions.</p>
+            
+            <div class="button-group">
+                <button class="button" onclick="testUiComponent('button')">Test Button</button>
+                <button class="button" onclick="testUiComponent('form')">Test Form</button>
+                <button class="button" onclick="testUiComponent('modal')">Test Modal</button>
+                <button class="button" onclick="testUiComponent('alert')">Test Alert</button>
+            </div>
+            
+            <div class="result" id="ui-result">No UI component tested yet</div>
+        </div>
+    </div>
+
+    <script>
+        // Test route navigation
+        function testRoute(route) {
+            const resultElement = document.getElementById('route-result');
+            resultElement.innerHTML = `Testing route: ${route}...`;
+            resultElement.className = 'result';
+            
+            try {
+                window.location.href = route;
+                // This won't execute if navigation happens
+                setTimeout(() => {
+                    resultElement.innerHTML = `Successfully navigated to ${route}`;
+                    resultElement.className = 'result success';
+                }, 500);
+            } catch (error) {
+                resultElement.innerHTML = `Error navigating to ${route}: ${error.message}`;
+                resultElement.className = 'result error';
+            }
+        }
+        
+        // Test API endpoints
+        async function testApi(endpoint) {
+            const resultElement = document.getElementById('api-result');
+            resultElement.innerHTML = `Testing API endpoint: ${endpoint}...`;
+            resultElement.className = 'result';
+            
+            try {
+                const response = await fetch(endpoint);
+                const data = await response.json();
+                resultElement.innerHTML = `Status: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`;
+                resultElement.className = 'result success';
+            } catch (error) {
+                resultElement.innerHTML = `Error testing ${endpoint}: ${error.message}`;
+                resultElement.className = 'result error';
+            }
+        }
+        
+        // Test UI components
+        function testUiComponent(component) {
+            const resultElement = document.getElementById('ui-result');
+            resultElement.innerHTML = `Testing UI component: ${component}...`;
+            resultElement.className = 'result';
+            
+            switch (component) {
+                case 'button':
+                    resultElement.innerHTML = 'Button click test successful!';
+                    resultElement.className = 'result success';
+                    break;
+                case 'form':
+                    const formHtml = `
+                        <form id="test-form">
+                            <div style="margin-bottom: 10px;">
+                                <label for="name" style="display: block; margin-bottom: 5px;">Name:</label>
+                                <input type="text" id="name" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label for="email" style="display: block; margin-bottom: 5px;">Email:</label>
+                                <input type="email" id="email" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+                            </div>
+                            <button type="button" class="button" onclick="submitTestForm()">Submit</button>
+                        </form>
+                    `;
+                    resultElement.innerHTML = formHtml;
+                    resultElement.className = 'result';
+                    break;
+                case 'modal':
+                    const modalHtml = `
+                        <div style="position: relative; border: 1px solid #ddd; border-radius: 4px; padding: 20px; background-color: white; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                            <h3 style="margin-top: 0;">Test Modal</h3>
+                            <p>This is a test modal dialog.</p>
+                            <button class="button" onclick="closeTestModal()">Close</button>
+                        </div>
+                    `;
+                    resultElement.innerHTML = modalHtml;
+                    resultElement.className = 'result';
+                    break;
+                case 'alert':
+                    const alertHtml = `
+                        <div style="background-color: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; padding: 10px; border-radius: 4px;">
+                            <strong>Alert:</strong> This is a test alert message.
+                        </div>
+                    `;
+                    resultElement.innerHTML = alertHtml;
+                    resultElement.className = 'result';
+                    break;
+                default:
+                    resultElement.innerHTML = `Unknown component: ${component}`;
+                    resultElement.className = 'result error';
+            }
+        }
+        
+        // Helper functions for UI component tests
+        function submitTestForm() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const resultElement = document.getElementById('ui-result');
+            
+            if (!name || !email) {
+                resultElement.innerHTML = 'Please fill in all fields.';
+                resultElement.className = 'result error';
+                return;
+            }
+            
+            resultElement.innerHTML = `Form submitted successfully!\nName: ${name}\nEmail: ${email}`;
+            resultElement.className = 'result success';
+        }
+        
+        function closeTestModal() {
+            const resultElement = document.getElementById('ui-result');
+            resultElement.innerHTML = 'Modal closed successfully!';
+            resultElement.className = 'result success';
+        }
+    </script>
+</body>
+</html>

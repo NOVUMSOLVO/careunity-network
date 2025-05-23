@@ -1,0 +1,4292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ML Models Test</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Error reporting module -->
+  <script src="ml-models-error-reporter.js"></script>
+
+  <!-- Custom modules for enhanced mobile experience -->
+  <script src="ml-models-offline-db.js"></script>
+  <script src="ml-models-voice.js"></script>
+  <script src="ml-models-notifications.js"></script>
+  <script src="ml-models-gestures-enhanced.js"></script>
+  <script src="ml-models-realtime.js"></script>
+
+  <!-- Test scripts -->
+  <script src="ml-models-test-script.js"></script>
+  <script src="test-ml-functionality.js"></script>
+  <script src="ml-models-dashboard.js"></script>
+  <script src="ml-models-offline-tester.js"></script>
+  <script src="ml-models-voice-demo.js"></script>
+
+  <!-- Progressive enhancement and fallback -->
+  <script>
+    // Check if modules loaded correctly and provide fallbacks if needed
+    window.addEventListener('load', function() {
+      // Create diagnostic info
+      const diagnosticInfo = {
+        timestamp: new Date().toISOString(),
+        modulesLoaded: {
+          errorReporter: !!window.mlModelsErrorReporter,
+          offlineDB: !!window.mlModelsOfflineDB,
+          voice: !!window.mlModelsVoice,
+          notifications: !!window.mlModelsNotifications,
+          gestures: !!window.mlModelsGestures
+        },
+        userAgent: navigator.userAgent,
+        viewport: {
+          width: window.innerWidth,
+          height: window.innerHeight
+        },
+        online: navigator.onLine,
+        touchSupport: 'ontouchstart' in window,
+        pointerSupport: 'PointerEvent' in window
+      };
+
+      console.log('[ML Models] Diagnostic info:', diagnosticInfo);
+
+      // Save diagnostic info to session storage
+      try {
+        sessionStorage.setItem('ml-models-diagnostics', JSON.stringify(diagnosticInfo));
+      } catch (e) {
+        console.error('[ML Models] Failed to save diagnostics:', e);
+      }
+
+      // Provide fallbacks for missing modules
+      if (!window.mlModelsErrorReporter) {
+        console.warn('[ML Models] Error reporter not loaded, creating minimal fallback');
+        window.mlModelsErrorReporter = {
+          reportError: function(source, error) {
+            console.error(`[${source}] Error:`, error);
+            return null;
+          },
+          createDiagnosticReport: function() {
+            return diagnosticInfo;
+          }
+        };
+      }
+
+      if (!window.mlModelsGestures) {
+        console.warn('[ML Models] Gesture controls not loaded, creating fallback');
+        window.mlModelsGestures = {
+          registerElement: function(id, handlers) {
+            console.log(`[Fallback] Registered element ${id}`);
+            return true;
+          },
+          registerGesture: function(type, handler) {
+            console.log(`[Fallback] Registered gesture ${type}`);
+            return true;
+          },
+          enable: function() { console.log('[Fallback] Enabled gesture controls'); },
+          disable: function() { console.log('[Fallback] Disabled gesture controls'); },
+          showGestureFeedback: function(text) { console.log(`[Fallback] Gesture feedback: ${text}`); }
+        };
+
+        // Report error
+        if (window.mlModelsErrorReporter) {
+          window.mlModelsErrorReporter.reportError('gestures', {
+            message: 'Gesture controls module failed to load, using fallback',
+            error: new Error('Module not loaded')
+          });
+        }
+      }
+    });
+  </script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 1.5rem;
+    }
+    .tab {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    .tab.active {
+      border-bottom: 2px solid #4f46e5;
+      color: #4f46e5;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .btn {
+      background-color: #4f46e5;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      border: none;
+    }
+    .btn:hover {
+      background-color: #4338ca;
+    }
+    .badge {
+      background-color: #e5e7eb;
+      color: #374151;
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .badge.success {
+      background-color: #10b981;
+      color: white;
+    }
+    .badge.warning {
+      background-color: #f59e0b;
+      color: white;
+    }
+    .badge.error {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    /* Real-time indicator styles */
+    .realtime-indicator {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+
+    .realtime-indicator.connected {
+      background-color: #10b981;
+      color: white;
+    }
+
+    .realtime-indicator.connecting {
+      background-color: #f59e0b;
+      color: white;
+    }
+
+    .realtime-indicator.disconnected {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    .realtime-pulse {
+      height: 8px;
+      width: 8px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+      background-color: currentColor;
+      position: relative;
+    }
+
+    .realtime-pulse::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      border-radius: 50%;
+      background-color: currentColor;
+      animation: pulse 2s infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+      50% {
+        transform: scale(1.5);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0;
+      }
+    }
+
+    .update-badge {
+      position: relative;
+      display: inline-block;
+    }
+
+    .update-badge::after {
+      content: attr(data-count);
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      background-color: #ef4444;
+      color: white;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: scale(0);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .update-badge.has-updates::after {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Animation for new updates */
+    @keyframes highlight {
+      0% {
+        background-color: rgba(79, 70, 229, 0.2);
+      }
+      100% {
+        background-color: transparent;
+      }
+    }
+
+    .highlight-update {
+      animation: highlight 2s ease-out;
+    }
+
+    /* Data visualization styles */
+    .chart-container {
+      position: relative;
+      height: 200px;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .chart-tooltip {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.95);
+      border: 1px solid #e2e8f0;
+      border-radius: 0.25rem;
+      padding: 0.5rem;
+      font-size: 0.75rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      pointer-events: none;
+      z-index: 10;
+      max-width: 200px;
+    }
+
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      font-size: 0.75rem;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      margin-right: 0.25rem;
+    }
+
+    .heatmap-cell {
+      transition: all 0.2s;
+    }
+
+    .heatmap-cell:hover {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+
+    .confusion-matrix-cell {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: white;
+      transition: all 0.2s;
+    }
+
+    .confusion-matrix-cell:hover {
+      transform: scale(1.05);
+      z-index: 1;
+    }
+
+    .confusion-matrix-label {
+      font-size: 0.75rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100px;
+    }
+
+    .metric-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 0.375rem;
+      padding: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .metric-card:hover {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transform: translateY(-2px);
+    }
+
+    .metric-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .metric-change {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.75rem;
+      margin-left: 0.5rem;
+    }
+
+    .metric-change.positive {
+      color: #10b981;
+    }
+
+    .metric-change.negative {
+      color: #ef4444;
+    }
+
+    .metric-change.neutral {
+      color: #6b7280;
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      .card {
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .card:active {
+        transform: scale(0.98);
+      }
+
+      .tab {
+        white-space: nowrap;
+        transition: all 0.2s;
+      }
+
+      .tab:active {
+        background-color: rgba(79, 70, 229, 0.1);
+      }
+
+      .btn {
+        transition: all 0.2s;
+      }
+
+      .btn:active {
+        transform: scale(0.95);
+      }
+
+      /* Improve touch targets */
+      .tab, .btn {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Add pull-to-refresh animation */
+      .pull-indicator {
+        height: 0;
+        overflow: hidden;
+        text-align: center;
+        transition: height 0.3s;
+        color: #4f46e5;
+      }
+
+      .pull-indicator.active {
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Swipe animations */
+      .tab-content {
+        transition: transform 0.3s, opacity 0.3s;
+      }
+
+      .tab-content.swipe-left-enter {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      .tab-content.swipe-right-enter {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+
+      .tab-content.swipe-left-exit {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+
+      .tab-content.swipe-right-exit {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      /* Progressive loading animation */
+      @keyframes shimmer {
+        0% {
+          background-position: -468px 0;
+        }
+        100% {
+          background-position: 468px 0;
+        }
+      }
+
+      .loading-shimmer {
+        animation-duration: 1.5s;
+        animation-fill-mode: forwards;
+        animation-iteration-count: infinite;
+        animation-name: shimmer;
+        animation-timing-function: linear;
+        background: linear-gradient(to right, #f6f7f8 8%, #edeef1 18%, #f6f7f8 33%);
+        background-size: 800px 104px;
+        position: relative;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div id="root" class="container mx-auto p-4"></div>
+  <div id="debug" style="padding: 20px; background-color: #f0f0f0; margin-top: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <h2 class="text-xl font-bold mb-4">Debug Information</h2>
+    <div id="debug-info" class="mb-4"></div>
+
+    <div style="margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px;">
+      <h3 class="text-lg font-semibold mb-3">Diagnostics</h3>
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button id="show-diagnostics-btn" class="btn">Show Diagnostics</button>
+        <button id="test-gestures-btn" class="btn bg-green-600">Test Gestures</button>
+        <button id="clear-errors-btn" class="btn bg-red-600">Clear Errors</button>
+      </div>
+
+      <div id="diagnostics-panel" style="margin-top: 10px; display: none;">
+        <h4 class="font-semibold mb-2">System Information</h4>
+        <div id="system-info" class="font-mono bg-white p-3 rounded mb-4 text-sm"></div>
+
+        <h4 class="font-semibold mb-2">Module Status</h4>
+        <div id="module-status" class="font-mono bg-white p-3 rounded mb-4 text-sm"></div>
+
+        <h4 class="font-semibold mb-2">Recent Errors</h4>
+        <div id="error-log" class="font-mono bg-white p-3 rounded max-h-60 overflow-y-auto text-sm"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Diagnostics panel functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const showDiagnosticsBtn = document.getElementById('show-diagnostics-btn');
+      const testGesturesBtn = document.getElementById('test-gestures-btn');
+      const clearErrorsBtn = document.getElementById('clear-errors-btn');
+      const diagnosticsPanel = document.getElementById('diagnostics-panel');
+      const systemInfoElement = document.getElementById('system-info');
+      const moduleStatusElement = document.getElementById('module-status');
+      const errorLogElement = document.getElementById('error-log');
+
+      // Show diagnostics button
+      if (showDiagnosticsBtn) {
+        showDiagnosticsBtn.addEventListener('click', function() {
+          if (diagnosticsPanel.style.display === 'none') {
+            // Show panel and update information
+            diagnosticsPanel.style.display = 'block';
+            updateDiagnostics();
+            showDiagnosticsBtn.textContent = 'Hide Diagnostics';
+          } else {
+            diagnosticsPanel.style.display = 'none';
+            showDiagnosticsBtn.textContent = 'Show Diagnostics';
+          }
+        });
+      }
+
+      // Test gestures button
+      if (testGesturesBtn) {
+        testGesturesBtn.addEventListener('click', function() {
+          if (window.mlModelsGestures) {
+            // Test gesture feedback
+            window.mlModelsGestures.showGestureFeedback('Test Gesture');
+
+            // Log test
+            if (errorLogElement) {
+              const timestamp = new Date().toLocaleTimeString();
+              errorLogElement.innerHTML += `<div style="color: green;">[${timestamp}] Gesture test triggered</div>`;
+            }
+          } else {
+            // Log error
+            if (errorLogElement) {
+              const timestamp = new Date().toLocaleTimeString();
+              errorLogElement.innerHTML += `<div style="color: red;">[${timestamp}] Gesture module not available</div>`;
+            }
+          }
+        });
+      }
+
+      // Clear errors button
+      if (clearErrorsBtn) {
+        clearErrorsBtn.addEventListener('click', function() {
+          if (window.mlModelsErrorReporter) {
+            window.mlModelsErrorReporter.clearErrors();
+
+            // Update error log
+            if (errorLogElement) {
+              errorLogElement.innerHTML = '<div style="color: green;">Errors cleared</div>';
+            }
+          }
+        });
+      }
+
+      // Update diagnostics information
+      function updateDiagnostics() {
+        // System information
+        if (systemInfoElement) {
+          const systemInfo = {
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            viewport: `${window.innerWidth}x${window.innerHeight}`,
+            devicePixelRatio: window.devicePixelRatio,
+            online: navigator.onLine,
+            timestamp: new Date().toLocaleString()
+          };
+
+          systemInfoElement.innerHTML = '';
+          for (const [key, value] of Object.entries(systemInfo)) {
+            systemInfoElement.innerHTML += `<div><strong>${key}:</strong> ${value}</div>`;
+          }
+        }
+
+        // Module status
+        if (moduleStatusElement) {
+          const moduleStatus = {
+            'Error Reporter': !!window.mlModelsErrorReporter,
+            'Offline DB': !!window.mlModelsOfflineDB,
+            'Voice Commands': !!window.mlModelsVoice,
+            'Notifications': !!window.mlModelsNotifications,
+            'Gesture Controls': !!window.mlModelsGestures,
+            'Real-Time Updates': !!window.mlModelsRealTime
+          };
+
+          moduleStatusElement.innerHTML = '';
+          for (const [module, loaded] of Object.entries(moduleStatus)) {
+            const color = loaded ? 'green' : 'red';
+            const status = loaded ? '✓' : '✗';
+            moduleStatusElement.innerHTML += `<div style="color: ${color};"><strong>${module}:</strong> ${status}</div>`;
+          }
+        }
+
+        // Error log
+        if (errorLogElement && window.mlModelsErrorReporter) {
+          const errors = window.mlModelsErrorReporter.getErrors?.() || [];
+
+          if (errors.length === 0) {
+            errorLogElement.innerHTML = '<div style="color: green;">No errors reported</div>';
+          } else {
+            errorLogElement.innerHTML = '';
+            errors.slice(0, 10).forEach(error => {
+              const timestamp = new Date(error.timestamp).toLocaleTimeString();
+              errorLogElement.innerHTML += `
+                <div style="margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                  <div><strong>[${timestamp}] ${error.source}:</strong> ${error.message}</div>
+                  ${error.error ? `<div style="color: #666; margin-left: 10px;">${error.error.toString()}</div>` : ''}
+                </div>
+              `;
+            });
+          }
+        }
+      }
+    });
+  </script>
+
+  <script>
+    // Register service worker for offline support
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch(error => {
+            console.error('Service Worker registration failed:', error);
+          });
+      });
+    }
+
+    // Debug script to check if basic JavaScript is working
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM fully loaded');
+      const debugElement = document.getElementById('debug');
+      const debugInfoElement = document.getElementById('debug-info');
+
+      // Add basic info
+      debugInfoElement.innerHTML += '<p>Page loaded at: ' + new Date().toLocaleTimeString() + '</p>';
+
+      // Check if React is loaded
+      if (window.React) {
+        debugInfoElement.innerHTML += '<p style="color: green">✓ React is loaded (version: ' + React.version + ')</p>';
+      } else {
+        debugInfoElement.innerHTML += '<p style="color: red">✗ React is NOT loaded</p>';
+      }
+
+      // Check if ReactDOM is loaded
+      if (window.ReactDOM) {
+        debugInfoElement.innerHTML += '<p style="color: green">✓ ReactDOM is loaded</p>';
+      } else {
+        debugInfoElement.innerHTML += '<p style="color: red">✗ ReactDOM is NOT loaded</p>';
+      }
+
+      // Check if Babel is loaded
+      if (window.Babel) {
+        debugInfoElement.innerHTML += '<p style="color: green">✓ Babel is loaded</p>';
+      } else {
+        debugInfoElement.innerHTML += '<p style="color: red">✗ Babel is NOT loaded</p>';
+      }
+
+      // Check if custom modules are loaded
+      if (window.mlModelsOfflineDB) {
+        debugInfoElement.innerHTML += '<p style="color: green">✓ Offline DB module is loaded</p>';
+      } else {
+        debugInfoElement.innerHTML += '<p style="color: red">✗ Offline DB module is NOT loaded</p>';
+      }
+
+      if (window.mlModelsVoice) {
+        debugInfoElement.innerHTML += '<p style="color: green">✓ Voice Commands module is loaded</p>';
+      } else {
+        debugInfoElement.innerHTML += '<p style="color: red">✗ Voice Commands module is NOT loaded</p>';
+      }
+
+      if (window.mlModelsNotifications) {
+        debugInfoElement.innerHTML += '<p style="color: green">✓ Notifications module is loaded</p>';
+      } else {
+        debugInfoElement.innerHTML += '<p style="color: red">✗ Notifications module is NOT loaded</p>';
+      }
+
+      if (window.mlModelsGestures) {
+        debugInfoElement.innerHTML += '<p style="color: green">✓ Gesture Controls module is loaded</p>';
+      } else {
+        debugInfoElement.innerHTML += '<p style="color: red">✗ Gesture Controls module is NOT loaded</p>';
+
+        // Create a fallback gesture controls object
+        console.warn('Creating fallback gesture controls object');
+        window.mlModelsGestures = {
+          registerElement: function(id, handlers) {
+            console.log(`Fallback: Registered element ${id}`);
+            return true;
+          },
+          registerGesture: function(type, handler) {
+            console.log(`Fallback: Registered gesture ${type}`);
+            return true;
+          },
+          enable: function() { console.log('Fallback: Enabled gesture controls'); },
+          disable: function() { console.log('Fallback: Disabled gesture controls'); },
+          showGestureFeedback: function(text) { console.log(`Fallback gesture feedback: ${text}`); }
+        };
+
+        debugInfoElement.innerHTML += '<p style="color: orange">⚠ Created fallback gesture controls</p>';
+      }
+
+      if (window.mlModelsRealTime) {
+        debugInfoElement.innerHTML += '<p style="color: green">✓ Real-Time Updates module is loaded</p>';
+      } else {
+        debugInfoElement.innerHTML += '<p style="color: red">✗ Real-Time Updates module is NOT loaded</p>';
+
+        // Create a fallback real-time updates object
+        console.warn('Creating fallback real-time updates object');
+        window.mlModelsRealTime = {
+          subscribeToModel: function(modelId, callback) {
+            console.log(`Fallback: Subscribed to model ${modelId}`);
+            return true;
+          },
+          unsubscribeFromModel: function(modelId, callback) {
+            console.log(`Fallback: Unsubscribed from model ${modelId}`);
+            return true;
+          },
+          sendFeedback: function(modelId, feedback) {
+            console.log(`Fallback: Sent feedback for model ${modelId}: ${feedback}`);
+            return true;
+          },
+          onConnect: function(handler) { return true; },
+          onDisconnect: function(handler) { return true; },
+          onError: function(handler) { return true; }
+        };
+
+        debugInfoElement.innerHTML += '<p style="color: orange">⚠ Created fallback real-time updates</p>';
+      }
+
+      // Check if online
+      if (navigator.onLine) {
+        debugInfoElement.innerHTML += '<p style="color: green">✓ Online</p>';
+      } else {
+        debugInfoElement.innerHTML += '<p style="color: orange">⚠ Offline</p>';
+      }
+    });
+  </script>
+
+  <script type="text/babel">
+    // Main App Component
+    function MLModelsApp() {
+      const [activeTab, setActiveTab] = React.useState('dashboard');
+
+      return (
+        <div className="container mx-auto p-4">
+          <header className="mb-6">
+            <h1 className="text-2xl font-bold text-indigo-700 mb-2">ML Models Testing Environment</h1>
+            <p className="text-gray-600">Test and demonstrate ML model functionality with enhanced features</p>
+          </header>
+
+          <div className="tabs mb-6">
+            <div
+              className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setActiveTab('dashboard')}
+            >
+              Dashboard
+            </div>
+            <div
+              className={`tab ${activeTab === 'offline' ? 'active' : ''}`}
+              onClick={() => setActiveTab('offline')}
+            >
+              Offline Testing
+            </div>
+            <div
+              className={`tab ${activeTab === 'voice' ? 'active' : ''}`}
+              onClick={() => setActiveTab('voice')}
+            >
+              Voice Commands
+            </div>
+            <div
+              className={`tab ${activeTab === 'about' ? 'active' : ''}`}
+              onClick={() => setActiveTab('about')}
+            >
+              About
+            </div>
+          </div>
+
+          <div className={`tab-content ${activeTab === 'dashboard' ? 'active' : ''}`}>
+            <h2 className="text-xl font-semibold mb-4">ML Models Dashboard</h2>
+            <p className="mb-4">The dashboard provides a visual interface for interacting with ML models.</p>
+            <div id="ml-dashboard"></div>
+          </div>
+
+          <div className={`tab-content ${activeTab === 'offline' ? 'active' : ''}`}>
+            <h2 className="text-xl font-semibold mb-4">Offline Functionality Testing</h2>
+            <p className="mb-4">Test how the application behaves when offline and how data is synchronized when back online.</p>
+            <div id="ml-offline-tester"></div>
+          </div>
+
+          <div className={`tab-content ${activeTab === 'voice' ? 'active' : ''}`}>
+            <h2 className="text-xl font-semibold mb-4">Voice Command Testing</h2>
+            <p className="mb-4">Test voice commands for hands-free interaction with ML models.</p>
+            <div id="ml-voice-demo"></div>
+          </div>
+
+          <div className={`tab-content ${activeTab === 'about' ? 'active' : ''}`}>
+            <h2 className="text-xl font-semibold mb-4">About ML Models</h2>
+            <div className="card">
+              <p className="mb-4">This testing environment demonstrates the following features:</p>
+              <ul className="list-disc pl-6 mb-4">
+                <li className="mb-2"><strong>Real-time Updates:</strong> WebSocket connection for live model updates</li>
+                <li className="mb-2"><strong>Offline Support:</strong> IndexedDB for caching models and predictions</li>
+                <li className="mb-2"><strong>Voice Commands:</strong> Speech recognition for hands-free control</li>
+                <li className="mb-2"><strong>Gesture Controls:</strong> Touch and pointer gestures for mobile interaction</li>
+                <li className="mb-2"><strong>Error Handling:</strong> Comprehensive error reporting and diagnostics</li>
+                <li className="mb-2"><strong>Progressive Enhancement:</strong> Fallbacks for unsupported features</li>
+              </ul>
+
+              <h3 className="text-lg font-semibold mb-2">Available Models</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {mockModels.map(model => (
+                  <div key={model.id} className="card">
+                    <h4 className="font-semibold">{model.name}</h4>
+                    <p className="text-sm text-gray-500">Version {model.version}</p>
+                    <p className="mt-2 text-sm">{model.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Render the app
+    ReactDOM.render(<MLModelsApp />, document.getElementById('root'));
+
+    // Mock data for testing
+    const mockModels = [
+      {
+        id: 'recommendation-1',
+        name: 'Caregiver Recommendation',
+        version: '1.0',
+        createdAt: new Date(2023, 5, 15),
+        metrics: { accuracy: 0.92, precision: 0.89, recall: 0.94, f1: 0.91 },
+        algorithm: 'Random Forest',
+        description: 'Recommends the most suitable caregiver based on client needs and caregiver skills',
+        features: ['client_age', 'client_condition', 'client_location', 'caregiver_skills', 'caregiver_experience', 'previous_matches']
+      },
+      {
+        id: 'timeseries-1',
+        name: 'Visit Prediction',
+        version: '1.2',
+        createdAt: new Date(2023, 7, 20),
+        metrics: { rmse: 1.2, mae: 0.9, r2: 0.78 },
+        algorithm: 'LSTM Neural Network',
+        description: 'Predicts optimal visit times based on historical data and client preferences',
+        features: ['historical_visits', 'client_availability', 'caregiver_schedule', 'visit_duration', 'travel_time', 'weather_conditions']
+      },
+      {
+        id: 'satisfaction-1',
+        name: 'Satisfaction Prediction',
+        version: '0.8',
+        createdAt: new Date(2023, 9, 5),
+        metrics: { accuracy: 0.85, precision: 0.82, recall: 0.79, f1: 0.80 },
+        algorithm: 'Gradient Boosting',
+        description: 'Predicts client satisfaction based on various factors of care delivery',
+        features: ['visit_punctuality', 'care_quality', 'communication', 'caregiver_attitude', 'service_completeness', 'client_feedback']
+      },
+    ];
+
+    const mockDeployments = [
+      { id: 'deploy-1', modelId: 'recommendation-1', environment: 'staging', status: 'success', timestamp: new Date(2023, 6, 1), version: '1.0' },
+      { id: 'deploy-2', modelId: 'recommendation-1', environment: 'production', status: 'success', timestamp: new Date(2023, 6, 15), version: '1.0' },
+      { id: 'deploy-3', modelId: 'timeseries-1', environment: 'staging', status: 'success', timestamp: new Date(2023, 8, 10), version: '1.2' },
+    ];
+
+    const mockMonitoringData = {
+      health: {
+        uptime: 99.8,
+        responseTime: 120,
+        errorRate: 0.2,
+        trend: [
+          { date: '2023-06-01', errorRate: 0.3, responseTime: 150 },
+          { date: '2023-07-01', errorRate: 0.2, responseTime: 130 },
+          { date: '2023-08-01', errorRate: 0.2, responseTime: 120 },
+        ]
+      },
+      dataQuality: {
+        overallScore: 92,
+        metrics: [
+          { name: 'Completeness', score: 95 },
+          { name: 'Consistency', score: 90 },
+          { name: 'Accuracy', score: 88 },
+        ],
+        distribution: [
+          { feature: 'age', training: 35, current: 38 },
+          { feature: 'gender', training: 50, current: 48 },
+          { feature: 'location', training: 25, current: 28 },
+        ]
+      },
+      predictions: {
+        accuracy: 92,
+        volume: 1250,
+        confidence: 88,
+        trend: [
+          { date: '2023-06-01', accuracy: 90, confidence: 85 },
+          { date: '2023-07-01', accuracy: 91, confidence: 86 },
+          { date: '2023-08-01', accuracy: 92, confidence: 88 },
+        ]
+      }
+    };
+
+    const mockAlerts = {
+      activeAlerts: 2,
+      alerts: [
+        { id: 'alert-1', modelId: 'recommendation-1', title: 'Drift Detected', description: 'Data drift detected in age distribution', severity: 'medium', status: 'active', createdAt: new Date(2023, 8, 15), type: 'drift' },
+        { id: 'alert-2', modelId: 'recommendation-1', title: 'Performance Drop', description: 'Model accuracy dropped below threshold', severity: 'high', status: 'active', createdAt: new Date(2023, 8, 20), type: 'performance' },
+        { id: 'alert-3', modelId: 'timeseries-1', title: 'System Error', description: 'Error in prediction service', severity: 'low', status: 'resolved', createdAt: new Date(2023, 7, 10), resolvedAt: new Date(2023, 7, 11), type: 'error' },
+      ]
+    };
+
+    // Mock data for model versions
+    const mockModelVersions = {
+      'recommendation-1': [
+        {
+          version: '1.0',
+          createdAt: new Date(2023, 5, 15),
+          metrics: { accuracy: 0.92, precision: 0.89, recall: 0.94, f1: 0.91 },
+          algorithm: 'Random Forest',
+          status: 'production',
+          author: 'AI Team',
+          trainingTime: '2h 15m',
+          datasetSize: '250,000 records'
+        },
+        {
+          version: '0.9',
+          createdAt: new Date(2023, 4, 10),
+          metrics: { accuracy: 0.89, precision: 0.86, recall: 0.91, f1: 0.88 },
+          algorithm: 'Random Forest',
+          status: 'archived',
+          author: 'AI Team',
+          trainingTime: '1h 45m',
+          datasetSize: '200,000 records'
+        },
+        {
+          version: '0.8',
+          createdAt: new Date(2023, 3, 5),
+          metrics: { accuracy: 0.85, precision: 0.82, recall: 0.87, f1: 0.84 },
+          algorithm: 'Gradient Boosting',
+          status: 'archived',
+          author: 'Data Science',
+          trainingTime: '1h 30m',
+          datasetSize: '180,000 records'
+        }
+      ],
+      'timeseries-1': [
+        {
+          version: '1.2',
+          createdAt: new Date(2023, 7, 20),
+          metrics: { rmse: 1.2, mae: 0.9, r2: 0.78 },
+          algorithm: 'LSTM Neural Network',
+          status: 'production',
+          author: 'ML Research',
+          trainingTime: '4h 30m',
+          datasetSize: '150,000 records'
+        },
+        {
+          version: '1.1',
+          createdAt: new Date(2023, 6, 15),
+          metrics: { rmse: 1.4, mae: 1.1, r2: 0.75 },
+          algorithm: 'LSTM Neural Network',
+          status: 'archived',
+          author: 'ML Research',
+          trainingTime: '4h 10m',
+          datasetSize: '140,000 records'
+        },
+        {
+          version: '1.0',
+          createdAt: new Date(2023, 5, 10),
+          metrics: { rmse: 1.8, mae: 1.3, r2: 0.70 },
+          algorithm: 'GRU Neural Network',
+          status: 'archived',
+          author: 'Data Science',
+          trainingTime: '3h 45m',
+          datasetSize: '120,000 records'
+        }
+      ],
+      'satisfaction-1': [
+        {
+          version: '0.8',
+          createdAt: new Date(2023, 9, 5),
+          metrics: { accuracy: 0.85, precision: 0.82, recall: 0.79, f1: 0.80 },
+          algorithm: 'Gradient Boosting',
+          status: 'production',
+          author: 'AI Team',
+          trainingTime: '1h 50m',
+          datasetSize: '100,000 records'
+        },
+        {
+          version: '0.7',
+          createdAt: new Date(2023, 8, 1),
+          metrics: { accuracy: 0.82, precision: 0.79, recall: 0.76, f1: 0.77 },
+          algorithm: 'Gradient Boosting',
+          status: 'archived',
+          author: 'AI Team',
+          trainingTime: '1h 40m',
+          datasetSize: '90,000 records'
+        }
+      ]
+    };
+
+    // Mock data for feature importance
+    const mockFeatureImportance = {
+      'recommendation-1': [
+        { feature: 'caregiver_skills', importance: 0.28, description: 'Specific skills of the caregiver that match client needs' },
+        { feature: 'previous_matches', importance: 0.22, description: 'History of successful matches between caregivers and similar clients' },
+        { feature: 'caregiver_experience', importance: 0.18, description: 'Years of experience in relevant care areas' },
+        { feature: 'client_condition', importance: 0.15, description: 'Specific health conditions and care requirements of the client' },
+        { feature: 'client_location', importance: 0.12, description: 'Geographic proximity between client and caregiver' },
+        { feature: 'client_age', importance: 0.05, description: 'Age of the client which may affect care requirements' }
+      ],
+      'timeseries-1': [
+        { feature: 'historical_visits', importance: 0.30, description: 'Pattern of previous visit times and frequency' },
+        { feature: 'client_availability', importance: 0.25, description: 'Times when client is available to receive care' },
+        { feature: 'caregiver_schedule', importance: 0.20, description: 'Available slots in caregiver\'s schedule' },
+        { feature: 'travel_time', importance: 0.15, description: 'Estimated travel time between locations' },
+        { feature: 'visit_duration', importance: 0.07, description: 'Expected length of the care visit' },
+        { feature: 'weather_conditions', importance: 0.03, description: 'Weather forecast that might affect travel' }
+      ],
+      'satisfaction-1': [
+        { feature: 'care_quality', importance: 0.32, description: 'Overall quality of care provided during visits' },
+        { feature: 'caregiver_attitude', importance: 0.25, description: 'Friendliness and professionalism of the caregiver' },
+        { feature: 'service_completeness', importance: 0.18, description: 'Whether all required services were provided' },
+        { feature: 'communication', importance: 0.12, description: 'Quality of communication between caregiver and client' },
+        { feature: 'visit_punctuality', importance: 0.08, description: 'Whether caregiver arrived on time' },
+        { feature: 'client_feedback', importance: 0.05, description: 'Previous feedback provided by the client' }
+      ]
+    };
+
+    // Mock data for model explanations (SHAP values for specific predictions)
+    const mockModelExplanations = {
+      'recommendation-1': {
+        prediction: 'Recommended caregiver: Sarah Johnson (ID: CG-12345)',
+        confidence: 0.89,
+        explanations: [
+          { feature: 'caregiver_skills', value: 'Dementia Care, Medication Management', impact: 0.35, direction: 'positive' },
+          { feature: 'previous_matches', value: '5 successful matches with similar clients', impact: 0.28, direction: 'positive' },
+          { feature: 'client_condition', value: 'Early-stage Alzheimer\'s', impact: 0.15, direction: 'positive' },
+          { feature: 'caregiver_experience', value: '7 years', impact: 0.12, direction: 'positive' },
+          { feature: 'client_location', value: '12 miles away', impact: 0.08, direction: 'negative' },
+          { feature: 'client_age', value: '78', impact: 0.02, direction: 'neutral' }
+        ]
+      },
+      'timeseries-1': {
+        prediction: 'Optimal visit time: Tuesday, 10:00 AM',
+        confidence: 0.82,
+        explanations: [
+          { feature: 'historical_visits', value: '9/10 previous visits on Tuesday morning', impact: 0.40, direction: 'positive' },
+          { feature: 'client_availability', value: 'Available all day Tuesday', impact: 0.25, direction: 'positive' },
+          { feature: 'caregiver_schedule', value: 'Available Tuesday 9AM-12PM', impact: 0.20, direction: 'positive' },
+          { feature: 'travel_time', value: '25 minutes', impact: 0.10, direction: 'neutral' },
+          { feature: 'weather_conditions', value: 'Clear forecast', impact: 0.05, direction: 'positive' }
+        ]
+      },
+      'satisfaction-1': {
+        prediction: 'Predicted satisfaction: High (4.8/5)',
+        confidence: 0.87,
+        explanations: [
+          { feature: 'care_quality', value: 'Comprehensive care plan followed', impact: 0.35, direction: 'positive' },
+          { feature: 'caregiver_attitude', value: 'Professional and friendly', impact: 0.30, direction: 'positive' },
+          { feature: 'service_completeness', value: 'All required services provided', impact: 0.20, direction: 'positive' },
+          { feature: 'visit_punctuality', value: '5 minutes late', impact: 0.10, direction: 'negative' },
+          { feature: 'communication', value: 'Clear communication', impact: 0.05, direction: 'positive' }
+        ]
+      }
+    };
+
+    // Mock data for model metrics history (for time-series charts)
+    const mockMetricsHistory = {
+      'recommendation-1': [
+        { date: '2023-01-01', accuracy: 0.82, precision: 0.79, recall: 0.81, f1: 0.80 },
+        { date: '2023-02-01', accuracy: 0.83, precision: 0.80, recall: 0.82, f1: 0.81 },
+        { date: '2023-03-01', accuracy: 0.85, precision: 0.82, recall: 0.84, f1: 0.83 },
+        { date: '2023-04-01', accuracy: 0.84, precision: 0.81, recall: 0.83, f1: 0.82 },
+        { date: '2023-05-01', accuracy: 0.86, precision: 0.83, recall: 0.85, f1: 0.84 },
+        { date: '2023-06-01', accuracy: 0.88, precision: 0.85, recall: 0.87, f1: 0.86 },
+        { date: '2023-07-01', accuracy: 0.89, precision: 0.86, recall: 0.88, f1: 0.87 },
+        { date: '2023-08-01', accuracy: 0.90, precision: 0.87, recall: 0.89, f1: 0.88 },
+        { date: '2023-09-01', accuracy: 0.91, precision: 0.88, recall: 0.90, f1: 0.89 },
+        { date: '2023-10-01', accuracy: 0.92, precision: 0.89, recall: 0.94, f1: 0.91 }
+      ],
+      'timeseries-1': [
+        { date: '2023-01-01', rmse: 2.1, mae: 1.7, r2: 0.65 },
+        { date: '2023-02-01', rmse: 2.0, mae: 1.6, r2: 0.67 },
+        { date: '2023-03-01', rmse: 1.9, mae: 1.5, r2: 0.68 },
+        { date: '2023-04-01', rmse: 1.8, mae: 1.4, r2: 0.70 },
+        { date: '2023-05-01', rmse: 1.7, mae: 1.3, r2: 0.71 },
+        { date: '2023-06-01', rmse: 1.6, mae: 1.2, r2: 0.73 },
+        { date: '2023-07-01', rmse: 1.5, mae: 1.1, r2: 0.74 },
+        { date: '2023-08-01', rmse: 1.4, mae: 1.0, r2: 0.76 },
+        { date: '2023-09-01', rmse: 1.3, mae: 0.95, r2: 0.77 },
+        { date: '2023-10-01', rmse: 1.2, mae: 0.9, r2: 0.78 }
+      ],
+      'satisfaction-1': [
+        { date: '2023-03-01', accuracy: 0.78, precision: 0.75, recall: 0.72, f1: 0.73 },
+        { date: '2023-04-01', accuracy: 0.79, precision: 0.76, recall: 0.73, f1: 0.74 },
+        { date: '2023-05-01', accuracy: 0.80, precision: 0.77, recall: 0.74, f1: 0.75 },
+        { date: '2023-06-01', accuracy: 0.81, precision: 0.78, recall: 0.75, f1: 0.76 },
+        { date: '2023-07-01', accuracy: 0.82, precision: 0.79, recall: 0.76, f1: 0.77 },
+        { date: '2023-08-01', accuracy: 0.83, precision: 0.80, recall: 0.77, f1: 0.78 },
+        { date: '2023-09-01', accuracy: 0.84, precision: 0.81, recall: 0.78, f1: 0.79 },
+        { date: '2023-10-01', accuracy: 0.85, precision: 0.82, recall: 0.79, f1: 0.80 }
+      ]
+    };
+
+    // Mock data for feature correlation matrices (for heatmaps)
+    const mockFeatureCorrelations = {
+      'recommendation-1': [
+        { feature1: 'caregiver_skills', feature2: 'caregiver_skills', correlation: 1.0 },
+        { feature1: 'caregiver_skills', feature2: 'previous_matches', correlation: 0.65 },
+        { feature1: 'caregiver_skills', feature2: 'caregiver_experience', correlation: 0.72 },
+        { feature1: 'caregiver_skills', feature2: 'client_condition', correlation: 0.58 },
+        { feature1: 'caregiver_skills', feature2: 'client_location', correlation: 0.12 },
+        { feature1: 'caregiver_skills', feature2: 'client_age', correlation: 0.25 },
+
+        { feature1: 'previous_matches', feature2: 'previous_matches', correlation: 1.0 },
+        { feature1: 'previous_matches', feature2: 'caregiver_experience', correlation: 0.54 },
+        { feature1: 'previous_matches', feature2: 'client_condition', correlation: 0.48 },
+        { feature1: 'previous_matches', feature2: 'client_location', correlation: 0.18 },
+        { feature1: 'previous_matches', feature2: 'client_age', correlation: 0.22 },
+
+        { feature1: 'caregiver_experience', feature2: 'caregiver_experience', correlation: 1.0 },
+        { feature1: 'caregiver_experience', feature2: 'client_condition', correlation: 0.42 },
+        { feature1: 'caregiver_experience', feature2: 'client_location', correlation: 0.08 },
+        { feature1: 'caregiver_experience', feature2: 'client_age', correlation: 0.31 },
+
+        { feature1: 'client_condition', feature2: 'client_condition', correlation: 1.0 },
+        { feature1: 'client_condition', feature2: 'client_location', correlation: 0.15 },
+        { feature1: 'client_condition', feature2: 'client_age', correlation: 0.62 },
+
+        { feature1: 'client_location', feature2: 'client_location', correlation: 1.0 },
+        { feature1: 'client_location', feature2: 'client_age', correlation: 0.05 },
+
+        { feature1: 'client_age', feature2: 'client_age', correlation: 1.0 }
+      ],
+      'timeseries-1': [
+        { feature1: 'historical_visits', feature2: 'historical_visits', correlation: 1.0 },
+        { feature1: 'historical_visits', feature2: 'client_availability', correlation: 0.58 },
+        { feature1: 'historical_visits', feature2: 'caregiver_schedule', correlation: 0.62 },
+        { feature1: 'historical_visits', feature2: 'travel_time', correlation: 0.35 },
+        { feature1: 'historical_visits', feature2: 'visit_duration', correlation: 0.42 },
+        { feature1: 'historical_visits', feature2: 'weather_conditions', correlation: 0.18 },
+
+        { feature1: 'client_availability', feature2: 'client_availability', correlation: 1.0 },
+        { feature1: 'client_availability', feature2: 'caregiver_schedule', correlation: 0.45 },
+        { feature1: 'client_availability', feature2: 'travel_time', correlation: 0.22 },
+        { feature1: 'client_availability', feature2: 'visit_duration', correlation: 0.38 },
+        { feature1: 'client_availability', feature2: 'weather_conditions', correlation: 0.12 },
+
+        { feature1: 'caregiver_schedule', feature2: 'caregiver_schedule', correlation: 1.0 },
+        { feature1: 'caregiver_schedule', feature2: 'travel_time', correlation: 0.48 },
+        { feature1: 'caregiver_schedule', feature2: 'visit_duration', correlation: 0.52 },
+        { feature1: 'caregiver_schedule', feature2: 'weather_conditions', correlation: 0.25 },
+
+        { feature1: 'travel_time', feature2: 'travel_time', correlation: 1.0 },
+        { feature1: 'travel_time', feature2: 'visit_duration', correlation: 0.32 },
+        { feature1: 'travel_time', feature2: 'weather_conditions', correlation: 0.68 },
+
+        { feature1: 'visit_duration', feature2: 'visit_duration', correlation: 1.0 },
+        { feature1: 'visit_duration', feature2: 'weather_conditions', correlation: 0.15 },
+
+        { feature1: 'weather_conditions', feature2: 'weather_conditions', correlation: 1.0 }
+      ],
+      'satisfaction-1': [
+        { feature1: 'care_quality', feature2: 'care_quality', correlation: 1.0 },
+        { feature1: 'care_quality', feature2: 'caregiver_attitude', correlation: 0.75 },
+        { feature1: 'care_quality', feature2: 'service_completeness', correlation: 0.82 },
+        { feature1: 'care_quality', feature2: 'communication', correlation: 0.68 },
+        { feature1: 'care_quality', feature2: 'visit_punctuality', correlation: 0.42 },
+        { feature1: 'care_quality', feature2: 'client_feedback', correlation: 0.58 },
+
+        { feature1: 'caregiver_attitude', feature2: 'caregiver_attitude', correlation: 1.0 },
+        { feature1: 'caregiver_attitude', feature2: 'service_completeness', correlation: 0.65 },
+        { feature1: 'caregiver_attitude', feature2: 'communication', correlation: 0.78 },
+        { feature1: 'caregiver_attitude', feature2: 'visit_punctuality', correlation: 0.38 },
+        { feature1: 'caregiver_attitude', feature2: 'client_feedback', correlation: 0.62 },
+
+        { feature1: 'service_completeness', feature2: 'service_completeness', correlation: 1.0 },
+        { feature1: 'service_completeness', feature2: 'communication', correlation: 0.55 },
+        { feature1: 'service_completeness', feature2: 'visit_punctuality', correlation: 0.48 },
+        { feature1: 'service_completeness', feature2: 'client_feedback', correlation: 0.52 },
+
+        { feature1: 'communication', feature2: 'communication', correlation: 1.0 },
+        { feature1: 'communication', feature2: 'visit_punctuality', correlation: 0.32 },
+        { feature1: 'communication', feature2: 'client_feedback', correlation: 0.58 },
+
+        { feature1: 'visit_punctuality', feature2: 'visit_punctuality', correlation: 1.0 },
+        { feature1: 'visit_punctuality', feature2: 'client_feedback', correlation: 0.28 },
+
+        { feature1: 'client_feedback', feature2: 'client_feedback', correlation: 1.0 }
+      ]
+    };
+
+    // Mock data for confusion matrices
+    const mockConfusionMatrices = {
+      'recommendation-1': {
+        labels: ['Caregiver A', 'Caregiver B', 'Caregiver C', 'Caregiver D'],
+        matrix: [
+          [120, 8, 5, 2],   // True Caregiver A
+          [10, 95, 12, 3],  // True Caregiver B
+          [6, 9, 105, 5],   // True Caregiver C
+          [4, 3, 8, 105]    // True Caregiver D
+        ]
+      },
+      'satisfaction-1': {
+        labels: ['Very Low', 'Low', 'Medium', 'High', 'Very High'],
+        matrix: [
+          [45, 8, 2, 0, 0],    // True Very Low
+          [5, 60, 10, 2, 0],   // True Low
+          [1, 7, 85, 12, 3],   // True Medium
+          [0, 2, 9, 95, 8],    // True High
+          [0, 0, 4, 10, 65]    // True Very High
+        ]
+      }
+    };
+
+    // Simple components to demonstrate the ML Models page
+    function ModelCard({ model, onSelect }) {
+      const formatDate = (date) => {
+        return new Date(date).toLocaleDateString();
+      };
+
+      const getModelType = (id) => {
+        if (id.startsWith('recommendation')) return 'Recommendation';
+        if (id.startsWith('timeseries')) return 'Time Series';
+        if (id.startsWith('satisfaction')) return 'Satisfaction';
+        return 'Unknown';
+      };
+
+      const modelType = getModelType(model.id);
+
+      // Check if device is mobile
+      const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+
+      // Update isMobile state on window resize
+      React.useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      // Track touch interactions for mobile
+      const [isTouched, setIsTouched] = React.useState(false);
+
+      const handleTouchStart = () => {
+        setIsTouched(true);
+      };
+
+      const handleTouchEnd = () => {
+        setTimeout(() => setIsTouched(false), 300);
+      };
+
+      return (
+        <div
+          className={`card cursor-pointer transition-all duration-300 ${
+            isTouched ? 'scale-98 bg-gray-50' : 'hover:shadow-lg'
+          }`}
+          onClick={() => onSelect(model.id, modelType.toLowerCase())}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          style={{
+            minHeight: isMobile ? '120px' : 'auto',
+            padding: isMobile ? '1rem' : '1.5rem'
+          }}
+        >
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className={`font-semibold ${isMobile ? 'text-base' : 'text-lg'}`}>{model.name}</h3>
+              <p className="text-sm text-gray-500">Version {model.version}</p>
+            </div>
+            <span className={`badge ${isMobile ? 'text-xs' : ''}`}>{modelType}</span>
+          </div>
+          <div className={`${isMobile ? 'mt-3' : 'mt-4'}`}>
+            <p className="text-sm text-gray-500">Created: {formatDate(model.createdAt)}</p>
+            <div className={`${isMobile ? 'mt-1 flex flex-wrap' : 'mt-2'}`}>
+              {model.metrics.accuracy && (
+                <span className={`badge success mr-2 ${isMobile ? 'text-xs mb-1' : ''}`}>
+                  Accuracy: {(model.metrics.accuracy * 100).toFixed(1)}%
+                </span>
+              )}
+              {model.metrics.rmse && (
+                <span className={`badge ${isMobile ? 'text-xs mb-1' : ''}`}>
+                  RMSE: {model.metrics.rmse.toFixed(2)}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function ModelDeployment({ modelId }) {
+      const deployments = mockDeployments.filter(d => d.modelId === modelId);
+      const [activeDeploymentTab, setActiveDeploymentTab] = React.useState('history');
+      const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+
+      // Update isMobile state on window resize
+      React.useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      if (deployments.length === 0) {
+        return (
+          <div className="card">
+            <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold mb-4`}>Model Deployments</h3>
+            <p className="text-gray-500">No deployments found for this model.</p>
+          </div>
+        );
+      }
+
+      return (
+        <div className="card">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold`}>Model Deployments</h3>
+            <button className={`btn ${isMobile ? 'text-sm px-3 py-1' : ''}`}>
+              {isMobile ? 'Deploy' : 'Deploy Model'}
+            </button>
+          </div>
+
+          <div className={`tabs ${isMobile ? 'overflow-x-auto flex-nowrap' : ''}`}>
+            <div
+              className={`tab ${activeDeploymentTab === 'history' ? 'active' : ''} ${isMobile ? 'text-sm px-3' : ''}`}
+              onClick={() => setActiveDeploymentTab('history')}
+            >
+              Deployment History
+            </div>
+            <div
+              className={`tab ${activeDeploymentTab === 'status' ? 'active' : ''} ${isMobile ? 'text-sm px-3' : ''}`}
+              onClick={() => setActiveDeploymentTab('status')}
+            >
+              Current Status
+            </div>
+            <div
+              className={`tab ${activeDeploymentTab === 'training' ? 'active' : ''} ${isMobile ? 'text-sm px-3' : ''}`}
+              onClick={() => setActiveDeploymentTab('training')}
+            >
+              Custom Training
+            </div>
+          </div>
+
+          <div className={`tab-content ${activeDeploymentTab === 'history' ? 'active' : ''}`}>
+            {isMobile ? (
+              // Mobile view - cards instead of table
+              <div className="space-y-3">
+                {deployments.map(deployment => (
+                  <div key={deployment.id} className="card">
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="text-sm font-medium">
+                        {new Date(deployment.timestamp).toLocaleDateString()}
+                      </span>
+                      <span className={`badge ${deployment.status === 'success' ? 'success' : deployment.status === 'failed' ? 'error' : ''}`}>
+                        {deployment.status}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className={`badge ${deployment.environment === 'production' ? 'success' : ''}`}>
+                        {deployment.environment}
+                      </span>
+                      <span className="text-sm">v{deployment.version}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              // Desktop view - table
+              <table className="w-full">
+                <thead>
+                  <tr className="text-left">
+                    <th className="pb-2">Date</th>
+                    <th className="pb-2">Environment</th>
+                    <th className="pb-2">Status</th>
+                    <th className="pb-2">Version</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {deployments.map(deployment => (
+                    <tr key={deployment.id}>
+                      <td className="py-2">{new Date(deployment.timestamp).toLocaleDateString()}</td>
+                      <td className="py-2">
+                        <span className={`badge ${deployment.environment === 'production' ? 'success' : ''}`}>
+                          {deployment.environment}
+                        </span>
+                      </td>
+                      <td className="py-2">
+                        <span className={`badge ${deployment.status === 'success' ? 'success' : deployment.status === 'failed' ? 'error' : ''}`}>
+                          {deployment.status}
+                        </span>
+                      </td>
+                      <td className="py-2">{deployment.version}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          <div className={`tab-content ${activeDeploymentTab === 'status' ? 'active' : ''}`}>
+            <div className={`${isMobile ? 'space-y-3' : 'grid grid-cols-2 gap-4'}`}>
+              <div className="card">
+                <h4 className="text-sm font-medium mb-2">Production Status</h4>
+                {deployments.some(d => d.environment === 'production') ? (
+                  <div>
+                    <div className="flex items-center mb-2">
+                      <span className="badge success mr-2">Active</span>
+                      <span className="text-sm">
+                        v{deployments.find(d => d.environment === 'production')?.version}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      Deployed on {new Date(deployments.find(d => d.environment === 'production')?.timestamp).toLocaleDateString()}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">Not deployed to production</p>
+                )}
+              </div>
+
+              <div className="card">
+                <h4 className="text-sm font-medium mb-2">Staging Status</h4>
+                {deployments.some(d => d.environment === 'staging') ? (
+                  <div>
+                    <div className="flex items-center mb-2">
+                      <span className="badge mr-2">Active</span>
+                      <span className="text-sm">
+                        v{deployments.find(d => d.environment === 'staging')?.version}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      Deployed on {new Date(deployments.find(d => d.environment === 'staging')?.timestamp).toLocaleDateString()}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">Not deployed to staging</p>
+                )}
+              </div>
+            </div>
+
+            {isMobile && (
+              <div className="mt-4">
+                <button className="btn w-full text-sm">
+                  Promote to Production
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className={`tab-content ${activeDeploymentTab === 'training' ? 'active' : ''}`}>
+            <CustomModelTraining modelId={modelId} />
+          </div>
+        </div>
+      );
+    }
+
+    // Custom Model Training Component
+    function CustomModelTraining({ modelId }) {
+      const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+      const [selectedAlgorithm, setSelectedAlgorithm] = React.useState('random-forest');
+      const [trainingProgress, setTrainingProgress] = React.useState(0);
+      const [isTraining, setIsTraining] = React.useState(false);
+      const [trainingComplete, setTrainingComplete] = React.useState(false);
+      const [formData, setFormData] = React.useState({
+        datasetSize: '80',
+        testSplit: '20',
+        hyperparams: {
+          randomForest: {
+            trees: '100',
+            maxDepth: '10',
+            minSamplesSplit: '2'
+          },
+          gradientBoosting: {
+            iterations: '100',
+            learningRate: '0.1',
+            maxDepth: '3'
+          },
+          neuralNetwork: {
+            layers: '3',
+            neurons: '64,32,16',
+            dropout: '0.2',
+            epochs: '50'
+          }
+        }
+      });
+
+      // Get the model data
+      const model = mockModels.find(m => m.id === modelId);
+
+      // Update isMobile state on window resize
+      React.useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      // Handle form input changes
+      const handleInputChange = (e) => {
+        const { name, value } = e.target;
+
+        if (name.includes('.')) {
+          // Handle nested properties (hyperparameters)
+          const [category, param] = name.split('.');
+          setFormData({
+            ...formData,
+            hyperparams: {
+              ...formData.hyperparams,
+              [category]: {
+                ...formData.hyperparams[category],
+                [param]: value
+              }
+            }
+          });
+        } else {
+          // Handle top-level properties
+          setFormData({
+            ...formData,
+            [name]: value
+          });
+        }
+      };
+
+      // Start training simulation
+      const handleStartTraining = () => {
+        setIsTraining(true);
+        setTrainingProgress(0);
+        setTrainingComplete(false);
+
+        // Simulate training progress
+        const interval = setInterval(() => {
+          setTrainingProgress(prev => {
+            const newProgress = prev + Math.random() * 5;
+            if (newProgress >= 100) {
+              clearInterval(interval);
+              setIsTraining(false);
+              setTrainingComplete(true);
+              return 100;
+            }
+            return newProgress;
+          });
+        }, 500);
+      };
+
+      // Get hyperparameter fields based on selected algorithm
+      const getHyperparamFields = () => {
+        switch (selectedAlgorithm) {
+          case 'random-forest':
+            return (
+              <>
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1">Number of Trees</label>
+                  <input
+                    type="number"
+                    name="randomForest.trees"
+                    value={formData.hyperparams.randomForest.trees}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    min="10"
+                    max="1000"
+                    disabled={isTraining}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1">Max Depth</label>
+                  <input
+                    type="number"
+                    name="randomForest.maxDepth"
+                    value={formData.hyperparams.randomForest.maxDepth}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    min="1"
+                    max="50"
+                    disabled={isTraining}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1">Min Samples Split</label>
+                  <input
+                    type="number"
+                    name="randomForest.minSamplesSplit"
+                    value={formData.hyperparams.randomForest.minSamplesSplit}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    min="2"
+                    max="20"
+                    disabled={isTraining}
+                  />
+                </div>
+              </>
+            );
+          case 'gradient-boosting':
+            return (
+              <>
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1">Iterations</label>
+                  <input
+                    type="number"
+                    name="gradientBoosting.iterations"
+                    value={formData.hyperparams.gradientBoosting.iterations}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    min="10"
+                    max="500"
+                    disabled={isTraining}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1">Learning Rate</label>
+                  <input
+                    type="number"
+                    name="gradientBoosting.learningRate"
+                    value={formData.hyperparams.gradientBoosting.learningRate}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    min="0.001"
+                    max="1"
+                    step="0.001"
+                    disabled={isTraining}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1">Max Depth</label>
+                  <input
+                    type="number"
+                    name="gradientBoosting.maxDepth"
+                    value={formData.hyperparams.gradientBoosting.maxDepth}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    min="1"
+                    max="20"
+                    disabled={isTraining}
+                  />
+                </div>
+              </>
+            );
+          case 'neural-network':
+            return (
+              <>
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1">Number of Layers</label>
+                  <input
+                    type="number"
+                    name="neuralNetwork.layers"
+                    value={formData.hyperparams.neuralNetwork.layers}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    min="1"
+                    max="10"
+                    disabled={isTraining}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1">Neurons per Layer (comma-separated)</label>
+                  <input
+                    type="text"
+                    name="neuralNetwork.neurons"
+                    value={formData.hyperparams.neuralNetwork.neurons}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    placeholder="64,32,16"
+                    disabled={isTraining}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1">Dropout Rate</label>
+                  <input
+                    type="number"
+                    name="neuralNetwork.dropout"
+                    value={formData.hyperparams.neuralNetwork.dropout}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    min="0"
+                    max="0.9"
+                    step="0.1"
+                    disabled={isTraining}
+                  />
+                </div>
+                <div className="mb-3">
+                  <label className="block text-sm font-medium mb-1">Epochs</label>
+                  <input
+                    type="number"
+                    name="neuralNetwork.epochs"
+                    value={formData.hyperparams.neuralNetwork.epochs}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    min="10"
+                    max="500"
+                    disabled={isTraining}
+                  />
+                </div>
+              </>
+            );
+          default:
+            return null;
+        }
+      };
+
+      return (
+        <div>
+          <h4 className="text-sm font-medium mb-4">Train a New Model Version</h4>
+
+          {!model ? (
+            <p className="text-gray-500">Select a model to customize training.</p>
+          ) : (
+            <>
+              <div className="mb-4 p-3 bg-indigo-50 rounded-lg">
+                <p className="font-medium">Training a new version of: {model.name}</p>
+                <p className="text-sm text-gray-600 mt-1">Current version: v{model.version}</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-sm font-medium mb-3">Dataset Configuration</h4>
+
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">Training Data Percentage</label>
+                    <div className="flex items-center">
+                      <input
+                        type="range"
+                        name="datasetSize"
+                        value={formData.datasetSize}
+                        onChange={handleInputChange}
+                        className="w-full"
+                        min="50"
+                        max="90"
+                        step="5"
+                        disabled={isTraining}
+                      />
+                      <span className="ml-2 text-sm">{formData.datasetSize}%</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="block text-sm font-medium mb-1">Test Split</label>
+                    <div className="flex items-center">
+                      <input
+                        type="range"
+                        name="testSplit"
+                        value={formData.testSplit}
+                        onChange={handleInputChange}
+                        className="w-full"
+                        min="10"
+                        max="40"
+                        step="5"
+                        disabled={isTraining}
+                      />
+                      <span className="ml-2 text-sm">{formData.testSplit}%</span>
+                    </div>
+                  </div>
+
+                  <h4 className="text-sm font-medium mb-3 mt-6">Algorithm Selection</h4>
+
+                  <div className="mb-3">
+                    <select
+                      className="w-full p-2 border rounded"
+                      value={selectedAlgorithm}
+                      onChange={(e) => setSelectedAlgorithm(e.target.value)}
+                      disabled={isTraining}
+                    >
+                      <option value="random-forest">Random Forest</option>
+                      <option value="gradient-boosting">Gradient Boosting</option>
+                      <option value="neural-network">Neural Network</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium mb-3">Hyperparameters</h4>
+                  {getHyperparamFields()}
+                </div>
+              </div>
+
+              {isTraining && (
+                <div className="mt-6">
+                  <div className="flex justify-between mb-1">
+                    <span className="text-sm font-medium">Training Progress</span>
+                    <span className="text-sm text-gray-600">{Math.round(trainingProgress)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div
+                      className="bg-indigo-600 h-2.5 rounded-full"
+                      style={{ width: `${trainingProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    {trainingProgress < 30 ? 'Preparing dataset...' :
+                     trainingProgress < 60 ? 'Training model...' :
+                     trainingProgress < 90 ? 'Evaluating performance...' :
+                     'Finalizing model...'}
+                  </p>
+                </div>
+              )}
+
+              {trainingComplete && (
+                <div className="mt-6 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-start">
+                    <svg className="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <div>
+                      <p className="font-medium text-green-800">Training Complete!</p>
+                      <p className="text-sm text-green-600 mt-1">New model version created: v{(parseFloat(model.version) + 0.1).toFixed(1)}</p>
+                      <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-600">
+                        <div>
+                          <span className="font-medium">Accuracy:</span>
+                          <span className="ml-1 text-green-600">
+                            {(model.metrics.accuracy ? model.metrics.accuracy * 100 : 85) + Math.random() * 5}%
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-medium">Training Time:</span>
+                          <span className="ml-1">{Math.floor(Math.random() * 60) + 30} minutes</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-6 flex justify-end">
+                {!isTraining && !trainingComplete && (
+                  <button
+                    className="btn"
+                    onClick={handleStartTraining}
+                  >
+                    Start Training
+                  </button>
+                )}
+                {trainingComplete && (
+                  <div className="flex space-x-3">
+                    <button className="btn bg-white border border-gray-300 text-gray-700">
+                      View Details
+                    </button>
+                    <button className="btn">
+                      Deploy Model
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    // Real-time updates panel component
+    function RealTimeUpdatesPanel({ updates, isConnected, connectionStatus }) {
+      const [expanded, setExpanded] = React.useState(false);
+      const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+
+      // Update isMobile state on window resize
+      React.useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      // Format timestamp
+      const formatTime = (timestamp) => {
+        const date = new Date(timestamp);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      };
+
+      // Get status class
+      const getStatusClass = () => {
+        if (connectionStatus === 'connected') return 'connected';
+        if (connectionStatus === 'connecting') return 'connecting';
+        return 'disconnected';
+      };
+
+      // Get status text
+      const getStatusText = () => {
+        if (connectionStatus === 'connected') return 'Connected';
+        if (connectionStatus === 'connecting') return 'Connecting...';
+        return 'Disconnected';
+      };
+
+      return (
+        <div className="card">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center">
+              <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold mr-3`}>Real-Time Updates</h3>
+              <div className={`realtime-indicator ${getStatusClass()}`}>
+                <div className="realtime-pulse"></div>
+                <span>{getStatusText()}</span>
+              </div>
+            </div>
+            <button
+              className={`btn ${isMobile ? 'text-sm px-2 py-1' : ''}`}
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? 'Hide Updates' : 'Show Updates'}
+            </button>
+          </div>
+
+          {expanded && (
+            <div className="mt-2">
+              {updates.length === 0 ? (
+                <p className="text-gray-500 text-sm">No updates received yet.</p>
+              ) : (
+                <div className="max-h-60 overflow-y-auto">
+                  {updates.map((update) => (
+                    <div
+                      key={update.id}
+                      className="p-2 mb-2 border border-gray-200 rounded highlight-update"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="text-sm font-medium">{update.type}</span>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {update.data.modelId && `Model: ${update.data.modelId}`}
+                          </p>
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          {formatTime(update.timestamp)}
+                        </span>
+                      </div>
+                      <div className="mt-2 text-sm">
+                        {update.type === 'metrics' && (
+                          <div className="text-xs">
+                            {Object.entries(update.data.metrics || {}).map(([key, value]) => (
+                              <div key={key} className="flex justify-between">
+                                <span>{key}:</span>
+                                <span className="font-medium">{typeof value === 'number' ? value.toFixed(2) : value}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {update.type === 'status' && (
+                          <div className="text-xs">
+                            Status changed to: <span className="font-medium">{update.data.status}</span>
+                          </div>
+                        )}
+                        {update.type === 'drift' && (
+                          <div className="text-xs">
+                            <span className="font-medium text-amber-600">Drift detected!</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Model Comparison Component
+    function ModelComparison({ modelId }) {
+      const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+      const [selectedVersions, setSelectedVersions] = React.useState([]);
+      const [showAllMetrics, setShowAllMetrics] = React.useState(false);
+
+      // Get model versions for the selected model
+      const versions = mockModelVersions[modelId] || [];
+
+      // Update isMobile state on window resize
+      React.useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      // Initialize with the latest two versions selected
+      React.useEffect(() => {
+        if (versions.length >= 2) {
+          setSelectedVersions([versions[0].version, versions[1].version]);
+        } else if (versions.length === 1) {
+          setSelectedVersions([versions[0].version]);
+        }
+      }, [modelId]);
+
+      // Toggle version selection
+      const toggleVersionSelection = (version) => {
+        if (selectedVersions.includes(version)) {
+          // Remove version if already selected
+          setSelectedVersions(selectedVersions.filter(v => v !== version));
+        } else {
+          // Add version if not already selected (limit to 3 versions)
+          if (selectedVersions.length < 3) {
+            setSelectedVersions([...selectedVersions, version]);
+          }
+        }
+      };
+
+      // Get metrics for comparison
+      const getMetricsForComparison = () => {
+        const selectedVersionData = versions.filter(v => selectedVersions.includes(v.version));
+
+        if (selectedVersionData.length === 0) return [];
+
+        // Get all metric keys from all selected versions
+        const allMetricKeys = new Set();
+        selectedVersionData.forEach(version => {
+          Object.keys(version.metrics).forEach(key => allMetricKeys.add(key));
+        });
+
+        return Array.from(allMetricKeys);
+      };
+
+      const metricKeys = getMetricsForComparison();
+
+      // Format metric value for display
+      const formatMetricValue = (key, value) => {
+        if (key === 'accuracy' || key === 'precision' || key === 'recall' || key === 'f1' || key === 'r2') {
+          return (value * 100).toFixed(1) + '%';
+        }
+        return value.toFixed(2);
+      };
+
+      // Get color class based on metric comparison
+      const getComparisonColorClass = (key, value, index) => {
+        if (selectedVersions.length <= 1 || index === 0) return '';
+
+        const previousVersion = versions.find(v => v.version === selectedVersions[index - 1]);
+        if (!previousVersion || !previousVersion.metrics[key]) return '';
+
+        const previousValue = previousVersion.metrics[key];
+
+        // For metrics where higher is better
+        if (key === 'accuracy' || key === 'precision' || key === 'recall' || key === 'f1' || key === 'r2') {
+          if (value > previousValue) return 'text-green-600';
+          if (value < previousValue) return 'text-red-600';
+          return 'text-gray-600';
+        }
+
+        // For metrics where lower is better (like RMSE, MAE)
+        if (key === 'rmse' || key === 'mae') {
+          if (value < previousValue) return 'text-green-600';
+          if (value > previousValue) return 'text-red-600';
+          return 'text-gray-600';
+        }
+
+        return '';
+      };
+
+      return (
+        <div className="card">
+          <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold mb-4`}>Model Version Comparison</h3>
+
+          {versions.length === 0 ? (
+            <p className="text-gray-500">No version history available for this model.</p>
+          ) : (
+            <>
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 mb-2">Select up to 3 versions to compare:</p>
+                <div className="flex flex-wrap gap-2">
+                  {versions.map((version, index) => (
+                    <button
+                      key={version.version}
+                      className={`px-3 py-1 text-sm rounded-full border ${
+                        selectedVersions.includes(version.version)
+                          ? 'bg-indigo-100 border-indigo-300 text-indigo-800'
+                          : 'bg-gray-100 border-gray-300 text-gray-800'
+                      }`}
+                      onClick={() => toggleVersionSelection(version.version)}
+                    >
+                      v{version.version}
+                      {version.status === 'production' && (
+                        <span className="ml-1 text-xs bg-green-100 text-green-800 px-1 rounded">prod</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {selectedVersions.length > 0 ? (
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2">Metric</th>
+                          {selectedVersions.map(version => (
+                            <th key={version} className="text-left py-2">v{version}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {/* Show algorithm and training info */}
+                        <tr className="border-b">
+                          <td className="py-2 font-medium">Algorithm</td>
+                          {selectedVersions.map(versionNum => {
+                            const versionData = versions.find(v => v.version === versionNum);
+                            return (
+                              <td key={versionNum} className="py-2">
+                                {versionData?.algorithm || '-'}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2 font-medium">Training Time</td>
+                          {selectedVersions.map(versionNum => {
+                            const versionData = versions.find(v => v.version === versionNum);
+                            return (
+                              <td key={versionNum} className="py-2">
+                                {versionData?.trainingTime || '-'}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                        <tr className="border-b">
+                          <td className="py-2 font-medium">Dataset Size</td>
+                          {selectedVersions.map(versionNum => {
+                            const versionData = versions.find(v => v.version === versionNum);
+                            return (
+                              <td key={versionNum} className="py-2">
+                                {versionData?.datasetSize || '-'}
+                              </td>
+                            );
+                          })}
+                        </tr>
+
+                        {/* Show performance metrics */}
+                        {metricKeys.slice(0, showAllMetrics ? metricKeys.length : 3).map(key => (
+                          <tr key={key} className="border-b">
+                            <td className="py-2 font-medium">
+                              {key.toUpperCase()}
+                            </td>
+                            {selectedVersions.map((versionNum, index) => {
+                              const versionData = versions.find(v => v.version === versionNum);
+                              const value = versionData?.metrics[key];
+                              return (
+                                <td
+                                  key={versionNum}
+                                  className={`py-2 ${getComparisonColorClass(key, value, index)}`}
+                                >
+                                  {value !== undefined ? formatMetricValue(key, value) : '-'}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {metricKeys.length > 3 && (
+                    <button
+                      className="mt-3 text-sm text-indigo-600 hover:text-indigo-800"
+                      onClick={() => setShowAllMetrics(!showAllMetrics)}
+                    >
+                      {showAllMetrics ? 'Show fewer metrics' : `Show all metrics (${metricKeys.length})`}
+                    </button>
+                  )}
+
+                  <div className="mt-4 flex justify-end">
+                    <button className="btn text-sm">
+                      Export Comparison
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <p className="text-gray-500 italic">Select at least one version to see metrics</p>
+              )}
+            </>
+          )}
+        </div>
+      );
+    }
+
+    // Feature Importance Visualization Component
+    function FeatureImportance({ modelId }) {
+      const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+      const [showAllFeatures, setShowAllFeatures] = React.useState(false);
+
+      // Get feature importance data for the selected model
+      const featureData = mockFeatureImportance[modelId] || [];
+
+      // Update isMobile state on window resize
+      React.useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      // Sort features by importance
+      const sortedFeatures = [...featureData].sort((a, b) => b.importance - a.importance);
+
+      // Determine how many features to show
+      const displayFeatures = showAllFeatures ? sortedFeatures : sortedFeatures.slice(0, 4);
+
+      return (
+        <div className="card">
+          <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold mb-4`}>Feature Importance</h3>
+
+          {featureData.length === 0 ? (
+            <p className="text-gray-500">No feature importance data available for this model.</p>
+          ) : (
+            <>
+              <div className="space-y-3">
+                {displayFeatures.map(feature => (
+                  <div key={feature.feature} className="relative">
+                    <div className="flex justify-between mb-1">
+                      <span className="text-sm font-medium">{feature.feature}</span>
+                      <span className="text-sm text-gray-600">{(feature.importance * 100).toFixed(1)}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div
+                        className="bg-indigo-600 h-2.5 rounded-full"
+                        style={{ width: `${feature.importance * 100}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">{feature.description}</p>
+                  </div>
+                ))}
+              </div>
+
+              {sortedFeatures.length > 4 && (
+                <button
+                  className="mt-4 text-sm text-indigo-600 hover:text-indigo-800"
+                  onClick={() => setShowAllFeatures(!showAllFeatures)}
+                >
+                  {showAllFeatures ? 'Show less' : `Show all features (${sortedFeatures.length})`}
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      );
+    }
+
+    // Metrics Chart Component (Time-series visualization)
+    function MetricsChart({ modelId }) {
+      const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+      const [selectedMetrics, setSelectedMetrics] = React.useState([]);
+      const [tooltip, setTooltip] = React.useState({ visible: false, x: 0, y: 0, data: null });
+      const chartRef = React.useRef(null);
+
+      // Get metrics history data for the selected model
+      const metricsHistory = mockMetricsHistory[modelId] || [];
+
+      // Update isMobile state on window resize
+      React.useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      // Initialize selected metrics based on model type
+      React.useEffect(() => {
+        if (metricsHistory.length > 0) {
+          const firstEntry = metricsHistory[0];
+          const availableMetrics = Object.keys(firstEntry).filter(key => key !== 'date');
+
+          // Select first two metrics by default
+          setSelectedMetrics(availableMetrics.slice(0, 2));
+        }
+      }, [modelId, metricsHistory]);
+
+      // Toggle metric selection
+      const toggleMetric = (metric) => {
+        if (selectedMetrics.includes(metric)) {
+          setSelectedMetrics(selectedMetrics.filter(m => m !== metric));
+        } else {
+          setSelectedMetrics([...selectedMetrics, metric]);
+        }
+      };
+
+      // Get all available metrics
+      const getAvailableMetrics = () => {
+        if (metricsHistory.length === 0) return [];
+
+        const firstEntry = metricsHistory[0];
+        return Object.keys(firstEntry).filter(key => key !== 'date');
+      };
+
+      const availableMetrics = getAvailableMetrics();
+
+      // Get color for metric
+      const getMetricColor = (metric, opacity = 1) => {
+        const colors = {
+          accuracy: `rgba(79, 70, 229, ${opacity})`,
+          precision: `rgba(16, 185, 129, ${opacity})`,
+          recall: `rgba(245, 158, 11, ${opacity})`,
+          f1: `rgba(239, 68, 68, ${opacity})`,
+          rmse: `rgba(99, 102, 241, ${opacity})`,
+          mae: `rgba(236, 72, 153, ${opacity})`,
+          r2: `rgba(14, 165, 233, ${opacity})`
+        };
+
+        return colors[metric] || `rgba(107, 114, 128, ${opacity})`;
+      };
+
+      // Format metric name for display
+      const formatMetricName = (metric) => {
+        const names = {
+          accuracy: 'Accuracy',
+          precision: 'Precision',
+          recall: 'Recall',
+          f1: 'F1 Score',
+          rmse: 'RMSE',
+          mae: 'MAE',
+          r2: 'R²'
+        };
+
+        return names[metric] || metric;
+      };
+
+      // Format metric value for display
+      const formatMetricValue = (metric, value) => {
+        if (['accuracy', 'precision', 'recall', 'f1', 'r2'].includes(metric)) {
+          return (value * 100).toFixed(1) + '%';
+        }
+        return value.toFixed(2);
+      };
+
+      // Handle mouse move on chart
+      const handleMouseMove = (e) => {
+        if (!chartRef.current || metricsHistory.length === 0 || selectedMetrics.length === 0) return;
+
+        const chartRect = chartRef.current.getBoundingClientRect();
+        const x = e.clientX - chartRect.left;
+        const chartWidth = chartRect.width;
+
+        // Calculate which data point is closest
+        const dataIndex = Math.min(
+          Math.floor((x / chartWidth) * metricsHistory.length),
+          metricsHistory.length - 1
+        );
+
+        if (dataIndex >= 0) {
+          const dataPoint = metricsHistory[dataIndex];
+
+          setTooltip({
+            visible: true,
+            x: x,
+            y: 0, // Will be calculated for each metric in the render
+            data: dataPoint
+          });
+        }
+      };
+
+      // Handle mouse leave
+      const handleMouseLeave = () => {
+        setTooltip({ visible: false, x: 0, y: 0, data: null });
+      };
+
+      // Calculate y-position on chart
+      const calculateYPosition = (value, metric) => {
+        if (!chartRef.current) return 0;
+
+        const chartHeight = chartRef.current.clientHeight - 30; // Subtract padding
+
+        // Find min and max values for the metric
+        let minValue = Math.min(...metricsHistory.map(entry => entry[metric]));
+        let maxValue = Math.max(...metricsHistory.map(entry => entry[metric]));
+
+        // Add some padding
+        const padding = (maxValue - minValue) * 0.1;
+        minValue -= padding;
+        maxValue += padding;
+
+        // Calculate position (invert y-axis)
+        return chartHeight - ((value - minValue) / (maxValue - minValue)) * chartHeight + 15; // Add padding
+      };
+
+      return (
+        <div className="card">
+          <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold mb-4`}>Metrics Over Time</h3>
+
+          {metricsHistory.length === 0 ? (
+            <p className="text-gray-500">No metrics history available for this model.</p>
+          ) : (
+            <>
+              <div className="mb-4">
+                <div className="flex flex-wrap gap-2">
+                  {availableMetrics.map(metric => (
+                    <button
+                      key={metric}
+                      className={`px-3 py-1 text-xs rounded-full border ${
+                        selectedMetrics.includes(metric)
+                          ? 'bg-indigo-100 border-indigo-300 text-indigo-800'
+                          : 'bg-gray-100 border-gray-300 text-gray-800'
+                      }`}
+                      onClick={() => toggleMetric(metric)}
+                    >
+                      {formatMetricName(metric)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div
+                className="chart-container"
+                ref={chartRef}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+              >
+                {/* Chart grid lines */}
+                <div className="absolute inset-0 border-b border-l border-gray-200">
+                  {[0, 1, 2, 3].map(i => (
+                    <div
+                      key={i}
+                      className="absolute w-full border-t border-gray-100"
+                      style={{ top: `${25 * i}%`, height: '1px' }}
+                    ></div>
+                  ))}
+                </div>
+
+                {/* X-axis labels */}
+                <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-500">
+                  <span>{new Date(metricsHistory[0].date).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</span>
+                  <span>{new Date(metricsHistory[Math.floor(metricsHistory.length / 2)].date).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</span>
+                  <span>{new Date(metricsHistory[metricsHistory.length - 1].date).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}</span>
+                </div>
+
+                {/* Chart lines */}
+                {selectedMetrics.map(metric => {
+                  const points = metricsHistory.map((entry, index) => {
+                    const x = (index / (metricsHistory.length - 1)) * 100;
+                    const y = calculateYPosition(entry[metric], metric);
+                    return `${x}%,${y}px`;
+                  }).join(' ');
+
+                  return (
+                    <React.Fragment key={metric}>
+                      {/* Line */}
+                      <svg className="absolute inset-0 h-full w-full overflow-visible">
+                        <polyline
+                          points={points}
+                          fill="none"
+                          stroke={getMetricColor(metric)}
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+
+                      {/* Data points */}
+                      {metricsHistory.map((entry, index) => {
+                        const x = (index / (metricsHistory.length - 1)) * 100;
+                        const y = calculateYPosition(entry[metric], metric);
+
+                        return (
+                          <div
+                            key={`${metric}-${index}`}
+                            className="absolute h-3 w-3 rounded-full border-2 border-white"
+                            style={{
+                              left: `calc(${x}% - 4px)`,
+                              top: `${y - 4}px`,
+                              backgroundColor: getMetricColor(metric)
+                            }}
+                          ></div>
+                        );
+                      })}
+                    </React.Fragment>
+                  );
+                })}
+
+                {/* Tooltip */}
+                {tooltip.visible && tooltip.data && (
+                  <div
+                    className="chart-tooltip"
+                    style={{
+                      left: `${tooltip.x + 10}px`,
+                      top: '10px'
+                    }}
+                  >
+                    <div className="font-medium text-xs mb-1">
+                      {new Date(tooltip.data.date).toLocaleDateString()}
+                    </div>
+                    {selectedMetrics.map(metric => (
+                      <div key={metric} className="flex justify-between text-xs">
+                        <span style={{ color: getMetricColor(metric) }}>{formatMetricName(metric)}:</span>
+                        <span className="ml-2 font-medium">{formatMetricValue(metric, tooltip.data[metric])}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="chart-legend">
+                {selectedMetrics.map(metric => (
+                  <div key={metric} className="legend-item">
+                    <div
+                      className="legend-color"
+                      style={{ backgroundColor: getMetricColor(metric) }}
+                    ></div>
+                    <span>{formatMetricName(metric)}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Latest metrics summary */}
+              <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2">
+                {selectedMetrics.map(metric => {
+                  const latestValue = metricsHistory[metricsHistory.length - 1][metric];
+                  const previousValue = metricsHistory[metricsHistory.length - 2][metric];
+                  const change = latestValue - previousValue;
+                  const changePercent = (change / previousValue) * 100;
+
+                  let changeClass = 'neutral';
+                  if (['accuracy', 'precision', 'recall', 'f1', 'r2'].includes(metric)) {
+                    changeClass = change > 0 ? 'positive' : change < 0 ? 'negative' : 'neutral';
+                  } else {
+                    changeClass = change < 0 ? 'positive' : change > 0 ? 'negative' : 'neutral';
+                  }
+
+                  return (
+                    <div key={metric} className="metric-card">
+                      <div className="text-xs text-gray-500 mb-1">{formatMetricName(metric)}</div>
+                      <div className="flex items-end">
+                        <div className="metric-value">{formatMetricValue(metric, latestValue)}</div>
+                        <div className={`metric-change ${changeClass}`}>
+                          {changeClass === 'positive' && '↑'}
+                          {changeClass === 'negative' && '↓'}
+                          {Math.abs(changePercent).toFixed(1)}%
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    // Feature Correlation Heatmap Component
+    function FeatureCorrelationHeatmap({ modelId }) {
+      const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+      const [tooltip, setTooltip] = React.useState({ visible: false, x: 0, y: 0, data: null });
+
+      // Get correlation data for the selected model
+      const correlationData = mockFeatureCorrelations[modelId] || [];
+
+      // Update isMobile state on window resize
+      React.useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      // Get unique features
+      const getUniqueFeatures = () => {
+        if (correlationData.length === 0) return [];
+
+        const features = new Set();
+        correlationData.forEach(item => {
+          features.add(item.feature1);
+          features.add(item.feature2);
+        });
+
+        return Array.from(features);
+      };
+
+      const features = getUniqueFeatures();
+
+      // Get correlation value between two features
+      const getCorrelation = (feature1, feature2) => {
+        const item = correlationData.find(
+          item =>
+            (item.feature1 === feature1 && item.feature2 === feature2) ||
+            (item.feature1 === feature2 && item.feature2 === feature1)
+        );
+
+        return item ? item.correlation : 0;
+      };
+
+      // Get color for correlation value
+      const getCorrelationColor = (value) => {
+        if (value === 1) return 'rgb(79, 70, 229)'; // Self-correlation (diagonal)
+
+        const absValue = Math.abs(value);
+
+        if (value > 0) {
+          return `rgba(79, 70, 229, ${absValue})`;
+        } else {
+          return `rgba(239, 68, 68, ${absValue})`;
+        }
+      };
+
+      // Format feature name for display
+      const formatFeatureName = (name) => {
+        return name
+          .split('_')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+      };
+
+      // Handle mouse enter on cell
+      const handleMouseEnter = (e, feature1, feature2, correlation) => {
+        const rect = e.target.getBoundingClientRect();
+
+        setTooltip({
+          visible: true,
+          x: rect.left + rect.width / 2,
+          y: rect.top,
+          data: {
+            feature1,
+            feature2,
+            correlation
+          }
+        });
+      };
+
+      // Handle mouse leave
+      const handleMouseLeave = () => {
+        setTooltip({ visible: false, x: 0, y: 0, data: null });
+      };
+
+      return (
+        <div className="card">
+          <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold mb-4`}>Feature Correlation</h3>
+
+          {correlationData.length === 0 ? (
+            <p className="text-gray-500">No correlation data available for this model.</p>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <div className="inline-block min-w-full">
+                  <div className="grid" style={{
+                    gridTemplateColumns: `auto ${features.map(() => '1fr').join(' ')}`,
+                    gridTemplateRows: `auto ${features.map(() => '1fr').join(' ')}`
+                  }}>
+                    {/* Empty top-left cell */}
+                    <div className="p-1"></div>
+
+                    {/* Column headers */}
+                    {features.map(feature => (
+                      <div key={`col-${feature}`} className="p-1">
+                        <div className="confusion-matrix-label text-center">
+                          {formatFeatureName(feature)}
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Row headers and cells */}
+                    {features.map(feature1 => (
+                      <React.Fragment key={`row-${feature1}`}>
+                        {/* Row header */}
+                        <div className="p-1">
+                          <div className="confusion-matrix-label text-right">
+                            {formatFeatureName(feature1)}
+                          </div>
+                        </div>
+
+                        {/* Cells */}
+                        {features.map(feature2 => {
+                          const correlation = getCorrelation(feature1, feature2);
+
+                          return (
+                            <div
+                              key={`cell-${feature1}-${feature2}`}
+                              className="p-1"
+                            >
+                              <div
+                                className="heatmap-cell w-10 h-10 rounded"
+                                style={{
+                                  backgroundColor: getCorrelationColor(correlation),
+                                  opacity: Math.abs(correlation)
+                                }}
+                                onMouseEnter={(e) => handleMouseEnter(e, feature1, feature2, correlation)}
+                                onMouseLeave={handleMouseLeave}
+                              ></div>
+                            </div>
+                          );
+                        })}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Legend */}
+              <div className="mt-4 flex justify-center">
+                <div className="flex items-center">
+                  <div className="w-20 h-4 bg-gradient-to-r from-white via-red-500 to-red-600 rounded"></div>
+                  <span className="mx-2 text-xs">Negative</span>
+                  <div className="w-20 h-4 bg-gradient-to-r from-white via-indigo-500 to-indigo-600 rounded"></div>
+                  <span className="ml-2 text-xs">Positive</span>
+                </div>
+              </div>
+
+              {/* Tooltip */}
+              {tooltip.visible && tooltip.data && (
+                <div
+                  className="chart-tooltip"
+                  style={{
+                    left: `${tooltip.x}px`,
+                    top: `${tooltip.y - 60}px`,
+                    transform: 'translateX(-50%)'
+                  }}
+                >
+                  <div className="text-xs mb-1">
+                    <span className="font-medium">{formatFeatureName(tooltip.data.feature1)}</span>
+                    {' '}&amp;{' '}
+                    <span className="font-medium">{formatFeatureName(tooltip.data.feature2)}</span>
+                  </div>
+                  <div className="text-sm font-medium">
+                    Correlation: {tooltip.data.correlation.toFixed(2)}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      );
+    }
+
+    // Confusion Matrix Component
+    function ConfusionMatrix({ modelId }) {
+      const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+      const [tooltip, setTooltip] = React.useState({ visible: false, x: 0, y: 0, data: null });
+
+      // Get confusion matrix data for the selected model
+      const matrixData = mockConfusionMatrices[modelId];
+
+      // Update isMobile state on window resize
+      React.useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      // Calculate total predictions for each true class
+      const getRowTotals = () => {
+        if (!matrixData) return [];
+
+        return matrixData.matrix.map(row => row.reduce((sum, val) => sum + val, 0));
+      };
+
+      // Calculate accuracy
+      const calculateAccuracy = () => {
+        if (!matrixData) return 0;
+
+        let correct = 0;
+        let total = 0;
+
+        matrixData.matrix.forEach((row, i) => {
+          row.forEach((val, j) => {
+            if (i === j) correct += val;
+            total += val;
+          });
+        });
+
+        return total > 0 ? correct / total : 0;
+      };
+
+      // Get color intensity based on value
+      const getColorIntensity = (value, rowIndex, colIndex, rowTotal) => {
+        if (rowTotal === 0) return 0;
+
+        const percentage = value / rowTotal;
+
+        // Diagonal cells (correct predictions) use green
+        if (rowIndex === colIndex) {
+          return `rgba(16, 185, 129, ${Math.min(1, percentage + 0.2)})`;
+        }
+
+        // Off-diagonal cells (incorrect predictions) use red
+        return `rgba(239, 68, 68, ${Math.min(1, percentage + 0.2)})`;
+      };
+
+      // Handle mouse enter on cell
+      const handleMouseEnter = (e, rowIndex, colIndex, value, rowTotal) => {
+        const rect = e.target.getBoundingClientRect();
+
+        setTooltip({
+          visible: true,
+          x: rect.left + rect.width / 2,
+          y: rect.top,
+          data: {
+            trueClass: matrixData.labels[rowIndex],
+            predictedClass: matrixData.labels[colIndex],
+            value,
+            percentage: rowTotal > 0 ? (value / rowTotal) * 100 : 0
+          }
+        });
+      };
+
+      // Handle mouse leave
+      const handleMouseLeave = () => {
+        setTooltip({ visible: false, x: 0, y: 0, data: null });
+      };
+
+      const rowTotals = getRowTotals();
+      const accuracy = calculateAccuracy();
+
+      return (
+        <div className="card">
+          <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold mb-4`}>Confusion Matrix</h3>
+
+          {!matrixData ? (
+            <p className="text-gray-500">No confusion matrix available for this model.</p>
+          ) : (
+            <>
+              <div className="mb-4 flex justify-between items-center">
+                <div className="text-sm">
+                  <span className="font-medium">Overall Accuracy:</span>{' '}
+                  <span className="text-indigo-600 font-medium">{(accuracy * 100).toFixed(1)}%</span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  {matrixData.matrix.reduce((sum, row) => sum + row.reduce((s, v) => s + v, 0), 0)} total predictions
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <div className="inline-block min-w-full">
+                  <div className="grid" style={{
+                    gridTemplateColumns: `auto ${matrixData.labels.map(() => '1fr').join(' ')}`,
+                    gridTemplateRows: `auto ${matrixData.labels.map(() => '1fr').join(' ')}`
+                  }}>
+                    {/* Top-left corner label */}
+                    <div className="p-1">
+                      <div className="text-xs text-center font-medium text-gray-500">
+                        True ↓ / Predicted →
+                      </div>
+                    </div>
+
+                    {/* Column headers (Predicted) */}
+                    {matrixData.labels.map(label => (
+                      <div key={`col-${label}`} className="p-1">
+                        <div className="confusion-matrix-label text-center">
+                          {label}
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Row headers and cells */}
+                    {matrixData.matrix.map((row, rowIndex) => (
+                      <React.Fragment key={`row-${rowIndex}`}>
+                        {/* Row header (True) */}
+                        <div className="p-1">
+                          <div className="confusion-matrix-label text-right">
+                            {matrixData.labels[rowIndex]}
+                          </div>
+                        </div>
+
+                        {/* Cells */}
+                        {row.map((value, colIndex) => (
+                          <div
+                            key={`cell-${rowIndex}-${colIndex}`}
+                            className="p-1"
+                          >
+                            <div
+                              className="confusion-matrix-cell w-12 h-12 rounded"
+                              style={{
+                                backgroundColor: getColorIntensity(value, rowIndex, colIndex, rowTotals[rowIndex])
+                              }}
+                              onMouseEnter={(e) => handleMouseEnter(e, rowIndex, colIndex, value, rowTotals[rowIndex])}
+                              onMouseLeave={handleMouseLeave}
+                            >
+                              {value}
+                            </div>
+                          </div>
+                        ))}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Tooltip */}
+              {tooltip.visible && tooltip.data && (
+                <div
+                  className="chart-tooltip"
+                  style={{
+                    left: `${tooltip.x}px`,
+                    top: `${tooltip.y - 70}px`,
+                    transform: 'translateX(-50%)'
+                  }}
+                >
+                  <div className="text-xs mb-1">
+                    <span className="font-medium">True:</span> {tooltip.data.trueClass}
+                  </div>
+                  <div className="text-xs mb-1">
+                    <span className="font-medium">Predicted:</span> {tooltip.data.predictedClass}
+                  </div>
+                  <div className="text-sm font-medium">
+                    {tooltip.data.value} ({tooltip.data.percentage.toFixed(1)}%)
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      );
+    }
+
+    // Model Explanation Component (Explainable AI)
+    function ModelExplanation({ modelId }) {
+      const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+
+      // Get explanation data for the selected model
+      const explanationData = mockModelExplanations[modelId];
+
+      // Update isMobile state on window resize
+      React.useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      // Get color class based on impact direction
+      const getImpactColorClass = (direction) => {
+        if (direction === 'positive') return 'text-green-600';
+        if (direction === 'negative') return 'text-red-600';
+        return 'text-gray-600';
+      };
+
+      // Get background color class based on impact direction
+      const getImpactBgClass = (direction) => {
+        if (direction === 'positive') return 'bg-green-100';
+        if (direction === 'negative') return 'bg-red-100';
+        return 'bg-gray-100';
+      };
+
+      return (
+        <div className="card">
+          <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold mb-4`}>Model Explanation</h3>
+
+          {!explanationData ? (
+            <p className="text-gray-500">No explanation data available for this model.</p>
+          ) : (
+            <>
+              <div className="mb-4 p-3 bg-indigo-50 rounded-lg">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium">{explanationData.prediction}</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Confidence: <span className="font-medium">{(explanationData.confidence * 100).toFixed(1)}%</span>
+                    </p>
+                  </div>
+                  <button className="text-xs bg-white border border-gray-300 rounded px-2 py-1">
+                    New Prediction
+                  </button>
+                </div>
+              </div>
+
+              <h4 className="text-sm font-medium mb-3">Factors influencing this prediction:</h4>
+
+              <div className="space-y-3">
+                {explanationData.explanations.map(explanation => (
+                  <div key={explanation.feature} className="p-3 border rounded-lg">
+                    <div className="flex justify-between">
+                      <span className="font-medium">{explanation.feature}</span>
+                      <span className={`text-sm ${getImpactColorClass(explanation.direction)}`}>
+                        {explanation.direction === 'positive' ? '↑' : explanation.direction === 'negative' ? '↓' : '→'}
+                        Impact: {(explanation.impact * 100).toFixed(1)}%
+                      </span>
+                    </div>
+                    <div className="mt-1 text-sm">
+                      <span className="text-gray-500">Value: </span>
+                      <span className={`px-2 py-0.5 rounded ${getImpactBgClass(explanation.direction)}`}>
+                        {explanation.value}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-4 flex justify-end">
+                <button className="btn text-sm">
+                  Provide Feedback
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    function ModelMonitoring({ modelId }) {
+      const [activeMonitoringTab, setActiveMonitoringTab] = React.useState('health');
+      const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+
+      // Update isMobile state on window resize
+      React.useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      return (
+        <div className="card">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className={`${isMobile ? 'text-base' : 'text-lg'} font-semibold`}>Model Monitoring</h3>
+            <button className={`btn ${isMobile ? 'text-sm px-2 py-1' : ''}`}>
+              <span className={isMobile ? 'hidden' : 'inline'}>Refresh</span>
+              <span className={isMobile ? 'inline' : 'hidden'}>↻</span>
+            </button>
+          </div>
+
+          <div className={`tabs ${isMobile ? 'overflow-x-auto flex-nowrap' : ''}`}>
+            <div
+              className={`tab ${activeMonitoringTab === 'health' ? 'active' : ''} ${isMobile ? 'text-sm px-3' : ''}`}
+              onClick={() => setActiveMonitoringTab('health')}
+            >
+              Health
+            </div>
+            <div
+              className={`tab ${activeMonitoringTab === 'quality' ? 'active' : ''} ${isMobile ? 'text-sm px-3' : ''}`}
+              onClick={() => setActiveMonitoringTab('quality')}
+            >
+              Data Quality
+            </div>
+            <div
+              className={`tab ${activeMonitoringTab === 'predictions' ? 'active' : ''} ${isMobile ? 'text-sm px-3' : ''}`}
+              onClick={() => setActiveMonitoringTab('predictions')}
+            >
+              Predictions
+            </div>
+            <div
+              className={`tab ${activeMonitoringTab === 'alerts' ? 'active' : ''} ${isMobile ? 'text-sm px-3' : ''}`}
+              onClick={() => setActiveMonitoringTab('alerts')}
+            >
+              Alerts
+            </div>
+            <div
+              className={`tab ${activeMonitoringTab === 'visualization' ? 'active' : ''} ${isMobile ? 'text-sm px-3' : ''}`}
+              onClick={() => setActiveMonitoringTab('visualization')}
+            >
+              Visualization
+            </div>
+            <div
+              className={`tab ${activeMonitoringTab === 'comparison' ? 'active' : ''} ${isMobile ? 'text-sm px-3' : ''}`}
+              onClick={() => setActiveMonitoringTab('comparison')}
+            >
+              Comparison
+            </div>
+            <div
+              className={`tab ${activeMonitoringTab === 'explainability' ? 'active' : ''} ${isMobile ? 'text-sm px-3' : ''}`}
+              onClick={() => setActiveMonitoringTab('explainability')}
+            >
+              Explainability
+            </div>
+          </div>
+
+          <div className={`tab-content ${activeMonitoringTab === 'health' ? 'active' : ''}`}>
+            <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'grid-cols-3 gap-4'} mb-4`}>
+              <div className="card">
+                <h4 className="text-sm font-medium mb-1">Uptime</h4>
+                <div className="flex items-center">
+                  <span className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold`}>{mockMonitoringData.health.uptime}%</span>
+                </div>
+              </div>
+
+              <div className="card">
+                <h4 className="text-sm font-medium mb-1">Response Time</h4>
+                <div className="flex items-center">
+                  <span className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold`}>{mockMonitoringData.health.responseTime}ms</span>
+                </div>
+              </div>
+
+              <div className="card">
+                <h4 className="text-sm font-medium mb-1">Error Rate</h4>
+                <div className="flex items-center">
+                  <span className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold`}>{mockMonitoringData.health.errorRate}%</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="card">
+              <h4 className="text-sm font-medium mb-2">Health Trend</h4>
+              <div className={`${isMobile ? 'h-32' : 'h-40'} bg-gray-100 flex items-center justify-center`}>
+                <p className="text-gray-500 text-sm">
+                  {isMobile ? 'Tap to view detailed health trend' : 'Health trend chart would be displayed here'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className={`tab-content ${activeMonitoringTab === 'quality' ? 'active' : ''}`}>
+            <div className="card mb-4">
+              <h4 className="text-sm font-medium mb-2">Data Quality Score</h4>
+              <div className="flex items-center">
+                <span className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold`}>{mockMonitoringData.dataQuality.overallScore}/100</span>
+              </div>
+
+              <div className="mt-4">
+                <h5 className="text-sm font-medium mb-2">Quality Metrics</h5>
+                <div className={`grid ${isMobile ? 'grid-cols-1 gap-2' : 'grid-cols-3 gap-4'}`}>
+                  {mockMonitoringData.dataQuality.metrics.map((metric, index) => (
+                    <div key={index} className="flex justify-between items-center">
+                      <span className="text-sm">{metric.name}</span>
+                      <span className="text-sm font-medium">{metric.score}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={`tab-content ${activeMonitoringTab === 'predictions' ? 'active' : ''}`}>
+            <div className="card mb-4">
+              <h4 className="text-sm font-medium mb-2">Prediction Performance</h4>
+              <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'grid-cols-2 gap-4'}`}>
+                <div>
+                  <div className="text-sm text-gray-500 mb-1">Accuracy</div>
+                  <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold`}>{mockMonitoringData.predictions.accuracy}%</div>
+                </div>
+                <div>
+                  <div className="text-sm text-gray-500 mb-1">Confidence</div>
+                  <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold`}>{mockMonitoringData.predictions.confidence}%</div>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <div className="text-sm text-gray-500 mb-1">Prediction Volume</div>
+                <div className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold`}>{mockMonitoringData.predictions.volume}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className={`tab-content ${activeMonitoringTab === 'alerts' ? 'active' : ''}`}>
+            <div className="mb-4">
+              <div className="flex justify-between items-center mb-3">
+                <h4 className="text-sm font-medium">Active Alerts</h4>
+                <span className="badge error">{mockAlerts.activeAlerts}</span>
+              </div>
+
+              {mockAlerts.alerts.map(alert => (
+                <div key={alert.id} className={`card mb-3 ${alert.status === 'active' ? 'border-l-4 border-red-500' : ''}`}>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h5 className={`${isMobile ? 'text-sm' : 'text-base'} font-medium`}>{alert.title}</h5>
+                      <p className="text-sm text-gray-500 mt-1">{alert.description}</p>
+                    </div>
+                    <span className={`badge ${
+                      alert.severity === 'high' ? 'error' :
+                      alert.severity === 'medium' ? 'warning' : ''
+                    }`}>
+                      {alert.severity}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex justify-between items-center">
+                    <span className="text-xs text-gray-500">
+                      {new Date(alert.createdAt).toLocaleDateString()}
+                    </span>
+                    {alert.status === 'active' && (
+                      <button className={`btn ${isMobile ? 'text-xs px-2 py-1' : ''}`}>
+                        Resolve
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Visualization Tab */}
+          <div className={`tab-content ${activeMonitoringTab === 'visualization' ? 'active' : ''}`}>
+            <div className="space-y-6">
+              <MetricsChart modelId={modelId} />
+              <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-2 gap-4'}`}>
+                <FeatureCorrelationHeatmap modelId={modelId} />
+                <ConfusionMatrix modelId={modelId} />
+              </div>
+            </div>
+          </div>
+
+          {/* Model Comparison Tab */}
+          <div className={`tab-content ${activeMonitoringTab === 'comparison' ? 'active' : ''}`}>
+            <ModelComparison modelId={modelId} />
+          </div>
+
+          {/* Explainability Tab */}
+          <div className={`tab-content ${activeMonitoringTab === 'explainability' ? 'active' : ''}`}>
+            <div className="space-y-6">
+              <FeatureImportance modelId={modelId} />
+              <ModelExplanation modelId={modelId} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [selectedModelId, setSelectedModelId] = React.useState(null);
+      const [activeTab, setActiveTab] = React.useState('models');
+      const [isLoading, setIsLoading] = React.useState(false);
+      const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+      const [modelsToShow, setModelsToShow] = React.useState(mockModels);
+      const [isOnline, setIsOnline] = React.useState(navigator.onLine);
+      const [cachedModels, setCachedModels] = React.useState([]);
+      const [showVoiceButton, setShowVoiceButton] = React.useState(false);
+      const [isListening, setIsListening] = React.useState(false);
+      const [showNotificationBanner, setShowNotificationBanner] = React.useState(false);
+      const [notificationPermission, setNotificationPermission] = React.useState(Notification.permission);
+      const [isRealTimeConnected, setIsRealTimeConnected] = React.useState(false);
+      const [realtimeUpdates, setRealtimeUpdates] = React.useState([]);
+      const [connectionStatus, setConnectionStatus] = React.useState('disconnected');
+      const [unreadUpdates, setUnreadUpdates] = React.useState(0);
+
+      // Update isMobile state on window resize
+      React.useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      // Monitor online/offline status
+      React.useEffect(() => {
+        const handleOnline = () => {
+          console.log('App is online');
+          setIsOnline(true);
+          syncOfflineData();
+        };
+
+        const handleOffline = () => {
+          console.log('App is offline');
+          setIsOnline(false);
+        };
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        return () => {
+          window.removeEventListener('online', handleOnline);
+          window.removeEventListener('offline', handleOffline);
+        };
+      }, []);
+
+      // Initialize offline database and cache models
+      React.useEffect(() => {
+        const cacheModels = async () => {
+          try {
+            // Cache each model for offline use
+            for (const model of mockModels) {
+              await window.mlModelsOfflineDB.cacheModel(model);
+            }
+
+            // Get cached models
+            const models = await window.mlModelsOfflineDB.getCachedModels();
+            setCachedModels(models);
+
+            console.log('Models cached for offline use:', models.length);
+          } catch (error) {
+            console.error('Error caching models:', error);
+          }
+        };
+
+        cacheModels();
+      }, []);
+
+      // Sync offline data when coming back online
+      const syncOfflineData = async () => {
+        try {
+          // Get sync queue
+          const syncQueue = await window.mlModelsOfflineDB.getSyncQueue();
+
+          if (syncQueue.length > 0) {
+            console.log(`Syncing ${syncQueue.length} offline items`);
+
+            // Show notification
+            window.mlModelsNotifications.showOfflineSyncNotification({
+              count: syncQueue.length
+            });
+
+            // Mark items as synced
+            for (const item of syncQueue) {
+              await window.mlModelsOfflineDB.markAsSynced(item.id);
+            }
+          }
+        } catch (error) {
+          console.error('Error syncing offline data:', error);
+        }
+      };
+
+      // Initialize voice commands
+      React.useEffect(() => {
+        if (isMobile && window.mlModelsVoice) {
+          setShowVoiceButton(true);
+
+          // Register voice commands
+          window.mlModelsVoice.registerCommand('show models', () => {
+            setActiveTab('models');
+            window.mlModelsVoice.showFeedback('Showing models');
+          });
+
+          window.mlModelsVoice.registerCommand('show deployment', () => {
+            if (selectedModelId) {
+              setActiveTab('deployment');
+              window.mlModelsVoice.showFeedback('Showing deployment');
+            } else {
+              window.mlModelsVoice.showFeedback('Please select a model first');
+            }
+          });
+
+          window.mlModelsVoice.registerCommand('show monitoring', () => {
+            if (selectedModelId) {
+              setActiveTab('monitoring');
+              window.mlModelsVoice.showFeedback('Showing monitoring');
+            } else {
+              window.mlModelsVoice.showFeedback('Please select a model first');
+            }
+          });
+
+          // Listen for voice commands
+          document.addEventListener('voiceCommand', (event) => {
+            console.log('Voice command received:', event.detail);
+
+            const { action, params } = event.detail;
+
+            if (action === 'selectModel' && params.modelIndex >= 0 && params.modelIndex < modelsToShow.length) {
+              handleSelectModel(modelsToShow[params.modelIndex].id);
+            } else if (action === 'refresh') {
+              handleRefresh();
+            } else if (action === 'goBack') {
+              if (activeTab === 'monitoring') setActiveTab('deployment');
+              else if (activeTab === 'deployment') setActiveTab('models');
+            }
+          });
+        }
+      }, [isMobile, selectedModelId, modelsToShow]);
+
+      // Initialize gesture controls
+      React.useEffect(() => {
+        if (isMobile && window.mlModelsGestures) {
+          // Register global gestures
+          window.mlModelsGestures.registerGesture('pinch', (data) => {
+            console.log('Pinch gesture detected:', data);
+            // Implement pinch-to-zoom for charts or visualizations
+          });
+
+          window.mlModelsGestures.registerGesture('rotate', (data) => {
+            console.log('Rotate gesture detected:', data);
+            // Implement rotation for 3D model visualizations
+          });
+
+          window.mlModelsGestures.registerGesture('swipe', (data) => {
+            console.log('Swipe gesture detected:', data);
+            handleSwipe(data.direction);
+          });
+
+          // Listen for gesture events
+          document.addEventListener('mlModelGesture', (event) => {
+            console.log('Gesture event received:', event.detail);
+          });
+        }
+      }, [isMobile]);
+
+      // Check for notification permission and show banner if needed
+      React.useEffect(() => {
+        if (isMobile && window.mlModelsNotifications) {
+          if (Notification.permission === 'default') {
+            setShowNotificationBanner(true);
+          }
+
+          // Listen for permission changes
+          const checkPermission = () => {
+            setNotificationPermission(Notification.permission);
+            if (Notification.permission === 'granted') {
+              setShowNotificationBanner(false);
+            }
+          };
+
+          document.addEventListener('visibilitychange', checkPermission);
+
+          return () => {
+            document.removeEventListener('visibilitychange', checkPermission);
+          };
+        }
+      }, [isMobile]);
+
+      // Initialize real-time updates
+      React.useEffect(() => {
+        if (window.mlModelsRealTime) {
+          // Set up connection handlers
+          window.mlModelsRealTime.onConnect(() => {
+            console.log('Connected to real-time updates server');
+            setIsRealTimeConnected(true);
+            setConnectionStatus('connected');
+
+            // Show notification if permission granted
+            if (Notification.permission === 'granted' && window.mlModelsNotifications) {
+              window.mlModelsNotifications.showNotification(
+                'Real-Time Updates',
+                {
+                  body: 'Connected to real-time updates server. You will now receive live model updates.',
+                  icon: '/icon.png'
+                }
+              );
+            }
+
+            // Subscribe to all models
+            mockModels.forEach(model => {
+              window.mlModelsRealTime.subscribeToModel(model.id, (updateType, data) => {
+                console.log(`Subscription callback for ${model.id}:`, updateType, data);
+              });
+            });
+          });
+
+          window.mlModelsRealTime.onDisconnect(() => {
+            console.log('Disconnected from real-time updates server');
+            setIsRealTimeConnected(false);
+            setConnectionStatus('disconnected');
+
+            // Show notification if permission granted
+            if (Notification.permission === 'granted' && window.mlModelsNotifications) {
+              window.mlModelsNotifications.showNotification(
+                'Real-Time Updates',
+                {
+                  body: 'Disconnected from real-time updates server. Attempting to reconnect...',
+                  icon: '/icon.png'
+                }
+              );
+            }
+          });
+
+          window.mlModelsRealTime.onError((error) => {
+            console.error('Real-time updates error:', error);
+            setConnectionStatus('disconnected');
+
+            // Report error
+            if (window.mlModelsErrorReporter) {
+              window.mlModelsErrorReporter.reportError('realtime', {
+                message: 'Real-time updates error',
+                error
+              });
+            }
+          });
+
+          // Add a connecting state handler
+          const originalConnect = window.mlModelsRealTime.connect;
+          window.mlModelsRealTime.connect = function() {
+            setConnectionStatus('connecting');
+            return originalConnect.apply(this, arguments);
+          };
+
+          // Listen for model updates
+          document.addEventListener('mlModelsUpdate', (event) => {
+            const { updateType, data } = event.detail;
+            console.log(`Real-time update received: ${updateType}`, data);
+
+            // Add to updates list
+            setRealtimeUpdates(prevUpdates => {
+              const newUpdates = [
+                {
+                  id: Date.now().toString(),
+                  type: updateType,
+                  data,
+                  timestamp: new Date().toISOString()
+                },
+                ...prevUpdates
+              ].slice(0, 20); // Keep only the latest 20 updates
+
+              return newUpdates;
+            });
+
+            // Increment unread updates counter
+            setUnreadUpdates(prev => prev + 1);
+
+            // Show notification for important updates
+            if (Notification.permission === 'granted' && window.mlModelsNotifications) {
+              if (updateType === 'drift') {
+                window.mlModelsNotifications.showModelDriftNotification(
+                  mockModels.find(m => m.id === data.modelId),
+                  data.driftAlert
+                );
+              } else if (updateType === 'status' && data.status === 'degraded') {
+                window.mlModelsNotifications.showNotification(
+                  'Model Status Change',
+                  {
+                    body: `Model ${mockModels.find(m => m.id === data.modelId)?.name} status changed to ${data.status}`,
+                    icon: '/icon.png'
+                  }
+                );
+              }
+            }
+
+            // Update model data if metrics changed
+            if (updateType === 'metrics') {
+              setModelsToShow(prevModels => {
+                return prevModels.map(model => {
+                  if (model.id === data.modelId) {
+                    return {
+                      ...model,
+                      metrics: {
+                        ...model.metrics,
+                        ...data.metrics
+                      }
+                    };
+                  }
+                  return model;
+                });
+              });
+            }
+          });
+
+          // Simulate connection attempt
+          setTimeout(() => {
+            setConnectionStatus('connecting');
+
+            // Simulate successful connection after a delay
+            setTimeout(() => {
+              setIsRealTimeConnected(true);
+              setConnectionStatus('connected');
+
+              // Simulate receiving updates periodically
+              const updateInterval = setInterval(() => {
+                if (isRealTimeConnected) {
+                  // Simulate different types of updates
+                  const updateTypes = ['metrics', 'status', 'drift'];
+                  const randomType = updateTypes[Math.floor(Math.random() * updateTypes.length)];
+                  const randomModelIndex = Math.floor(Math.random() * mockModels.length);
+                  const randomModel = mockModels[randomModelIndex];
+
+                  let updateData = {
+                    modelId: randomModel.id
+                  };
+
+                  if (randomType === 'metrics') {
+                    updateData.metrics = {
+                      accuracy: randomModel.metrics.accuracy ?
+                        Math.min(0.99, Math.max(0.7, randomModel.metrics.accuracy + (Math.random() * 0.02 - 0.01))) :
+                        undefined,
+                      rmse: randomModel.metrics.rmse ?
+                        Math.max(0.5, Math.min(2.0, randomModel.metrics.rmse + (Math.random() * 0.2 - 0.1))) :
+                        undefined
+                    };
+                  } else if (randomType === 'status') {
+                    const statuses = ['healthy', 'degraded', 'critical'];
+                    updateData.status = statuses[Math.floor(Math.random() * statuses.length)];
+                  } else if (randomType === 'drift') {
+                    updateData.driftAlert = {
+                      severity: Math.random() > 0.5 ? 'medium' : 'high',
+                      feature: ['age', 'gender', 'location'][Math.floor(Math.random() * 3)]
+                    };
+                  }
+
+                  // Dispatch custom event to simulate receiving update from server
+                  const event = new CustomEvent('mlModelsUpdate', {
+                    detail: {
+                      updateType: randomType,
+                      data: updateData
+                    }
+                  });
+                  document.dispatchEvent(event);
+                }
+              }, 10000); // Send update every 10 seconds
+
+              return () => clearInterval(updateInterval);
+            }, 2000);
+          }, 1000);
+
+          // Listen for initialization data
+          document.addEventListener('mlModelsInit', (event) => {
+            console.log('Received initialization data:', event.detail);
+          });
+        }
+      }, []);
+
+      // Implement progressive loading for mobile
+      React.useEffect(() => {
+        if (isMobile) {
+          // Initially show only first 2 models on mobile
+          setModelsToShow(mockModels.slice(0, 2));
+
+          // Simulate loading the rest after a delay
+          const timer = setTimeout(() => {
+            setModelsToShow(mockModels);
+          }, 1000);
+
+          return () => clearTimeout(timer);
+        } else {
+          // Show all models on desktop
+          setModelsToShow(mockModels);
+        }
+      }, [isMobile]);
+
+      const handleSelectModel = (modelId) => {
+        setSelectedModelId(modelId);
+        setActiveTab('deployment');
+
+        // Simulate loading data
+        setIsLoading(true);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 500);
+
+        // Cache the selected model for offline use
+        if (window.mlModelsOfflineDB) {
+          const model = mockModels.find(m => m.id === modelId);
+          if (model) {
+            window.mlModelsOfflineDB.cacheModel(model)
+              .then(() => console.log(`Model ${modelId} cached for offline use`))
+              .catch(error => console.error(`Error caching model ${modelId}:`, error));
+          }
+        }
+
+        // Subscribe to real-time updates for this model
+        if (window.mlModelsRealTime && isRealTimeConnected) {
+          // First unsubscribe from any previous model
+          if (selectedModelId) {
+            window.mlModelsRealTime.unsubscribeFromModel(selectedModelId);
+          }
+
+          // Subscribe to the new model
+          window.mlModelsRealTime.subscribeToModel(modelId, (updateType, data) => {
+            console.log(`Received update for model ${modelId}: ${updateType}`, data);
+
+            // Handle specific update types
+            if (updateType === 'metrics' && window.mlModelsNotifications && Notification.permission === 'granted') {
+              // Show notification for significant metric changes
+              if (data.metrics.accuracy && Math.abs(data.metrics.accuracy - model.metrics.accuracy) > 0.05) {
+                window.mlModelsNotifications.showModelPerformanceNotification(
+                  model,
+                  data.metrics
+                );
+              } else if (data.metrics.rmse && Math.abs(data.metrics.rmse - model.metrics.rmse) > 0.5) {
+                window.mlModelsNotifications.showModelPerformanceNotification(
+                  model,
+                  data.metrics
+                );
+              }
+            }
+          });
+
+          console.log(`Subscribed to real-time updates for model ${modelId}`);
+        }
+      };
+
+      // Function to load more models (for mobile "load more" button)
+      const handleLoadMore = () => {
+        setIsLoading(true);
+
+        // Simulate loading delay
+        setTimeout(() => {
+          setModelsToShow(mockModels);
+          setIsLoading(false);
+        }, 500);
+      };
+
+      // Function to handle swipe gestures on mobile
+      const handleSwipe = (direction) => {
+        if (direction === 'left' && selectedModelId) {
+          // Swipe left to go to next tab
+          if (activeTab === 'models') setActiveTab('deployment');
+          else if (activeTab === 'deployment') setActiveTab('monitoring');
+        } else if (direction === 'right') {
+          // Swipe right to go to previous tab
+          if (activeTab === 'monitoring') setActiveTab('deployment');
+          else if (activeTab === 'deployment') setActiveTab('models');
+        }
+      };
+
+      // Function to handle voice command button
+      const handleVoiceCommand = () => {
+        if (window.mlModelsVoice) {
+          const isNowListening = window.mlModelsVoice.toggleListening();
+          setIsListening(isNowListening);
+        }
+      };
+
+      // Function to request notification permission
+      const requestNotificationPermission = async () => {
+        if (window.mlModelsNotifications) {
+          const granted = await window.mlModelsNotifications.requestPermission();
+          setNotificationPermission(granted ? 'granted' : 'denied');
+          setShowNotificationBanner(false);
+
+          if (granted) {
+            // Show a welcome notification
+            window.mlModelsNotifications.showNotification(
+              'Notifications Enabled',
+              {
+                body: 'You will now receive updates about your ML models.',
+                icon: '/icon.png'
+              }
+            );
+          }
+        }
+      };
+
+      // Pull-to-refresh functionality for mobile
+      const [isPulling, setIsPulling] = React.useState(false);
+      const [pullDistance, setPullDistance] = React.useState(0);
+      const [isRefreshing, setIsRefreshing] = React.useState(false);
+
+      const handleTouchStart = (e) => {
+        if (isMobile && window.scrollY === 0) {
+          window.touchStartY = e.touches[0].clientY;
+        }
+      };
+
+      const handleTouchMove = (e) => {
+        if (isMobile && window.touchStartY && window.scrollY === 0) {
+          const touchY = e.touches[0].clientY;
+          const distance = touchY - window.touchStartY;
+
+          if (distance > 0) {
+            setPullDistance(Math.min(distance * 0.5, 70));
+            setIsPulling(true);
+          }
+        }
+      };
+
+      const handleTouchEnd = () => {
+        if (isMobile && isPulling) {
+          if (pullDistance > 50) {
+            // Trigger refresh
+            handleRefresh();
+          } else {
+            setPullDistance(0);
+            setIsPulling(false);
+          }
+
+          window.touchStartY = null;
+        }
+      };
+
+      // Function to handle refresh
+      const handleRefresh = () => {
+        setIsRefreshing(true);
+
+        // Simulate refresh delay
+        setTimeout(async () => {
+          // Refresh cached models
+          if (window.mlModelsOfflineDB) {
+            try {
+              const models = await window.mlModelsOfflineDB.getCachedModels();
+              setCachedModels(models);
+            } catch (error) {
+              console.error('Error refreshing cached models:', error);
+            }
+          }
+
+          setIsRefreshing(false);
+          setPullDistance(0);
+          setIsPulling(false);
+        }, 1500);
+      };
+
+      return (
+        <div
+          className="container px-4 sm:px-6"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {/* Offline indicator */}
+          {!isOnline && (
+            <div className="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-4 rounded">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-yellow-700">
+                    You are currently offline. Using cached data.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Notification permission banner */}
+          {showNotificationBanner && (
+            <div className="bg-indigo-100 border-l-4 border-indigo-500 p-4 mb-4 rounded">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-indigo-700">
+                      Enable notifications to get updates about your ML models.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  className="bg-indigo-500 text-white px-3 py-1 rounded text-sm"
+                  onClick={requestNotificationPermission}
+                >
+                  Enable
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Pull-to-refresh indicator */}
+          {isMobile && (
+            <div
+              className={`pull-indicator ${isPulling || isRefreshing ? 'active' : ''}`}
+              style={{ height: isPulling ? `${pullDistance}px` : isRefreshing ? '50px' : '0' }}
+            >
+              {isRefreshing ? (
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+              ) : (
+                <span>Pull down to refresh</span>
+              )}
+            </div>
+          )}
+
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold mb-1`}>Machine Learning Models</h1>
+              <p className="text-gray-500 mb-4 sm:mb-6">Manage and use AI models for care allocation and prediction</p>
+            </div>
+
+            <div className="flex items-center">
+              {/* Real-time updates indicator */}
+              <div className="mr-3 flex items-center">
+                <div
+                  className={`w-3 h-3 rounded-full mr-1 ${isRealTimeConnected ? 'bg-green-500' : 'bg-gray-400'}`}
+                  style={{
+                    boxShadow: isRealTimeConnected ? '0 0 0 2px rgba(16, 185, 129, 0.2)' : 'none',
+                    animation: isRealTimeConnected ? 'pulse 2s infinite' : 'none'
+                  }}
+                ></div>
+                <span className={`text-xs ${isRealTimeConnected ? 'text-green-600' : 'text-gray-500'}`}>
+                  {isRealTimeConnected ? 'Live' : 'Offline'}
+                </span>
+              </div>
+
+              {/* Voice command button for mobile */}
+              {showVoiceButton && (
+                <button
+                  className={`rounded-full w-12 h-12 flex items-center justify-center shadow-lg ${isListening ? 'bg-red-500' : 'bg-indigo-600'}`}
+                  onClick={handleVoiceCommand}
+                >
+                  <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Real-time updates panel */}
+          <div className="mb-4 p-3 bg-indigo-50 border border-indigo-100 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center">
+                <svg className="h-5 w-5 text-indigo-600 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                </svg>
+                <h3 className="text-sm font-medium text-indigo-800">Real-Time Updates</h3>
+              </div>
+              <div className="flex items-center">
+                <div className={`realtime-indicator ${connectionStatus === 'connected' ? 'connected' : connectionStatus === 'connecting' ? 'connecting' : 'disconnected'}`}>
+                  <div className="realtime-pulse"></div>
+                  <span>{connectionStatus === 'connected' ? 'Connected' : connectionStatus === 'connecting' ? 'Connecting...' : 'Disconnected'}</span>
+                </div>
+                {connectionStatus === 'disconnected' && (
+                  <button
+                    className="ml-2 bg-indigo-500 text-white text-xs px-2 py-1 rounded"
+                    onClick={() => {
+                      setConnectionStatus('connecting');
+                      setTimeout(() => {
+                        setIsRealTimeConnected(true);
+                        setConnectionStatus('connected');
+                      }, 2000);
+                    }}
+                  >
+                    Reconnect
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {realtimeUpdates.length > 0 ? (
+              <div className="max-h-32 overflow-y-auto">
+                {realtimeUpdates.map(update => (
+                  <div key={update.id} className="text-xs border-b border-indigo-100 py-1 last:border-b-0 highlight-update">
+                    <div className="flex justify-between">
+                      <span className="font-medium text-indigo-800">
+                        {update.type.charAt(0).toUpperCase() + update.type.slice(1)}
+                      </span>
+                      <span className="text-gray-500">
+                        {new Date(update.timestamp).toLocaleTimeString()}
+                      </span>
+                    </div>
+                    <div className="text-gray-600">
+                      {update.type === 'metrics' && (
+                        <span>
+                          Model {mockModels.find(m => m.id === update.data.modelId)?.name} metrics updated
+                          {update.data.metrics.accuracy && ` (Accuracy: ${(update.data.metrics.accuracy * 100).toFixed(1)}%)`}
+                          {update.data.metrics.rmse && ` (RMSE: ${update.data.metrics.rmse.toFixed(2)})`}
+                        </span>
+                      )}
+                      {update.type === 'status' && (
+                        <span>
+                          Model {mockModels.find(m => m.id === update.data.modelId)?.name} status changed to {update.data.status}
+                        </span>
+                      )}
+                      {update.type === 'drift' && (
+                        <span>
+                          Drift detected in model {mockModels.find(m => m.id === update.data.modelId)?.name} ({update.data.driftAlert.severity} severity)
+                        </span>
+                      )}
+                      {update.type === 'prediction' && (
+                        <span>
+                          New prediction for model {mockModels.find(m => m.id === update.data.modelId)?.name}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-3 text-sm text-gray-500">
+                {connectionStatus === 'connected' ? (
+                  <p>No updates received yet. Updates will appear here in real-time.</p>
+                ) : connectionStatus === 'connecting' ? (
+                  <div className="flex justify-center items-center">
+                    <svg className="animate-spin h-4 w-4 mr-2 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p>Connecting to real-time updates server...</p>
+                  </div>
+                ) : (
+                  <p>Not connected to real-time updates server. Click "Reconnect" to try again.</p>
+                )}
+              </div>
+            )}
+
+            {connectionStatus === 'connected' && (
+              <div className="mt-2 text-xs text-right">
+                <button
+                  className="text-indigo-600 hover:text-indigo-800"
+                  onClick={() => {
+                    // Simulate a new update
+                    const randomModelIndex = Math.floor(Math.random() * mockModels.length);
+                    const randomModel = mockModels[randomModelIndex];
+                    const updateTypes = ['metrics', 'status', 'drift'];
+                    const randomType = updateTypes[Math.floor(Math.random() * updateTypes.length)];
+
+                    let updateData = { modelId: randomModel.id };
+
+                    if (randomType === 'metrics') {
+                      updateData.metrics = {
+                        accuracy: randomModel.metrics.accuracy ?
+                          Math.min(0.99, Math.max(0.7, randomModel.metrics.accuracy + (Math.random() * 0.02 - 0.01))) :
+                          undefined,
+                        rmse: randomModel.metrics.rmse ?
+                          Math.max(0.5, Math.min(2.0, randomModel.metrics.rmse + (Math.random() * 0.2 - 0.1))) :
+                          undefined
+                      };
+                    } else if (randomType === 'status') {
+                      const statuses = ['healthy', 'degraded', 'critical'];
+                      updateData.status = statuses[Math.floor(Math.random() * statuses.length)];
+                    } else if (randomType === 'drift') {
+                      updateData.driftAlert = {
+                        severity: Math.random() > 0.5 ? 'medium' : 'high',
+                        feature: ['age', 'gender', 'location'][Math.floor(Math.random() * 3)]
+                      };
+                    }
+
+                    // Dispatch custom event to simulate receiving update from server
+                    const event = new CustomEvent('mlModelsUpdate', {
+                      detail: {
+                        updateType: randomType,
+                        data: updateData
+                      }
+                    });
+                    document.dispatchEvent(event);
+                  }}
+                >
+                  Test Update
+                </button>
+                {realtimeUpdates.length > 0 && (
+                  <button
+                    className="text-indigo-600 hover:text-indigo-800 ml-3"
+                    onClick={() => setRealtimeUpdates([])}
+                  >
+                    Clear All
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className={`tabs ${isMobile ? 'overflow-x-auto flex-nowrap' : ''}`}>
+            <div
+              className={`tab ${activeTab === 'models' ? 'active' : ''} ${isMobile ? 'px-3' : ''}`}
+              onClick={() => setActiveTab('models')}
+            >
+              Models
+            </div>
+            {selectedModelId && (
+              <div
+                className={`tab ${activeTab === 'deployment' ? 'active' : ''} ${isMobile ? 'px-3' : ''}`}
+                onClick={() => setActiveTab('deployment')}
+              >
+                Deployment
+              </div>
+            )}
+            {selectedModelId && (
+              <div
+                className={`tab ${activeTab === 'monitoring' ? 'active' : ''} ${isMobile ? 'px-3' : ''}`}
+                onClick={() => setActiveTab('monitoring')}
+              >
+                Monitoring
+              </div>
+            )}
+          </div>
+
+          <div
+            className={`tab-content ${activeTab === 'models' ? 'active' : ''}`}
+            onTouchStart={(e) => {
+              if (isMobile) {
+                // Store the touch start position
+                window.touchStartX = e.touches[0].clientX;
+              }
+            }}
+            onTouchEnd={(e) => {
+              if (isMobile && window.touchStartX) {
+                const touchEndX = e.changedTouches[0].clientX;
+                const diff = window.touchStartX - touchEndX;
+
+                // Detect swipe (more than 50px movement)
+                if (Math.abs(diff) > 50) {
+                  handleSwipe(diff > 0 ? 'left' : 'right');
+                }
+
+                window.touchStartX = null;
+              }
+            }}
+            id="models-container" // For gesture controls
+          >
+            {/* Offline cached models indicator */}
+            {!isOnline && cachedModels.length > 0 && (
+              <div className="mb-4 p-3 bg-gray-100 rounded-lg">
+                <div className="flex items-center mb-2">
+                  <svg className="h-5 w-5 text-indigo-600 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z" />
+                  </svg>
+                  <h3 className="text-sm font-medium">Cached Models Available Offline</h3>
+                </div>
+                <p className="text-xs text-gray-500">
+                  {cachedModels.length} models are available for offline use. Last synced: {new Date().toLocaleDateString()}
+                </p>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              {isRefreshing ? (
+                // Show shimmer loading placeholders when refreshing
+                Array(isMobile ? 2 : 3).fill().map((_, index) => (
+                  <div key={index} className="card">
+                    <div className="flex justify-between items-start">
+                      <div className="w-3/4">
+                        <div className="loading-shimmer h-5 w-full rounded mb-2"></div>
+                        <div className="loading-shimmer h-4 w-1/2 rounded"></div>
+                      </div>
+                      <div className="loading-shimmer h-6 w-20 rounded-full"></div>
+                    </div>
+                    <div className="mt-4">
+                      <div className="loading-shimmer h-4 w-1/3 rounded mb-2"></div>
+                      <div className="mt-2 flex">
+                        <div className="loading-shimmer h-6 w-24 rounded-full mr-2"></div>
+                        <div className="loading-shimmer h-6 w-16 rounded-full"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                modelsToShow.map((model, index) => (
+                  <ModelCard
+                    key={model.id}
+                    model={model}
+                    onSelect={handleSelectModel}
+                  />
+                ))
+              )}
+            </div>
+
+            {/* Load more button for mobile */}
+            {isMobile && modelsToShow.length < mockModels.length && (
+              <div className="mt-4 text-center">
+                <button
+                  className="btn w-full"
+                  onClick={handleLoadMore}
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Loading...' : 'Load More Models'}
+                </button>
+              </div>
+            )}
+
+            {/* Voice commands help */}
+            {showVoiceButton && (
+              <div className="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <h3 className="text-sm font-medium mb-2">Voice Commands</h3>
+                <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                  <div>"Show models"</div>
+                  <div>"Select model 1"</div>
+                  <div>"Show deployment"</div>
+                  <div>"Show monitoring"</div>
+                  <div>"Refresh"</div>
+                  <div>"Go back"</div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {selectedModelId && (
+            <div
+              className={`tab-content ${activeTab === 'deployment' ? 'active' : ''}`}
+              onTouchStart={(e) => {
+                if (isMobile) {
+                  window.touchStartX = e.touches[0].clientX;
+                }
+              }}
+              onTouchEnd={(e) => {
+                if (isMobile && window.touchStartX) {
+                  const touchEndX = e.changedTouches[0].clientX;
+                  const diff = window.touchStartX - touchEndX;
+
+                  if (Math.abs(diff) > 50) {
+                    handleSwipe(diff > 0 ? 'left' : 'right');
+                  }
+
+                  window.touchStartX = null;
+                }
+              }}
+              id="deployment-container" // For gesture controls
+            >
+              {isLoading ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+                </div>
+              ) : (
+                <ModelDeployment modelId={selectedModelId} />
+              )}
+            </div>
+          )}
+
+          {selectedModelId && (
+            <div
+              className={`tab-content ${activeTab === 'monitoring' ? 'active' : ''}`}
+              onTouchStart={(e) => {
+                if (isMobile) {
+                  window.touchStartX = e.touches[0].clientX;
+                }
+              }}
+              onTouchEnd={(e) => {
+                if (isMobile && window.touchStartX) {
+                  const touchEndX = e.changedTouches[0].clientX;
+                  const diff = window.touchStartX - touchEndX;
+
+                  if (Math.abs(diff) > 50) {
+                    handleSwipe(diff > 0 ? 'left' : 'right');
+                  }
+
+                  window.touchStartX = null;
+                }
+              }}
+              id="monitoring-container" // For gesture controls
+            >
+              {isLoading ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+                </div>
+              ) : (
+                <ModelMonitoring modelId={selectedModelId} />
+              )}
+
+              {/* Gesture controls help */}
+              {isMobile && (
+                <div className="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <h3 className="text-sm font-medium mb-2">Gesture Controls</h3>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                    <div>Swipe left/right: Navigate tabs</div>
+                    <div>Pinch: Zoom charts</div>
+                    <div>Long press: More options</div>
+                    <div>Two-finger rotate: Rotate visualizations</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Mobile navigation indicator */}
+          {isMobile && selectedModelId && (
+            <div className="fixed bottom-4 left-0 right-0 flex justify-center">
+              <div className="bg-white rounded-full shadow-lg px-2 py-1 flex space-x-1">
+                <div
+                  className={`w-2 h-2 rounded-full ${activeTab === 'models' ? 'bg-indigo-600' : 'bg-gray-300'}`}
+                  onClick={() => setActiveTab('models')}
+                ></div>
+                <div
+                  className={`w-2 h-2 rounded-full ${activeTab === 'deployment' ? 'bg-indigo-600' : 'bg-gray-300'}`}
+                  onClick={() => setActiveTab('deployment')}
+                ></div>
+                <div
+                  className={`w-2 h-2 rounded-full ${activeTab === 'monitoring' ? 'bg-indigo-600' : 'bg-gray-300'}`}
+                  onClick={() => setActiveTab('monitoring')}
+                ></div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Try to render the React app with error handling
+    try {
+      console.log('Attempting to render React app...');
+      const rootElement = document.getElementById('root');
+      if (rootElement) {
+        ReactDOM.createRoot(rootElement).render(<App />);
+        console.log('React app rendered successfully');
+      } else {
+        console.error('Root element not found!');
+        document.body.innerHTML += '<div style="color: red; padding: 20px;">Error: Root element not found!</div>';
+      }
+    } catch (error) {
+      console.error('Error rendering React app:', error);
+      document.body.innerHTML += '<div style="color: red; padding: 20px;">Error rendering React app: ' + error.message + '</div>';
+
+      // Fallback to basic HTML if React fails
+      document.getElementById('root').innerHTML = `
+        <div style="padding: 20px; max-width: 800px; margin: 0 auto;">
+          <h1>Machine Learning Models</h1>
+          <p>There was an error loading the React application. Here's a basic version:</p>
+          <div style="margin-top: 20px;">
+            <h2>Available Models</h2>
+            <ul>
+              <li>Caregiver Recommendation (v1.0)</li>
+              <li>Visit Prediction (v1.2)</li>
+              <li>Satisfaction Prediction (v0.8)</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

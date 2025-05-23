@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sync API Performance Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { color: #333; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    tr:nth-child(even) { background-color: #f9f9f9; }
+    .chart { width: 100%; height: 300px; margin-bottom: 30px; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Sync API Performance Report</h1>
+  <p>Generated on: 08/05/2025, 23:05:44</p>
+  
+  <h2>Latest Results</h2>
+  <table>
+    <tr>
+      <th>Metric</th>
+      <th>Value</th>
+    </tr>
+    <tr>
+      <td>Sync Status Response Time</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>Concurrent Operations (Total)</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>Concurrent Operations (Average)</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>Batch Operations (Total)</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>Batch Operations (Per Operation)</td>
+      <td>N/A</td>
+    </tr>
+    <tr>
+      <td>Process Operations Time</td>
+      <td>N/A</td>
+    </tr>
+  </table>
+  
+  <h2>Historical Trends</h2>
+  <div class="chart-container">
+    <canvas id="responseTimeChart" class="chart"></canvas>
+  </div>
+  
+  <script>
+    // Prepare data for charts
+    const reports = [{"timestamp":"2025-05-08T22:05:44.155Z","syncStatusResponseTime":null,"concurrentOperationsTime":null,"batchOperationsTime":null,"processOperationsTime":null}];
+    const labels = reports.map(r => new Date(r.timestamp).toLocaleDateString());
+    
+    // Response time chart
+    new Chart(document.getElementById('responseTimeChart'), {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Sync Status Response Time (ms)',
+            data: reports.map(r => r.syncStatusResponseTime),
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+          },
+          {
+            label: 'Process Operations Time (ms)',
+            data: reports.map(r => r.processOperationsTime),
+            borderColor: 'rgb(255, 99, 132)',
+            tension: 0.1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'API Response Times'
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+  

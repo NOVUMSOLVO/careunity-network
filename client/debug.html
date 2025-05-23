@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React Debug</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f2f5;
+        font-family: Arial, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- This div is where React will mount -->
+    <div id="root"></div>
+    
+    <!-- Fallback content in case React fails to load -->
+    <noscript>
+      <div style="padding: 20px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h1 style="color: #e11d48;">JavaScript Required</h1>
+        <p>This application requires JavaScript to be enabled in your browser.</p>
+      </div>
+    </noscript>
+    
+    <!-- Script to check if the page is blank -->
+    <script>
+      // Check if the page appears blank after a delay
+      setTimeout(function() {
+        const rootElement = document.getElementById('root');
+        if (rootElement && (!rootElement.children || rootElement.children.length === 0)) {
+          console.error('Page appears to be blank after timeout');
+          rootElement.innerHTML = `
+            <div style="padding: 20px; font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; background-color: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <h1 style="color: #e11d48;">Loading Error</h1>
+              <p>The application failed to load properly. This could be due to:</p>
+              <ul>
+                <li>JavaScript errors</li>
+                <li>Network issues</li>
+                <li>Missing dependencies</li>
+              </ul>
+              <p>Please check the browser console for more details.</p>
+            </div>
+          `;
+        }
+      }, 5000); // Check after 5 seconds
+    </script>
+    
+    <!-- Import the debug component -->
+    <script type="module" src="/src/debug.tsx"></script>
+  </body>
+</html>

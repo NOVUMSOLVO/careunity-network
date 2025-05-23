@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <title>CareUnity - Settings</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <div class="w-64 bg-indigo-700 text-white">
+      <div class="p-4 text-xl font-bold">CareUnity</div>
+      <nav class="mt-6">
+        <a href="careunity-dashboard.html" class="block px-4 py-2 hover:bg-indigo-800">Dashboard</a>
+        <a href="service-users.html" class="block px-4 py-2 hover:bg-indigo-800">Service Users</a>
+        <a href="staff.html" class="block px-4 py-2 hover:bg-indigo-800">Staff</a>
+        <a href="scheduling.html" class="block px-4 py-2 hover:bg-indigo-800">Scheduling</a>
+        <a href="care-plans.html" class="block px-4 py-2 hover:bg-indigo-800">Care Plans</a>
+        <a href="reports.html" class="block px-4 py-2 hover:bg-indigo-800">Reports</a>
+        <a href="settings.html" class="block px-4 py-2 bg-indigo-800">Settings</a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1">
+      <!-- Header -->
+      <header class="bg-white shadow-sm">
+        <div class="px-4 py-3 flex justify-between items-center">
+          <h1 class="text-xl font-semibold">Settings</h1>
+          <div class="flex items-center space-x-4">
+            <button class="p-2 rounded-full hover:bg-gray-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </button>
+            <div class="relative">
+              <button class="flex items-center space-x-2">
+                <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="User" class="w-8 h-8 rounded-full">
+                <span class="font-medium">Sarah Johnson</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Settings Content -->
+      <div class="p-6">
+        <!-- Settings Tabs -->
+        <div class="bg-white rounded-lg shadow mb-8">
+          <div class="border-b border-gray-200">
+            <nav class="flex -mb-px">
+              <a href="#" class="border-indigo-500 text-indigo-600 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm">
+                Organization
+              </a>
+              <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm">
+                Users & Permissions
+              </a>
+              <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm">
+                Notifications
+              </a>
+              <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm">
+                Integrations
+              </a>
+              <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm">
+                Billing
+              </a>
+            </nav>
+          </div>
+          
+          <!-- Organization Settings -->
+          <div class="p-6">
+            <h2 class="text-lg font-semibold mb-6">Organization Settings</h2>
+            
+            <div class="mb-8">
+              <h3 class="text-md font-medium mb-4">Organization Details</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Organization Name</label>
+                  <input type="text" value="CareUnity Home Care" class="w-full border rounded-md px-3 py-2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">CQC Registration Number</label>
+                  <input type="text" value="1-123456789" class="w-full border rounded-md px-3 py-2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                  <input type="text" value="+44 20 1234 5678" class="w-full border rounded-md px-3 py-2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                  <input type="email" value="info@careunity.example.com" class="w-full border rounded-md px-3 py-2">
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-8">
+              <h3 class="text-md font-medium mb-4">Address</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                  <input type="text" value="123 Care Street" class="w-full border rounded-md px-3 py-2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                  <input type="text" value="London" class="w-full border rounded-md px-3 py-2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
+                  <input type="text" value="SW1A 1AA" class="w-full border rounded-md px-3 py-2">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                  <select class="w-full border rounded-md px-3 py-2">
+                    <option>United Kingdom</option>
+                    <option>United States</option>
+                    <option>Canada</option>
+                    <option>Australia</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-8">
+              <h3 class="text-md font-medium mb-4">System Preferences</h3>
+              <div class="space-y-4">
+                <div class="flex items-center">
+                  <input type="checkbox" id="enable-notifications" class="h-4 w-4 text-indigo-600 border-gray-300 rounded" checked>
+                  <label for="enable-notifications" class="ml-2 block text-sm text-gray-700">Enable email notifications</label>
+                </div>
+                <div class="flex items-center">
+                  <input type="checkbox" id="enable-sms" class="h-4 w-4 text-indigo-600 border-gray-300 rounded" checked>
+                  <label for="enable-sms" class="ml-2 block text-sm text-gray-700">Enable SMS notifications</label>
+                </div>
+                <div class="flex items-center">
+                  <input type="checkbox" id="enable-ai" class="h-4 w-4 text-indigo-600 border-gray-300 rounded" checked>
+                  <label for="enable-ai" class="ml-2 block text-sm text-gray-700">Enable AI-powered care allocation</label>
+                </div>
+                <div class="flex items-center">
+                  <input type="checkbox" id="enable-offline" class="h-4 w-4 text-indigo-600 border-gray-300 rounded" checked>
+                  <label for="enable-offline" class="ml-2 block text-sm text-gray-700">Enable offline mode for mobile app</label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex justify-end">
+              <button class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Save Changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

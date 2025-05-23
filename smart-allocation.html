@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareUnity - Smart Allocation</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* Fix CSS compatibility issues */
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+    
+    button {
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .offline.inverted {
+      -webkit-filter: invert(100%);
+      filter: invert(100%);
+    }
+    
+    .bing-search .search-input {
+      -webkit-backdrop-filter: blur(30px);
+      backdrop-filter: blur(30px);
+    }
+    
+    .calendar-day {
+      min-height: 100px;
+    }
+    
+    .visit-item {
+      cursor: pointer;
+    }
+    
+    .staff-card {
+      border-left: 4px solid transparent;
+    }
+    
+    .staff-card.available {
+      border-left-color: #10B981;
+    }
+    
+    .staff-card.busy {
+      border-left-color: #EF4444;
+    }
+    
+    .staff-card.partial {
+      border-left-color: #F59E0B;
+    }
+    
+    .compatibility-high {
+      background-color: #D1FAE5;
+    }
+    
+    .compatibility-medium {
+      background-color: #FEF3C7;
+    }
+    
+    .compatibility-low {
+      background-color: #FEE2E2;
+    }
+    
+    .map-container {
+      height: 400px;
+      background-color: #E5E7EB;
+      background-image: url('https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s+555555(-0.1278,51.5074)/pin-s+555555(-0.1378,51.5174)/pin-s+555555(-0.1478,51.5274)/pin-s+555555(-0.1178,51.5174)/pin-s+555555(-0.1378,51.5274)/-0.1278,51.5174,11/600x400@2x?access_token=pk.placeholder');
+      background-size: cover;
+      background-position: center;
+      border-radius: 0.375rem;
+    }
+    
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: 100px repeat(7, 1fr);
+      grid-auto-rows: minmax(60px, auto);
+      gap: 1px;
+    }
+    
+    .calendar-header {
+      background-color: #F3F4F6;
+      padding: 8px;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .time-slot {
+      background-color: #F3F4F6;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .calendar-cell {
+      background-color: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      padding: 4px;
+      min-height: 60px;
+    }
+    
+    .calendar-cell.allocated {
+      background-color: #DBEAFE;
+    }
+    
+    .calendar-cell.unallocated {
+      background-color: #FEE2E2;
+    }
+    
+    .visit-block {
+      background-color: #93C5FD;
+      border-radius: 4px;
+      padding: 4px;
+      margin-bottom: 2px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+    
+    .visit-block.unallocated {
+      background-color: #FCA5A5;
+    }
+    
+    .drag-handle {
+      cursor: move;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <div class="w-64 bg-indigo-700 text-white">
+      <div class="p-4 text-xl font-bold">CareUnity</div>
+      <div class="px-4 py-2 text-sm text-indigo-200">Care Coordinator</div>
+      <nav class="mt-6">
+        <a href="coordinator-dashboard.html" class="block px-4 py-2 hover:bg-indigo-800">Dashboard</a>
+        <a href="smart-allocation.html" class="block px-4 py-2 bg-indigo-800">Smart Allocation</a>
+        <a href="service-users.html" class="block px-4 py-2 hover:bg-indigo-800">Service Users</a>
+        <a href="staff.html" class="block px-4 py-2 hover:bg-indigo-800">Staff</a>
+        <a href="care-plans.html" class="block px-4 py-2 hover:bg-indigo-800">Care Plans</a>
+        <a href="incidents.html" class="block px-4 py-2 hover:bg-indigo-800">Incidents</a>
+        <a href="communications.html" class="block px-4 py-2 hover:bg-indigo-800">Communications</a>
+        <a href="reports.html" class="block px-4 py-2 hover:bg-indigo-800">Reports</a>
+        <a href="login.html" class="block px-4 py-2 hover:bg-indigo-800">Logout</a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1">
+      <!-- Header -->
+      <header class="bg-white shadow-sm">
+        <div class="px-4 py-3 flex justify-between items-center">
+          <h1 class="text-xl font-semibold">Smart Allocation</h1>
+          <div class="flex items-center space-x-4">
+            <button class="p-2 rounded-full hover:bg-gray-100 relative">
+              <span class="absolute top-0 right-0 h-3 w-3 rounded-full bg-red-500"></span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </button>
+            <div class="relative">
+              <button class="flex items-center space-x-2">
+                <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="User" class="w-8 h-8 rounded-full">
+                <span class="font-medium">Sarah Johnson</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Smart Allocation Content -->
+      <div class="p-6">
+        <!-- Allocation Controls -->
+        <div class="bg-white rounded-lg shadow mb-8">
+          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 class="text-lg font-semibold">Weekly Schedule</h2>
+            <div class="flex space-x-2">
+              <button class="bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300">Previous Week</button>
+              <span class="px-3 py-1">May 8 - May 14, 2025</span>
+              <button class="bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300">Next Week</button>
+            </div>
+          </div>
+          <div class="p-4 bg-gray-50 border-b border-gray-200">
+            <div class="flex flex-wrap gap-4">
+              <div class="flex-grow">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Staff</label>
+                <select class="w-full border rounded-md px-3 py-2">
+                  <option>All Staff</option>
+                  <option>Emma Wilson</option>
+                  <option>James Taylor</option>
+                  <option>Michael Brown</option>
+                </select>
+              </div>
+              <div class="flex-grow">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Service User</label>
+                <select class="w-full border rounded-md px-3 py-2">
+                  <option>All Service Users</option>
+                  <option>John Smith</option>
+                  <option>Mary Johnson</option>
+                  <option>Robert Brown</option>
+                  <option>Jane Doe</option>
+                </select>
+              </div>
+              <div class="flex-grow">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Visit Type</label>
+                <select class="w-full border rounded-md px-3 py-2">
+                  <option>All Visit Types</option>
+                  <option>Morning Care</option>
+                  <option>Medication</option>
+                  <option>Lunch Call</option>
+                  <option>Afternoon Care</option>
+                  <option>Evening Care</option>
+                </select>
+              </div>
+              <div class="flex-grow">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select class="w-full border rounded-md px-3 py-2">
+                  <option>All Statuses</option>
+                  <option>Allocated</option>
+                  <option>Unallocated</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Calendar View -->
+          <div class="p-4 overflow-x-auto">
+            <div class="calendar-grid">
+              <!-- Header row -->
+              <div class="calendar-header"></div>
+              <div class="calendar-header">Monday</div>
+              <div class="calendar-header">Tuesday</div>
+              <div class="calendar-header">Wednesday</div>
+              <div class="calendar-header">Thursday</div>
+              <div class="calendar-header">Friday</div>
+              <div class="calendar-header">Saturday</div>
+              <div class="calendar-header">Sunday</div>
+              
+              <!-- 8:00 row -->
+              <div class="time-slot">8:00</div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Mary J.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">Emma W.</div>
+                </div>
+              </div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Robert B.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">James T.</div>
+                </div>
+              </div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Mary J.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">Emma W.</div>
+                </div>
+              </div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Robert B.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">James T.</div>
+                </div>
+              </div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Mary J.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">Emma W.</div>
+                </div>
+              </div>
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell"></div>
+              
+              <!-- 10:00 row -->
+              <div class="time-slot">10:00</div>
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>John S.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">Michael B.</div>
+                </div>
+              </div>
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>John S.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">Michael B.</div>
+                </div>
+              </div>
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>John S.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">Michael B.</div>
+                </div>
+              </div>
+              <div class="calendar-cell"></div>
+              
+              <!-- 12:00 row -->
+              <div class="time-slot">12:00</div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Jane D.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">Emma W.</div>
+                </div>
+              </div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Jane D.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">Emma W.</div>
+                </div>
+              </div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Jane D.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">Emma W.</div>
+                </div>
+              </div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Jane D.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">Emma W.</div>
+                </div>
+              </div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Jane D.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">Emma W.</div>
+                </div>
+              </div>
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell"></div>
+              
+              <!-- 15:00 row -->
+              <div class="time-slot">15:00</div>
+              <div class="calendar-cell unallocated">
+                <div class="visit-block unallocated">
+                  <div class="flex justify-between">
+                    <span>Robert B.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs text-red-700">Unallocated</div>
+                </div>
+              </div>
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell unallocated">
+                <div class="visit-block unallocated">
+                  <div class="flex justify-between">
+                    <span>Robert B.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs text-red-700">Unallocated</div>
+                </div>
+              </div>
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell unallocated">
+                <div class="visit-block unallocated">
+                  <div class="flex justify-between">
+                    <span>Robert B.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs text-red-700">Unallocated</div>
+                </div>
+              </div>
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell"></div>
+              
+              <!-- 18:00 row -->
+              <div class="time-slot">18:00</div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Mary J.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">James T.</div>
+                </div>
+              </div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Mary J.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">James T.</div>
+                </div>
+              </div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Mary J.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">James T.</div>
+                </div>
+              </div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Mary J.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">James T.</div>
+                </div>
+              </div>
+              <div class="calendar-cell allocated">
+                <div class="visit-block">
+                  <div class="flex justify-between">
+                    <span>Mary J.</span>
+                    <i class="fas fa-grip-lines drag-handle"></i>
+                  </div>
+                  <div class="text-xs">James T.</div>
+                </div>
+              </div>
+              <div class="calendar-cell"></div>
+              <div class="calendar-cell"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Available Staff -->
+        <div class="bg-white rounded-lg shadow mb-8">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold">Available Staff</h2>
+          </div>
+          <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="staff-card available bg-white p-4 rounded-lg shadow-sm">
+                <div class="flex items-center mb-2">
+                  <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Staff" class="w-10 h-10 rounded-full mr-3">
+                  <div>
+                    <p class="font-medium">Emma Wilson</p>
+                    <p class="text-xs text-gray-600">Care Worker</p>
+                  </div>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-green-600">Available</span>
+                  <span>8 hours today</span>
+                </div>
+                <div class="mt-2 text-xs text-gray-600">
+                  <p>Qualifications: Personal Care, Medication, Dementia Care</p>
+                </div>
+              </div>
+              
+              <div class="staff-card partial bg-white p-4 rounded-lg shadow-sm">
+                <div class="flex items-center mb-2">
+                  <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Staff" class="w-10 h-10 rounded-full mr-3">
+                  <div>
+                    <p class="font-medium">James Taylor</p>
+                    <p class="text-xs text-gray-600">Care Worker</p>
+                  </div>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-yellow-600">Partially Available</span>
+                  <span>4 hours today</span>
+                </div>
+                <div class="mt-2 text-xs text-gray-600">
+                  <p>Qualifications: Personal Care, Moving & Handling</p>
+                </div>
+              </div>
+              
+              <div class="staff-card busy bg-white p-4 rounded-lg shadow-sm">
+                <div class="flex items-center mb-2">
+                  <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Staff" class="w-10 h-10 rounded-full mr-3">
+                  <div>
+                    <p class="font-medium">Michael Brown</p>
+                    <p class="text-xs text-gray-600">Senior Care Worker</p>
+                  </div>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-red-600">Fully Booked</span>
+                  <span>0 hours today</span>
+                </div>
+                <div class="mt-2 text-xs text-gray-600">
+                  <p>Qualifications: Personal Care, Medication, Dementia Care, First Aid</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Unallocated Visits -->
+        <div class="bg-white rounded-lg shadow">
+          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 class="text-lg font-semibold">Unallocated Visits</h2>
+            <button class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Auto-Allocate All</button>
+          </div>
+          <div class="p-6">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service User</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visit Type</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Suggested Staff</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">May 8, 15:00</td>
+                  <td class="px-6 py-4 whitespace-nowrap">Robert Brown</td>
+                  <td class="px-6 py-4 whitespace-nowrap">Afternoon Care</td>
+                  <td class="px-6 py-4 whitespace-nowrap">1 hour</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Staff" class="w-6 h-6 rounded-full mr-2">
+                      <span>Emma Wilson</span>
+                      <span class="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">95% Match</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm mr-2">
+                      Allocate
+                    </button>
+                    <button class="bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 text-sm">
+                      View Options
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">May 10, 15:00</td>
+                  <td class="px-6 py-4 whitespace-nowrap">Robert Brown</td>
+                  <td class="px-6 py-4 whitespace-nowrap">Afternoon Care</td>
+                  <td class="px-6 py-4 whitespace-nowrap">1 hour</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Staff" class="w-6 h-6 rounded-full mr-2">
+                      <span>James Taylor</span>
+                      <span class="ml-2 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">80% Match</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm mr-2">
+                      Allocate
+                    </button>
+                    <button class="bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 text-sm">
+                      View Options
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">May 12, 15:00</td>
+                  <td class="px-6 py-4 whitespace-nowrap">Robert Brown</td>
+                  <td class="px-6 py-4 whitespace-nowrap">Afternoon Care</td>
+                  <td class="px-6 py-4 whitespace-nowrap">1 hour</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Staff" class="w-6 h-6 rounded-full mr-2">
+                      <span>Emma Wilson</span>
+                      <span class="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">95% Match</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 text-sm mr-2">
+                      Allocate
+                    </button>
+                    <button class="bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 text-sm">
+                      View Options
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

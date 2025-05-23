@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="msapplication-navbutton-color" content="#6366F1">
+  <meta name="theme-color" content="#6366F1">
+  
+  <title>CareUnity Mobile</title>
+    <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Custom JS -->  <script src="js/careunity-mobile-db.js" defer></script>
+  <script src="js/careunity-touch-interactions.js" defer></script>
+  <script src="js/careunity-sync-manager.js" defer></script>
+  <script src="js/careunity-notifications.js" defer></script>
+  <script src="js/careunity-conflict-resolution.js" defer></script>
+  <script src="js/careunity-checkin.js" defer></script>
+  <script src="js/careunity-voice-commands.js" defer></script>
+  <script src="js/careunity-biometric-auth.js" defer></script>
+  <script src="js/careunity-care-plan-viewer.js" defer></script>
+  <script src="js/careunity-care-plan.js" defer></script>
+  <style>
+    /* Custom styles */
+    body {
+      overscroll-behavior-y: contain; /* Prevents pull-to-refresh */
+      touch-action: manipulation; /* Improves touch experience */
+      -webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
+    }
+    
+    .bottom-nav {
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .bottom-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      color: #6B7280;
+      transition: color 0.2s;
+    }
+    
+    .bottom-nav-item.active {
+      color: #6366F1;
+    }
+    
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .feature-card:active {
+      transform: scale(0.98);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    
+    .pull-to-refresh {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -60px;
+      color: #6366F1;
+      transition: margin-top 0.2s;
+    }
+    
+    .pull-to-refresh.visible {
+      margin-top: 0;
+    }
+    
+    /* Offline indicator */
+    .offline-indicator {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 8px;
+      background-color: #EF4444;
+      color: white;
+      text-align: center;
+      font-weight: 600;
+      z-index: 50;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <!-- Offline indicator -->
+  <div id="offline-indicator" class="offline-indicator">
+    You are offline. Some features may be limited.
+  </div>
+  
+  <!-- Pull to refresh indicator -->
+  <div id="pull-to-refresh" class="pull-to-refresh">
+    <span class="material-icons animate-spin">refresh</span>
+    <span class="ml-2">Refreshing...</span>
+  </div>
+  
+  <!-- Main content area -->
+  <div class="pb-16"> <!-- Space for bottom navigation -->    <!-- Header -->
+    <header class="bg-indigo-700 text-white shadow-md">
+      <div class="flex items-center justify-between p-4">
+        <div class="flex items-center">
+          <span class="material-icons mr-2">health_and_safety</span>
+          <h1 class="text-xl font-bold">CareUnity</h1>
+        </div>        <div class="flex">
+          <button id="voice-command-button" class="p-2 rounded-full hover:bg-indigo-600 relative" aria-label="Voice commands">
+            <span class="material-icons">mic</span>
+            <span id="voice-active-indicator" class="absolute top-0 right-0 h-2 w-2 rounded-full bg-green-500 hidden"></span>
+          </button>
+          <button id="biometric-login-button" class="p-2 rounded-full hover:bg-indigo-600 ml-1" aria-label="Biometric login">
+            <span class="material-icons">fingerprint</span>
+          </button>
+          <button id="notifications-btn" class="p-2 rounded-full hover:bg-indigo-600 ml-1" aria-label="Notifications">
+            <span class="material-icons">notifications</span>
+          </button>
+          <button id="user-menu-btn" class="ml-2 flex items-center" aria-label="User menu">
+            <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="User" class="w-8 h-8 rounded-full border-2 border-white">
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content for Dashboard tab -->
+    <div id="dashboard-tab" class="tab-content active p-4">
+      <h2 class="text-xl font-semibold mb-4">Dashboard</h2>
+      
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-white p-4 rounded-lg shadow feature-card">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-medium text-gray-500">Care Hours</h3>
+            <span class="material-icons text-indigo-500">schedule</span>
+          </div>
+          <p class="text-2xl font-bold mt-1">128</p>
+          <p class="text-xs text-gray-500">This week</p>
+        </div>
+        
+        <div class="bg-white p-4 rounded-lg shadow feature-card">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-medium text-gray-500">Service Users</h3>
+            <span class="material-icons text-indigo-500">people</span>
+          </div>
+          <p class="text-2xl font-bold mt-1">24</p>
+          <p class="text-xs text-gray-500">Active</p>
+        </div>
+        
+        <div class="bg-white p-4 rounded-lg shadow feature-card">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-medium text-gray-500">Compliance</h3>
+            <span class="material-icons text-indigo-500">verified</span>
+          </div>
+          <p class="text-2xl font-bold mt-1">94%</p>
+          <p class="text-xs text-gray-500">CQC Standards</p>
+        </div>
+        
+        <div class="bg-white p-4 rounded-lg shadow feature-card">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-medium text-gray-500">Tasks</h3>
+            <span class="material-icons text-indigo-500">checklist</span>
+          </div>
+          <p class="text-2xl font-bold mt-1">7</p>
+          <p class="text-xs text-gray-500">Pending</p>
+        </div>
+      </div>
+      
+      <!-- Today's Visits -->
+      <div class="bg-white rounded-lg shadow mb-6">
+        <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+          <h2 class="text-lg font-semibold">Today's Visits</h2>
+          <button class="text-indigo-600 text-sm font-medium">See All</button>
+        </div>
+        <div class="p-4">
+          <div class="space-y-4">
+            <div class="border-l-4 border-green-500 pl-3 py-2 feature-card">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium">John Smith</p>
+                  <p class="text-sm text-gray-500">09:00 - 10:00</p>
+                </div>
+                <span class="status-badge bg-green-100 text-green-800">Completed</span>
+              </div>
+              <p class="text-sm text-gray-600 mt-1">Emma Wilson</p>
+            </div>
+            
+            <div class="border-l-4 border-blue-500 pl-3 py-2 feature-card">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium">Mary Johnson</p>
+                  <p class="text-sm text-gray-500">10:30 - 11:30</p>
+                </div>
+                <span class="status-badge bg-blue-100 text-blue-800">In Progress</span>
+              </div>
+              <p class="text-sm text-gray-600 mt-1">Emma Wilson</p>
+            </div>
+            
+            <div class="border-l-4 border-gray-300 pl-3 py-2 feature-card">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium">Robert Brown</p>
+                  <p class="text-sm text-gray-500">13:00 - 14:00</p>
+                </div>
+                <span class="status-badge bg-gray-100 text-gray-800">Scheduled</span>
+              </div>
+              <p class="text-sm text-gray-600 mt-1">James Taylor</p>
+            </div>
+            
+            <div class="border-l-4 border-gray-300 pl-3 py-2 feature-card">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium">Jane Doe</p>
+                  <p class="text-sm text-gray-500">15:30 - 16:30</p>
+                </div>
+                <span class="status-badge bg-gray-100 text-gray-800">Scheduled</span>
+              </div>
+              <p class="text-sm text-gray-600 mt-1">James Taylor</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Recent Incidents -->
+      <div class="bg-white rounded-lg shadow">
+        <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+          <h2 class="text-lg font-semibold">Recent Incidents</h2>
+          <button class="text-indigo-600 text-sm font-medium">See All</button>
+        </div>
+        <div class="p-4">
+          <div class="space-y-4">
+            <div class="feature-card">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium">Fall</p>
+                  <p class="text-sm text-gray-500">John Smith</p>
+                </div>
+                <span class="status-badge bg-yellow-100 text-yellow-800">Under Review</span>
+              </div>
+              <p class="text-sm text-gray-600 mt-1">May 7, 2025</p>
+            </div>
+            
+            <div class="feature-card">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium">Medication Error</p>
+                  <p class="text-sm text-gray-500">Mary Johnson</p>
+                </div>
+                <span class="status-badge bg-red-100 text-red-800">Action Required</span>
+              </div>
+              <p class="text-sm text-gray-600 mt-1">May 5, 2025</p>
+            </div>
+            
+            <div class="feature-card">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium">Missed Visit</p>
+                  <p class="text-sm text-gray-500">Robert Brown</p>
+                </div>
+                <span class="status-badge bg-green-100 text-green-800">Resolved</span>
+              </div>
+              <p class="text-sm text-gray-600 mt-1">May 3, 2025</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Content for Users tab -->
+    <div id="users-tab" class="tab-content p-4">
+      <h2 class="text-xl font-semibold mb-4">Service Users</h2>
+      
+      <!-- Search bar -->
+      <div class="relative mb-4">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+          <span class="material-icons text-gray-400">search</span>
+        </span>
+        <input type="text" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Search service users...">
+      </div>
+      
+      <!-- Users list -->
+      <div class="space-y-3">
+        <div class="bg-white p-3 rounded-lg shadow feature-card">
+          <div class="flex items-center">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="John Smith" class="w-12 h-12 rounded-full mr-3">
+            <div>
+              <p class="font-medium">John Smith</p>
+              <p class="text-sm text-gray-500">72, Weekly visits</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white p-3 rounded-lg shadow feature-card">
+          <div class="flex items-center">
+            <img src="https://randomuser.me/api/portraits/women/67.jpg" alt="Mary Johnson" class="w-12 h-12 rounded-full mr-3">
+            <div>
+              <p class="font-medium">Mary Johnson</p>
+              <p class="text-sm text-gray-500">65, Daily visits</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white p-3 rounded-lg shadow feature-card">
+          <div class="flex items-center">
+            <img src="https://randomuser.me/api/portraits/men/41.jpg" alt="Robert Brown" class="w-12 h-12 rounded-full mr-3">
+            <div>
+              <p class="font-medium">Robert Brown</p>
+              <p class="text-sm text-gray-500">81, Daily visits</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white p-3 rounded-lg shadow feature-card">
+          <div class="flex items-center">
+            <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Jane Doe" class="w-12 h-12 rounded-full mr-3">
+            <div>
+              <p class="font-medium">Jane Doe</p>
+              <p class="text-sm text-gray-500">68, Bi-weekly visits</p>
+            </div>
+          </div>        </div>
+      </div>
+    </div>
+    
+    <!-- Content for Care Plans tab -->
+    <div id="careplans-tab" class="tab-content p-4">
+      <h2 class="text-xl font-semibold mb-4">Care Plans</h2>
+      
+      <!-- Care Plans List -->
+      <div class="space-y-4">
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-gray-100">
+            <div class="flex items-center justify-between">
+              <h3 class="font-medium">Daily Living Activities</h3>
+              <span class="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">Active</span>
+            </div>
+            <p class="text-sm text-gray-500 mt-1">Updated 3 days ago</p>
+          </div>
+          <div class="p-4">
+            <div class="space-y-2">
+              <div class="flex items-center">
+                <span class="material-icons text-green-500 mr-2">check_circle</span>
+                <span class="text-sm">Morning hygiene routine</span>
+              </div>
+              <div class="flex items-center">
+                <span class="material-icons text-green-500 mr-2">check_circle</span>
+                <span class="text-sm">Medication management</span>
+              </div>
+              <div class="flex items-center">
+                <span class="material-icons text-green-500 mr-2">check_circle</span>
+                <span class="text-sm">Meal preparation assistance</span>
+              </div>
+            </div>
+            <button class="mt-3 text-sm text-indigo-600 font-medium">View full plan →</button>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="p-4 border-b border-gray-100">
+            <div class="flex items-center justify-between">
+              <h3 class="font-medium">Mobility Support</h3>
+              <span class="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">Active</span>
+            </div>
+            <p class="text-sm text-gray-500 mt-1">Updated 1 week ago</p>
+          </div>
+          <div class="p-4">
+            <div class="space-y-2">
+              <div class="flex items-center">
+                <span class="material-icons text-green-500 mr-2">check_circle</span>
+                <span class="text-sm">Walking assistance</span>
+              </div>
+              <div class="flex items-center">
+                <span class="material-icons text-green-500 mr-2">check_circle</span>
+                <span class="text-sm">Transfer support</span>
+              </div>
+              <div class="flex items-center">
+                <span class="material-icons text-amber-500 mr-2">priority_high</span>
+                <span class="text-sm">Fall risk assessment due</span>
+              </div>
+            </div>
+            <button class="mt-3 text-sm text-indigo-600 font-medium">View full plan →</button>
+          </div>
+        </div>
+        
+        <!-- Add Care Plan Button -->
+        <button class="w-full flex items-center justify-center py-3 bg-indigo-50 text-indigo-600 rounded-lg border border-dashed border-indigo-300" id="open-care-plan-modal">
+          <span class="material-icons mr-2">add_circle</span>
+          <span>Add New Care Plan</span>
+        </button>
+      </div>
+    </div>
+      
+    <!-- Content for Schedule tab -->
+    <div id="schedule-tab" class="tab-content p-4">
+      <h2 class="text-xl font-semibold mb-4">Schedule</h2>
+      
+      <!-- Date selector -->
+      <div class="flex justify-between items-center mb-4">
+        <button class="p-2 rounded-full hover:bg-gray-200">
+          <span class="material-icons">chevron_left</span>
+        </button>
+        <div class="font-medium">May 16, 2025</div>
+        <button class="p-2 rounded-full hover:bg-gray-200">
+          <span class="material-icons">chevron_right</span>
+        </button>
+      </div>
+      
+      <!-- Active Visit Banner (hidden by default) -->
+      <div id="active-visit-banner" class="mb-4 p-3 bg-blue-100 rounded-lg border border-blue-300 flex items-center justify-between hidden">
+        <div class="flex items-center">
+          <span class="material-icons text-blue-500 mr-2">timer</span>
+          <div>
+            <p class="font-medium" id="active-visit-name">Active Visit</p>
+            <p class="text-sm text-gray-600" id="active-visit-time">Started at: N/A</p>
+          </div>
+        </div>
+        <button id="checkout-btn" class="bg-blue-500 text-white px-3 py-1 rounded-md flex items-center">
+          <span class="material-icons text-sm mr-1">logout</span>
+          Check Out
+        </button>
+      </div>
+      
+      <!-- Timeline -->
+      <div class="space-y-4">
+        <div class="relative">
+          <div class="absolute top-0 bottom-0 left-6 w-0.5 bg-gray-300"></div>
+          
+          <div class="relative pl-10 pb-6">
+            <div class="absolute left-0 rounded-full h-12 w-12 flex items-center justify-center bg-indigo-100 text-indigo-800 font-bold border-2 border-white">
+              9:00
+            </div>
+            <div class="bg-white p-3 rounded-lg shadow feature-card ml-6" data-visit-id="visit1">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium">John Smith</p>
+                  <p class="text-sm text-gray-500">Morning Care</p>
+                  <p class="text-sm text-gray-600 mt-1">Emma Wilson</p>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="status-badge bg-green-100 text-green-800">Completed</span>
+                  <button class="mt-2 text-indigo-600 text-sm font-medium">Details</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="relative pl-10 pb-6">
+            <div class="absolute left-0 rounded-full h-12 w-12 flex items-center justify-center bg-indigo-100 text-indigo-800 font-bold border-2 border-white">
+              10:30
+            </div>
+            <div class="bg-white p-3 rounded-lg shadow feature-card ml-6" data-visit-id="visit2">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium">Mary Johnson</p>
+                  <p class="text-sm text-gray-500">Medication</p>
+                  <p class="text-sm text-gray-600 mt-1">Emma Wilson</p>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="status-badge bg-blue-100 text-blue-800">In Progress</span>
+                  <button class="mt-2 text-red-600 text-sm font-medium checkin-btn">Check Out</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="relative pl-10 pb-6">
+            <div class="absolute left-0 rounded-full h-12 w-12 flex items-center justify-center bg-indigo-100 text-indigo-800 font-bold border-2 border-white">
+              13:00
+            </div>
+            <div class="bg-white p-3 rounded-lg shadow feature-card ml-6" data-visit-id="visit3">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium">Robert Brown</p>
+                  <p class="text-sm text-gray-500">Lunch</p>
+                  <p class="text-sm text-gray-600 mt-1">James Taylor</p>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="status-badge bg-gray-100 text-gray-800">Scheduled</span>
+                  <button class="mt-2 text-indigo-600 text-sm font-medium checkin-btn">Check In</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="relative pl-10">
+            <div class="absolute left-0 rounded-full h-12 w-12 flex items-center justify-center bg-indigo-100 text-indigo-800 font-bold border-2 border-white">
+              15:30
+            </div>
+            <div class="bg-white p-3 rounded-lg shadow feature-card ml-6" data-visit-id="visit4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium">Jane Doe</p>
+                  <p class="text-sm text-gray-500">Afternoon Care</p>
+                  <p class="text-sm text-gray-600 mt-1">James Taylor</p>
+                </div>
+                <div class="flex flex-col items-end">
+                  <span class="status-badge bg-gray-100 text-gray-800">Scheduled</span>
+                  <button class="mt-2 text-indigo-600 text-sm font-medium checkin-btn">Check In</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Content for Profile tab -->
+    <div id="profile-tab" class="tab-content p-4">
+      <div class="flex flex-col items-center mb-6">
+        <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="Sarah Johnson" class="w-24 h-24 rounded-full border-4 border-white shadow-md mb-4">
+        <h2 class="text-xl font-bold">Sarah Johnson</h2>
+        <p class="text-gray-600">Care Coordinator</p>
+      </div>
+      
+      <!-- User stats -->
+      <div class="grid grid-cols-3 gap-4 mb-6">
+        <div class="bg-white p-3 rounded-lg shadow text-center">
+          <p class="text-xl font-bold">28</p>
+          <p class="text-xs text-gray-500">Visits Today</p>
+        </div>
+        <div class="bg-white p-3 rounded-lg shadow text-center">
+          <p class="text-xl font-bold">4</p>
+          <p class="text-xs text-gray-500">Staff</p>
+        </div>
+        <div class="bg-white p-3 rounded-lg shadow text-center">
+          <p class="text-xl font-bold">98%</p>
+          <p class="text-xs text-gray-500">On Time</p>
+        </div>
+      </div>
+      
+      <!-- Settings and options -->
+      <div class="bg-white rounded-lg shadow">
+        <div class="px-4 py-3 border-b border-gray-200">
+          <h3 class="font-medium">Settings</h3>
+        </div>
+        <div class="divide-y divide-gray-200">
+          <div class="px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+              <span class="material-icons mr-3 text-gray-500">person</span>
+              <span>Account Details</span>
+            </div>
+            <span class="material-icons text-gray-400">chevron_right</span>
+          </div>
+          <div class="px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+              <span class="material-icons mr-3 text-gray-500">notifications</span>
+              <span>Notifications</span>
+            </div>
+            <span class="material-icons text-gray-400">chevron_right</span>
+          </div>
+          <div class="px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+              <span class="material-icons mr-3 text-gray-500">privacy_tip</span>
+              <span>Privacy & Security</span>
+            </div>
+            <span class="material-icons text-gray-400">chevron_right</span>
+          </div>
+          <div class="px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+              <span class="material-icons mr-3 text-gray-500">help_outline</span>
+              <span>Help & Support</span>
+            </div>
+            <span class="material-icons text-gray-400">chevron_right</span>
+          </div>
+          <div class="px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+              <span class="material-icons mr-3 text-gray-500">logout</span>
+              <span>Logout</span>
+            </div>
+            <span class="material-icons text-gray-400">chevron_right</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white bottom-nav">
+    <div class="flex justify-around">      <button id="dashboard-btn" class="bottom-nav-item active" aria-label="Dashboard">
+        <span class="material-icons">dashboard</span>
+        <span class="text-xs">Dashboard</span>
+      </button>
+      <button id="users-btn" class="bottom-nav-item" aria-label="Service Users">
+        <span class="material-icons">people</span>
+        <span class="text-xs">Users</span>
+      </button>
+      <button id="careplans-btn" class="bottom-nav-item" aria-label="Care Plans">
+        <span class="material-icons">assignment</span>
+        <span class="text-xs">Care Plans</span>
+      </button>
+      <button id="schedule-btn" class="bottom-nav-item" aria-label="Schedule">
+        <span class="material-icons">calendar_today</span>
+        <span class="text-xs">Schedule</span>
+      </button>
+      <button id="profile-btn" class="bottom-nav-item" aria-label="Profile">
+        <span class="material-icons">person</span>
+        <span class="text-xs">Profile</span>
+      </button>
+    </div>
+  </nav>
+  
+  <!-- Modals -->
+  <!-- Checkout Modal -->
+  <div id="checkout-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg w-11/12 max-w-md max-h-90vh overflow-y-auto">
+      <div class="p-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-semibold">Complete Visit</h3>
+          <button class="modal-close-btn p-1">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+      </div>
+      <div class="p-4">
+        <div class="mb-4">
+          <p class="font-medium mb-1" id="checkout-user-name">Service User: Mary Johnson</p>
+          <p class="text-sm text-gray-600" id="checkout-visit-time">10:30 - 11:30</p>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-2">Visit Notes</label>
+          <textarea id="visit-notes" class="w-full border border-gray-300 rounded-md p-2 h-24" placeholder="Enter visit notes..."></textarea>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-2">Tasks Completed</label>
+          <div class="space-y-2">
+            <div class="flex items-center">
+              <input type="checkbox" id="task1" class="mr-2">
+              <label for="task1">Personal Care</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="task2" class="mr-2">
+              <label for="task2">Medication</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="task3" class="mr-2">
+              <label for="task3">Meal Preparation</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="task4" class="mr-2">
+              <label for="task4">Mobility Support</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-gray-700 font-medium">Report Incident</label>
+            <button id="add-incident-btn" class="text-indigo-600 text-sm flex items-center">
+              <span class="material-icons text-sm mr-1">add</span> Add
+            </button>
+          </div>
+          <div id="incident-form" class="bg-gray-100 p-3 rounded-md hidden">
+            <div class="mb-2">
+              <label class="block text-gray-700 text-sm mb-1">Type</label>
+              <select id="incident-type" class="w-full border border-gray-300 rounded-md p-2">
+                <option value="fall">Fall</option>
+                <option value="medication">Medication Error</option>
+                <option value="injury">Injury</option>
+                <option value="behavior">Behavioral Incident</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="block text-gray-700 text-sm mb-1">Description</label>
+              <textarea id="incident-description" class="w-full border border-gray-300 rounded-md p-2 h-16" placeholder="Describe what happened..."></textarea>
+            </div>
+            <div class="mb-2">
+              <label class="block text-gray-700 text-sm mb-1">Actions Taken</label>
+              <textarea id="incident-actions" class="w-full border border-gray-300 rounded-md p-2 h-16" placeholder="Describe actions taken..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 border-t border-gray-200 flex justify-end">
+        <button class="modal-close-btn px-4 py-2 border border-gray-300 rounded-md mr-2">Cancel</button>
+        <button id="complete-checkout-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md">Complete Visit</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Check-in Modal -->
+  <div id="checkin-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg w-11/12 max-w-md">
+      <div class="p-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-semibold">Start Visit</h3>
+          <button class="modal-close-btn p-1">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+      </div>
+      <div class="p-4">
+        <div class="mb-4">
+          <p class="font-medium mb-1" id="checkin-user-name">Service User: Robert Brown</p>
+          <p class="text-sm text-gray-600" id="checkin-visit-time">13:00 - 14:00</p>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-gray-700 font-medium mb-2">Care Tasks</label>
+          <div class="space-y-2 text-sm text-gray-700">
+            <div class="flex items-start">
+              <span class="material-icons text-indigo-500 mr-2 text-base">check_circle</span>
+              <span>Personal hygiene - assist with washing</span>
+            </div>
+            <div class="flex items-start">
+              <span class="material-icons text-indigo-500 mr-2 text-base">check_circle</span>
+              <span>Prepare and serve lunch</span>
+            </div>
+            <div class="flex items-start">
+              <span class="material-icons text-indigo-500 mr-2 text-base">check_circle</span>
+              <span>Assist with medication</span>
+            </div>
+            <div class="flex items-start">
+              <span class="material-icons text-indigo-500 mr-2 text-base">check_circle</span>
+              <span>Light housekeeping</span>
+            </div>
+          </div>
+        </div>
+        
+        <div id="location-permission" class="mb-4 p-3 bg-yellow-100 rounded-md hidden">
+          <div class="flex items-start">
+            <span class="material-icons text-yellow-600 mr-2">location_on</span>
+            <div>
+              <p class="font-medium text-yellow-800">Location permission required</p>
+              <p class="text-sm text-yellow-700">Please allow location access to check in to this visit.</p>
+              <button id="enable-location-btn" class="mt-2 bg-yellow-500 text-white px-3 py-1 rounded-md text-sm">Enable Location</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="p-4 border-t border-gray-200 flex justify-end">
+        <button class="modal-close-btn px-4 py-2 border border-gray-300 rounded-md mr-2">Cancel</button>
+        <button id="complete-checkin-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md">Start Visit</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Care Plan Modal -->
+  <div id="care-plan-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg w-11/12 max-w-md">
+      <div class="p-4 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-semibold">Create New Care Plan</h3>
+          <button class="modal-close-btn p-1">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+      </div>
+      <div class="p-4">
+        <form id="care-plan-form">
+          <div class="mb-4">
+            <label for="plan-name" class="block text-gray-700 font-medium mb-2">Care Plan Name <span class="text-red-500">*</span></label>
+            <input type="text" id="plan-name" class="w-full border border-gray-300 rounded-md p-2" placeholder="Enter care plan name...">
+          </div>
+          
+          <div class="mb-4">
+            <label for="plan-service-user" class="block text-gray-700 font-medium mb-2">Service User <span class="text-red-500">*</span></label>
+            <select id="plan-service-user" class="w-full border border-gray-300 rounded-md p-2">
+              <option value="">Select a service user</option>
+              <option value="user1">John Smith</option>
+              <option value="user2">Mary Johnson</option>
+              <option value="user3">Robert Brown</option>
+              <option value="user4">Jane Doe</option>
+            </select>
+          </div>
+          
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-2">
+              <label class="block text-gray-700 font-medium">Tasks <span class="text-red-500">*</span></label>
+              <button id="add-task-btn" type="button" class="text-indigo-600 text-sm flex items-center">
+                <span class="material-icons text-sm mr-1">add</span> Add Task
+              </button>
+            </div>
+            <div id="plan-tasks" class="space-y-2">
+              <div class="task-field mb-2">
+                <input type="text" name="task1" class="w-full border border-gray-300 rounded-md p-2" placeholder="Enter task...">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="p-4 border-t border-gray-200 flex justify-end">
+        <button class="modal-close-btn px-4 py-2 border border-gray-300 rounded-md mr-2">Cancel</button>
+        <button id="save-care-plan-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md">Save Care Plan</button>
+      </div>
+    </div>
+  </div>
+  <!-- JavaScript for the mobile app -->
+  <script>    // DOM Elements
+    const dashboardTab = document.getElementById('dashboard-tab');
+    const usersTab = document.getElementById('users-tab');
+    const careplansTab = document.getElementById('careplans-tab');
+    const scheduleTab = document.getElementById('schedule-tab');
+    const profileTab = document.getElementById('profile-tab');
+    
+    const dashboardBtn = document.getElementById('dashboard-btn');
+    const usersBtn = document.getElementById('users-btn');
+    const careplansBtn = document.getElementById('careplans-btn');
+    const scheduleBtn = document.getElementById('schedule-btn');
+    const profileBtn = document.getElementById('profile-btn');
+    
+    const offlineIndicator = document.getElementById('offline-indicator');
+    const pullToRefreshIndicator = document.getElementById('pull-to-refresh');
+      // Application instances
+    let db = null;
+    let syncManager = null;
+    let notificationManager = null;
+    let checkInManager = null;
+    let carePlanManager = null;
+    let touchInteractions = null;
+
+    // Initialize the application
+    async function initApp() {
+      try {
+        console.log('Initializing CareUnity Mobile App...');
+        
+        // Initialize database
+        if (window.initDatabase) {
+          db = await window.initDatabase();
+          console.log('Database initialized');
+          
+          // Store the db instance globally
+          window.CareUnity = window.CareUnity || {};
+          window.CareUnity.db = db;
+        } else {
+          console.error('Database initialization function not found');
+        }
+        
+        // Initialize sync manager
+        if (window.CareUnity.SyncManager) {
+          syncManager = new window.CareUnity.SyncManager(db);
+          await syncManager.init();
+          
+          // Store the sync manager instance globally          window.CareUnity.syncManager = syncManager;
+          console.log('Sync manager initialized');
+          
+          // Initialize conflict resolution UI
+          if (window.CareUnity.ConflictResolutionUI) {
+            const conflictResolutionUI = new window.CareUnity.ConflictResolutionUI(syncManager);
+            await conflictResolutionUI.init();
+            
+            // Store the conflict resolution UI instance globally
+            window.CareUnity.conflictResolutionUI = conflictResolutionUI;
+            console.log('Conflict resolution UI initialized');
+          }
+        }
+        
+        // Initialize notification manager
+        if (window.CareUnity.NotificationManager) {
+          notificationManager = new window.CareUnity.NotificationManager();
+          await notificationManager.init();
+          
+          // Store the notification manager instance globally
+          window.CareUnity.notificationManager = notificationManager;
+          console.log('Notification manager initialized');
+          
+          // Add a test notification
+          setTimeout(() => {
+            notificationManager.addNotification({
+              title: 'Welcome to CareUnity',
+              message: 'Your care management app is ready to use',
+              icon: 'health_and_safety'
+            });
+          }, 2000);
+        }
+          // Initialize check-in manager
+        if (window.CareUnity.CheckInManager) {
+          checkInManager = new window.CareUnity.CheckInManager(db);
+          await checkInManager.init();
+          
+          // Store the check-in manager instance globally
+          window.CareUnity.checkInManager = checkInManager;
+          console.log('Check-in manager initialized');
+        }
+        
+        // Initialize care plan manager
+        if (window.CareUnity.CarePlanManager) {
+          carePlanManager = new window.CareUnity.CarePlanManager(db);
+          await carePlanManager.init();
+          
+          // Store the care plan manager instance globally
+          window.CareUnity.carePlanManager = carePlanManager;
+          console.log('Care Plan manager initialized');
+        }
+        
+        // Initialize touch interactions
+        if (window.TouchInteractions) {
+          // Add touch interactions to cards and buttons
+          document.querySelectorAll('.feature-card').forEach(card => {
+            touchInteractions = new TouchInteractions(card, { preventDefault: false });
+            
+            touchInteractions.on('tap', () => {
+              // Add a ripple effect
+              const ripple = document.createElement('div');
+              ripple.className = 'absolute bg-white opacity-30 rounded-full';
+              ripple.style.width = '100px';
+              ripple.style.height = '100px';
+              ripple.style.left = (event.offsetX - 50) + 'px';
+              ripple.style.top = (event.offsetY - 50) + 'px';
+              ripple.style.transform = 'scale(0)';
+              ripple.style.transition = 'transform 0.5s, opacity 0.5s';
+              
+              card.style.position = 'relative';
+              card.style.overflow = 'hidden';
+              card.appendChild(ripple);
+              
+              setTimeout(() => {
+                ripple.style.transform = 'scale(4)';
+                ripple.style.opacity = '0';
+                
+                setTimeout(() => {
+                  ripple.remove();
+                }, 500);
+              }, 10);
+            });
+          });
+        }
+        
+        // Register event listeners
+        registerEventListeners();
+        
+        console.log('App initialization complete');
+      } catch (error) {
+        console.error('Error initializing app:', error);
+      }
+    }
+      // Register event listeners    
+    function registerEventListeners() {
+      // Tab Navigation
+      dashboardBtn.addEventListener('click', () => showTab(dashboardTab));
+      usersBtn.addEventListener('click', () => showTab(usersTab));
+      careplansBtn.addEventListener('click', () => showTab(careplansTab));
+      scheduleBtn.addEventListener('click', () => showTab(scheduleTab));
+      profileBtn.addEventListener('click', () => showTab(profileTab));
+      
+      // Pull to refresh functionality
+      let startY = 0;
+      let isRefreshing = false;
+      
+      document.addEventListener('touchstart', (e) => {
+        if (window.scrollY === 0) {
+          startY = e.touches[0].clientY;
+        }
+      }, { passive: true });
+      
+      document.addEventListener('touchmove', (e) => {
+        if (window.scrollY === 0 && !isRefreshing) {
+          const currentY = e.touches[0].clientY;
+          const diff = currentY - startY;
+          
+          if (diff > 60) {
+            pullToRefreshIndicator.classList.add('visible');
+          }
+        }
+      }, { passive: true });
+      
+      document.addEventListener('touchend', (e) => {
+        if (pullToRefreshIndicator.classList.contains('visible')) {
+          isRefreshing = true;
+          
+          // Perform the actual refresh operation
+          refreshData().finally(() => {
+            setTimeout(() => {
+              pullToRefreshIndicator.classList.remove('visible');
+              isRefreshing = false;
+            }, 1000);
+          });
+        }
+      }, { passive: true });
+      
+      // Sync status events
+      window.addEventListener('syncComplete', (e) => {
+        console.log('Sync completed at:', e.detail.timestamp);
+        // Refresh the UI with the latest data
+        refreshUI();
+      });
+      
+      window.addEventListener('syncFailed', (e) => {
+        console.error('Sync failed:', e.detail.error);
+        
+        // Show notification about sync failure
+        if (notificationManager) {
+          notificationManager.addNotification({
+            title: 'Sync Failed',
+            message: 'Unable to sync data with the server. Will retry later.',
+            icon: 'sync_problem'
+          });
+        }
+      });
+      
+      // Connection status events
+      window.addEventListener('connectionstatus', (e) => {
+        updateOfflineIndicator(e.detail.isOnline);
+      });
+      
+      // Visit status listeners for check-ins
+      document.querySelectorAll('.feature-card').forEach(card => {
+        if (card.dataset.visitId) {
+          card.addEventListener('click', () => {
+            handleVisitCardClick(card.dataset.visitId);
+          });
+        }
+      });
+        // Open care plan modal
+      const openCarePlanBtn = document.getElementById('open-care-plan-modal');
+      if (openCarePlanBtn) {
+        openCarePlanBtn.addEventListener('click', () => {
+          document.getElementById('care-plan-modal').classList.remove('hidden');
+        });
+      }
+      
+      // Close modals
+      document.querySelectorAll('.modal-close-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const modal = e.target.closest('.fixed');
+          if (modal) {
+            modal.classList.add('hidden');
+          }
+        });
+      });
+    }
+    
+    // Tab Navigation function
+    function showTab(tabElement) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Deactivate all nav buttons
+      document.querySelectorAll('.bottom-nav-item').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // Show the selected tab
+      tabElement.classList.add('active');
+      
+      // Activate the corresponding nav button
+      if (tabElement === dashboardTab) {
+        dashboardBtn.classList.add('active');
+      } else if (tabElement === usersTab) {
+        usersBtn.classList.add('active');
+      } else if (tabElement === careplansTab) {
+        careplansBtn.classList.add('active');
+      } else if (tabElement === scheduleTab) {
+        scheduleBtn.classList.add('active');
+      } else if (tabElement === profileTab) {
+        profileBtn.classList.add('active');
+      }
+    }
+    
+    // Update the offline indicator
+    function updateOfflineIndicator(isOnline) {
+      if (isOnline) {
+        offlineIndicator.style.display = 'none';
+      } else {
+        offlineIndicator.style.display = 'block';
+      }
+    }
+    
+    // Refresh data from the server
+    async function refreshData() {
+      try {
+        console.log('Refreshing data...');
+        
+        // Show loading indicator
+        pullToRefreshIndicator.classList.add('visible');
+        
+        // Trigger a sync if online
+        if (navigator.onLine && syncManager) {
+          await syncManager.manualSync();
+        }
+        
+        // Refresh UI components
+        await refreshUI();
+        
+        console.log('Data refresh complete');
+        
+        // Show success notification
+        if (notificationManager) {
+          notificationManager.addNotification({
+            title: 'Data Refreshed',
+            message: 'Latest data has been loaded',
+            icon: 'refresh'
+          });
+        }
+      } catch (error) {
+        console.error('Error refreshing data:', error);
+        
+        // Show error notification
+        if (notificationManager) {
+          notificationManager.addNotification({
+            title: 'Refresh Failed',
+            message: 'Unable to refresh data. Please try again.',
+            icon: 'error'
+          });
+        }
+      }
+    }
+    
+    // Refresh UI with the latest data
+    async function refreshUI() {
+      // Refresh visit lists
+      await refreshVisits();
+      
+      // Refresh user list
+      await refreshUsers();
+      
+      // Refresh incidents
+      await refreshIncidents();
+    }
+    
+    // Refresh visits data
+    async function refreshVisits() {
+      if (!db) return;
+      
+      try {
+        // Get today's visits from the check-in manager
+        let todayVisits = [];
+        if (checkInManager) {
+          todayVisits = await checkInManager.getTodayVisits();
+        } else {
+          // Fallback if check-in manager is not available
+          const allVisits = await db.getAll('visits');
+          
+          // Filter to today's visits
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          const tomorrow = new Date(today);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          
+          todayVisits = allVisits.filter(visit => {
+            const visitDate = new Date(visit.scheduledTime);
+            return visitDate >= today && visitDate < tomorrow;
+          });
+          
+          // Sort by scheduled time
+          todayVisits.sort((a, b) => {
+            return new Date(a.scheduledTime) - new Date(b.scheduledTime);
+          });
+        }
+        
+        // Update the Today's Visits section in the Dashboard tab
+        // This is just a placeholder implementation
+        console.log('Today\'s visits loaded:', todayVisits.length);
+      } catch (error) {
+        console.error('Error refreshing visits:', error);
+      }
+    }
+    
+    // Refresh users data
+    async function refreshUsers() {
+      if (!db) return;
+      
+      try {
+        // Get all users
+        const users = await db.getAll('users');
+        
+        // Update the Users tab
+        // This is just a placeholder implementation
+        console.log('Users loaded:', users.length);
+      } catch (error) {
+        console.error('Error refreshing users:', error);
+      }
+    }
+    
+    // Refresh incidents data
+    async function refreshIncidents() {
+      if (!db) return;
+      
+      try {
+        // Get recent incidents
+        const incidents = await db.getAll('incidents');
+        
+        // Sort by timestamp (newest first)
+        incidents.sort((a, b) => {
+          return new Date(b.timestamp) - new Date(a.timestamp);
+        });
+        
+        // Take only the 10 most recent
+        const recentIncidents = incidents.slice(0, 10);
+        
+        // Update the Recent Incidents section in the Dashboard tab
+        // This is just a placeholder implementation
+        console.log('Recent incidents loaded:', recentIncidents.length);
+      } catch (error) {
+        console.error('Error refreshing incidents:', error);
+      }
+    }
+    
+    // Handle visit card click
+    function handleVisitCardClick(visitId) {
+      // Show visit details or check-in/check-out options
+      console.log('Visit card clicked:', visitId);
+      
+      // Implement dialog or navigation to visit details
+    }
+    
+    // Check online/offline status
+    function updateOnlineStatus() {
+      updateOfflineIndicator(navigator.onLine);
+    }
+    
+    // Add offline/online listeners
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    
+    // Initialize the app when the page loads
+    window.addEventListener('load', () => {
+      // Initial check for online status
+      updateOnlineStatus();
+      
+      // Initialize the app
+      initApp();
+      
+      // Register service worker for PWA
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/mobile-service-worker.js')
+          .then(registration => {
+            console.log('ServiceWorker registered with scope:', registration.scope);
+            
+            // Check for updates to the service worker
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              console.log('Service Worker update found!');
+              
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New service worker is installed but waiting to activate
+                  console.log('New Service Worker installed and waiting to activate');
+                  
+                  // Notify user about update
+                  if (window.CareUnity && window.CareUnity.notificationManager) {
+                    window.CareUnity.notificationManager.addNotification({
+                      title: 'App Update Available',
+                      message: 'Refresh to update to the latest version',
+                      icon: 'system_update',
+                      actions: [
+                        {
+                          label: 'Refresh Now',
+                          callback: () => window.location.reload()
+                        }
+                      ]
+                    });
+                  }
+                }
+              });
+            });
+            
+            // Register for periodic sync if supported
+            if ('periodicSync' in registration) {
+              const registerPeriodicSync = async () => {
+                try {
+                  const status = await navigator.permissions.query({
+                    name: 'periodic-background-sync',
+                  });
+                  
+                  if (status.state === 'granted') {
+                    await registration.periodicSync.register('sync-periodic', {
+                      minInterval: 24 * 60 * 60 * 1000, // Once per day
+                    });
+                    console.log('Periodic background sync registered');
+                  }
+                } catch (error) {
+                  console.error('Periodic background sync registration error:', error);
+                }
+              };
+              
+              registerPeriodicSync();
+            }
+          })
+          .catch(error => {
+            console.error('ServiceWorker registration failed:', error);
+          });
+          
+        // Listen for messages from the service worker
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          const data = event.data;
+          
+          if (data.type === 'SYNC_COMPLETED') {
+            console.log('Received sync completed message from service worker:', data);
+            
+            window.dispatchEvent(new CustomEvent('syncComplete', {
+              detail: data
+            }));
+          } else if (data.type === 'SYNC_FAILED') {
+            console.log('Received sync failed message from service worker:', data);
+            
+            window.dispatchEvent(new CustomEvent('syncFailed', {
+              detail: data
+            }));
+          } else if (data.type === 'SYNC_STARTED') {
+            console.log('Received sync started message from service worker:', data);
+            
+            window.dispatchEvent(new CustomEvent('syncStarted', {
+              detail: data
+            }));
+          }
+        });
+      }
+    });  </script>
+</body>
+</html>

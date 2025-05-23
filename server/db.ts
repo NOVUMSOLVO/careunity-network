@@ -1,15 +1,28 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from "ws";
-import * as schema from "@shared/schema";
+import connectionManager from './db/connection-manager';
+import { logger } from './utils/logger';
 
-neonConfig.webSocketConstructor = ws;
+// Initialize the database connection
+let db: any;
 
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
-  );
+async function initializeDb() {
+  try {
+    await connectionManager.initializeDatabase();
+    db = connectionManager.getDb();
+    logger.info('Database initialized successfully');
+  } catch (error) {
+    logger.error('Failed to initialize database:', error);
+    throw error;
+  }
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle(pool, { schema });
+// Initialize the database on module load
+initializeDb().catch(error => {
+  logger.error('Database initialization failed:', error);
+  process.exit(1);
+});
+
+// Export the database instance
+export { db };
+
+// Export the connection manager for advanced usage
+export { connectionManager };

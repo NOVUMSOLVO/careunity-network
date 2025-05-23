@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareUnity Network</title>
+  <style>
+    /* Global Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    h1, h2, h3 {
+      color: #4f46e5;
+      margin-bottom: 0.5rem;
+    }
+
+    a {
+      color: #4f46e5;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Layout */
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background-color: #4f46e5;
+      color: white;
+      padding: 1rem;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 1rem;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+    }
+
+    .sidebar-nav li {
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 0.75rem 1rem;
+      color: white;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background-color: #4338ca;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 250px;
+      padding: 2rem;
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    /* Cards */
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Dashboard */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0.5rem 0;
+      color: #4f46e5;
+    }
+
+    .stat-label {
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 1rem;
+      background-color: #f9fafb;
+      font-weight: 500;
+      color: #6b7280;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 1rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    tr:hover {
+      background-color: #f9fafb;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #4338ca;
+    }
+
+    /* Utilities */
+    .hidden {
+      display: none;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .mt-4 {
+      margin-top: 1rem;
+    }
+
+    .mb-4 {
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h1>CareUnity</h1>
+      </div>
+      <ul class="sidebar-nav">
+        <li><a class="nav-link active" onclick="showPage('dashboard')">Dashboard</a></li>
+        <li><a class="nav-link" onclick="showPage('service-users')">Service Users</a></li>
+        <li><a class="nav-link" onclick="showPage('care-plans')">Care Plans</a></li>
+        <li><a class="nav-link" onclick="showPage('staff')">Staff</a></li>
+        <li><a class="nav-link" onclick="showPage('reports')">Reports</a></li>
+        <li><a class="nav-link" onclick="showPage('settings')">Settings</a></li>
+      </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Dashboard Page -->
+      <div id="dashboard-page" class="page">
+        <div class="page-header">
+          <h1>Dashboard</h1>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Care Hours</h3>
+            <div class="stat-value">128</div>
+            <div class="stat-label">This week</div>
+          </div>
+
+          <div class="stat-card">
+            <h3>Service Users</h3>
+            <div class="stat-value">24</div>
+            <div class="stat-label">Active</div>
+          </div>
+
+          <div class="stat-card">
+            <h3>Compliance</h3>
+            <div class="stat-value">94%</div>
+            <div class="stat-label">CQC Standards</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Recent Activity</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Staff</th>
+                <th>Service User</th>
+                <th>Activity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>May 8, 2025</td>
+                <td>Sarah Johnson</td>
+                <td>John Smith</td>
+                <td>Medication administered</td>
+              </tr>
+              <tr>
+                <td>May 8, 2025</td>
+                <td>Michael Brown</td>
+                <td>Jane Doe</td>
+                <td>Care plan updated</td>
+              </tr>
+              <tr>
+                <td>May 7, 2025</td>
+                <td>Emily Davis</td>
+                <td>Robert Wilson</td>
+                <td>Health check completed</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Service Users Page -->
+      <div id="service-users-page" class="page hidden">
+        <div class="page-header">
+          <h1>Service Users</h1>
+        </div>
+
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Care Plan</th>
+                <th>Last Visit</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>John Smith</td>
+                <td>Active</td>
+                <td>Daily Care</td>
+                <td>May 8, 2025</td>
+                <td><a href="#" onclick="alert('View profile functionality would go here')">View Profile</a></td>
+              </tr>
+              <tr>
+                <td>Jane Doe</td>
+                <td>Active</td>
+                <td>Weekly Visit</td>
+                <td>May 6, 2025</td>
+                <td><a href="#" onclick="alert('View profile functionality would go here')">View Profile</a></td>
+              </tr>
+              <tr>
+                <td>Robert Wilson</td>
+                <td>Active</td>
+                <td>Bi-weekly Check-in</td>
+                <td>May 7, 2025</td>
+                <td><a href="#" onclick="alert('View profile functionality would go here')">View Profile</a></td>
+              </tr>
+              <tr>
+                <td>Mary Johnson</td>
+                <td>Inactive</td>
+                <td>Monthly Assessment</td>
+                <td>April 28, 2025</td>
+                <td><a href="#" onclick="alert('View profile functionality would go here')">View Profile</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Care Plans Page -->
+      <div id="care-plans-page" class="page hidden">
+        <div class="page-header">
+          <h1>Care Plans</h1>
+        </div>
+
+        <div class="card">
+          <h2>Active Care Plans</h2>
+          <p>This section would display all active care plans.</p>
+        </div>
+      </div>
+
+      <!-- Staff Page -->
+      <div id="staff-page" class="page hidden">
+        <div class="page-header">
+          <h1>Staff</h1>
+        </div>
+
+        <div class="card">
+          <h2>Staff Directory</h2>
+          <p>This section would display the staff directory.</p>
+        </div>
+      </div>
+
+      <!-- Reports Page -->
+      <div id="reports-page" class="page hidden">
+        <div class="page-header">
+          <h1>Reports</h1>
+        </div>
+
+        <div class="card">
+          <h2>Available Reports</h2>
+          <p>This section would display available reports.</p>
+        </div>
+      </div>
+
+      <!-- Settings Page -->
+      <div id="settings-page" class="page hidden">
+        <div class="page-header">
+          <h1>Settings</h1>
+        </div>
+
+        <div class="card">
+          <h2>Account Settings</h2>
+          <p>This section would allow users to manage their account settings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simple page navigation
+    function showPage(pageId) {
+      // Hide all pages
+      const pages = document.querySelectorAll('.page');
+      pages.forEach(page => {
+        page.classList.add('hidden');
+      });
+
+      // Show the selected page
+      document.getElementById(pageId + '-page').classList.remove('hidden');
+
+      // Update active nav link
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+      });
+
+      // Find the clicked nav link and make it active
+      const clickedLink = document.querySelector(`.nav-link[onclick="showPage('${pageId}')"]`);
+      if (clickedLink) {
+        clickedLink.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>

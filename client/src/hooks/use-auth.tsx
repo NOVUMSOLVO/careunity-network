@@ -3,19 +3,23 @@ import {
   useQuery,
   useMutation,
   UseMutationResult,
+  useQueryClient,
 } from "@tanstack/react-query";
-import { insertUserSchema, User as SelectUser, InsertUser } from "@shared/schema";
-import { getQueryFn, apiRequest, queryClient } from "../lib/queryClient";
+import { User as SelectUser, InsertUser } from "@shared/schema";
+import { apiClient } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
-import { z } from "zod";
 
 type AuthContextType = {
   user: SelectUser | null;
   isLoading: boolean;
+  isAuthenticated: boolean;
   error: Error | null;
   loginMutation: UseMutationResult<SelectUser, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
   registerMutation: UseMutationResult<SelectUser, Error, InsertUser>;
+  login: (credentials: LoginData) => Promise<void>;
+  logout: () => Promise<void>;
+  register: (data: InsertUser) => Promise<void>;
 };
 
 type LoginData = {
@@ -27,8 +31,9 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [initialized, setInitialized] = useState(false);
-  
+
   useEffect(() => {
     console.log("AuthProvider mounted");
     setInitialized(true);
@@ -38,17 +43,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     data: user,
     error,
     isLoading,
-  } = useQuery<SelectUser | undefined, Error>({
+    refetch,
+  } = useQuery<SelectUser | null, Error>({
     queryKey: ["/api/user"],
-    queryFn: getQueryFn({ on401: "returnNull" }),
+    queryFn: async () => {
+      const { data, error } = await apiClient.get<SelectUser>('/api/user');
+
+      if (error) {
+        if (error.status === 401) {
+          return null;
+        }
+        throw error;
+      }
+
+      return data;
+    },
     enabled: initialized,
   });
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
       console.log("Login mutation called with:", credentials);
-      const res = await apiRequest("POST", "/api/login", credentials);
-      return await res.json();
+      const { data, error } = await apiClient.post<SelectUser>('/api/login', credentials);
+
+      if (error) {
+        throw error;
+      }
+
+      return data;
     },
     onSuccess: (user: SelectUser) => {
       console.log("Login successful:", user);
@@ -69,10 +91,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const registerMutation = useMutation({
-    mutationFn: async (credentials: InsertUser) => {
-      console.log("Register mutation called with:", credentials);
-      const res = await apiRequest("POST", "/api/register", credentials);
-      return await res.json();
+    mutationFn: async (data: InsertUser) => {
+      console.log("Register mutation called with:", data);
+      const { data: userData, error } = await apiClient.post<SelectUser>('/api/register', data);
+
+      if (error) {
+        throw error;
+      }
+
+      return userData;
     },
     onSuccess: (user: SelectUser) => {
       console.log("Registration successful:", user);
@@ -95,7 +122,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logoutMutation = useMutation({
     mutationFn: async () => {
       console.log("Logout mutation called");
-      await apiRequest("POST", "/api/logout");
+      const { error } = await apiClient.post('/api/logout');
+
+      if (error) {
+        throw error;
+      }
     },
     onSuccess: () => {
       console.log("Logout successful");
@@ -115,13 +146,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  // Helper functions with simpler API
+  const login = async (credentials: LoginData) => {
+    await loginMutation.mutateAsync(credentials);
+    await refetch();
+  };
+
+  const register = async (data: InsertUser) => {
+    await registerMutation.mutateAsync(data);
+    await refetch();
+  };
+
+  const logout = async () => {
+    await logoutMutation.mutateAsync();
+    await refetch();
+  };
+
   const value = {
     user: user ?? null,
     isLoading,
+    isAuthenticated: !!user,
     error,
     loginMutation,
     logoutMutation,
     registerMutation,
+    login,
+    logout,
+    register,
   };
 
   console.log("AuthProvider rendering with value:", value);

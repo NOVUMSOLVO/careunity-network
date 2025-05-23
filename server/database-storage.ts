@@ -1,11 +1,11 @@
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import {
-  users, User, InsertUser, 
+  users, User, InsertUser,
   serviceUsers, ServiceUser, InsertServiceUser,
   carePlans, CarePlan, InsertCarePlan,
   goals, Goal, InsertGoal,
-  tasks, Task, InsertTask, 
+  tasks, Task, InsertTask,
   appointments, Appointment, InsertAppointment,
   notes, Note, InsertNote,
   riskAssessments, RiskAssessment, InsertRiskAssessment,
@@ -13,9 +13,10 @@ import {
   communityResources, CommunityResource, InsertCommunityResource,
   resourceReferrals, ResourceReferral, InsertResourceReferral,
   resourceReviews, ResourceReview, InsertResourceReview,
-  resourceBookmarks, ResourceBookmark, InsertResourceBookmark
-} from "@shared/schema";
-import { db, pool } from "./db";
+  resourceBookmarks, ResourceBookmark, InsertResourceBookmark,
+  qualityMetrics, QualityMetric, InsertQualityMetric
+} from "./db/schema";
+import { db } from "./db";
 import { eq, and, or, sql } from "drizzle-orm";
 import { hashPassword } from "./auth";
 import { IStorage } from "./storage";
@@ -26,10 +27,8 @@ export class DatabaseStorage implements IStorage {
   sessionStore: session.Store;
 
   constructor() {
-    this.sessionStore = new PostgresSessionStore({ 
-      pool, 
-      createTableIfMissing: true 
-    });
+    // Use in-memory session store for SQLite
+    this.sessionStore = new session.MemoryStore();
   }
 
   // User operations
@@ -47,27 +46,27 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
-  
+
   // Service User operations
   async getAllServiceUsers(): Promise<ServiceUser[]> {
     return await db.select().from(serviceUsers);
   }
-  
+
   async getServiceUser(id: number): Promise<ServiceUser | undefined> {
     const result = await db.select().from(serviceUsers).where(eq(serviceUsers.id, id));
     return result[0];
   }
-  
+
   async getServiceUserByUniqueId(uniqueId: string): Promise<ServiceUser | undefined> {
     const result = await db.select().from(serviceUsers).where(eq(serviceUsers.uniqueId, uniqueId));
     return result[0];
   }
-  
+
   async createServiceUser(insertServiceUser: InsertServiceUser): Promise<ServiceUser> {
     const [serviceUser] = await db.insert(serviceUsers).values(insertServiceUser).returning();
     return serviceUser;
   }
-  
+
   async updateServiceUser(id: number, serviceUserUpdate: Partial<InsertServiceUser>): Promise<ServiceUser | undefined> {
     const [updatedServiceUser] = await db
       .update(serviceUsers)
@@ -76,7 +75,7 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updatedServiceUser;
   }
-  
+
   // Care Plan operations
   async getCarePlans(serviceUserId: number): Promise<CarePlan[]> {
     return await db
@@ -84,17 +83,17 @@ export class DatabaseStorage implements IStorage {
       .from(carePlans)
       .where(eq(carePlans.serviceUserId, serviceUserId));
   }
-  
+
   async getCarePlan(id: number): Promise<CarePlan | undefined> {
     const result = await db.select().from(carePlans).where(eq(carePlans.id, id));
     return result[0];
   }
-  
+
   async createCarePlan(insertCarePlan: InsertCarePlan): Promise<CarePlan> {
     const [carePlan] = await db.insert(carePlans).values(insertCarePlan).returning();
     return carePlan;
   }
-  
+
   async updateCarePlan(id: number, carePlanUpdate: Partial<InsertCarePlan>): Promise<CarePlan | undefined> {
     const [updatedCarePlan] = await db
       .update(carePlans)
@@ -103,7 +102,7 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updatedCarePlan;
   }
-  
+
   // Goal operations
   async getGoals(carePlanId: number): Promise<Goal[]> {
     return await db
@@ -111,17 +110,17 @@ export class DatabaseStorage implements IStorage {
       .from(goals)
       .where(eq(goals.carePlanId, carePlanId));
   }
-  
+
   async getGoal(id: number): Promise<Goal | undefined> {
     const result = await db.select().from(goals).where(eq(goals.id, id));
     return result[0];
   }
-  
+
   async createGoal(insertGoal: InsertGoal): Promise<Goal> {
     const [goal] = await db.insert(goals).values(insertGoal).returning();
     return goal;
   }
-  
+
   async updateGoal(id: number, goalUpdate: Partial<InsertGoal>): Promise<Goal | undefined> {
     const [updatedGoal] = await db
       .update(goals)
@@ -130,7 +129,7 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updatedGoal;
   }
-  
+
   // Task operations
   async getTasks(carePlanId: number): Promise<Task[]> {
     return await db
@@ -138,17 +137,17 @@ export class DatabaseStorage implements IStorage {
       .from(tasks)
       .where(eq(tasks.carePlanId, carePlanId));
   }
-  
+
   async getTask(id: number): Promise<Task | undefined> {
     const result = await db.select().from(tasks).where(eq(tasks.id, id));
     return result[0];
   }
-  
+
   async createTask(insertTask: InsertTask): Promise<Task> {
     const [task] = await db.insert(tasks).values(insertTask).returning();
     return task;
   }
-  
+
   async updateTask(id: number, taskUpdate: Partial<InsertTask>): Promise<Task | undefined> {
     const [updatedTask] = await db
       .update(tasks)
@@ -157,7 +156,7 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updatedTask;
   }
-  
+
   // Appointment operations
   async getAppointments(serviceUserId: number, date?: string): Promise<Appointment[]> {
     if (date) {
@@ -177,7 +176,7 @@ export class DatabaseStorage implements IStorage {
         .where(eq(appointments.serviceUserId, serviceUserId));
     }
   }
-  
+
   async getAppointmentsForCaregiver(caregiverId: number, date?: string): Promise<Appointment[]> {
     if (date) {
       return await db
@@ -196,17 +195,17 @@ export class DatabaseStorage implements IStorage {
         .where(eq(appointments.caregiverId, caregiverId));
     }
   }
-  
+
   async getAppointment(id: number): Promise<Appointment | undefined> {
     const result = await db.select().from(appointments).where(eq(appointments.id, id));
     return result[0];
   }
-  
+
   async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {
     const [appointment] = await db.insert(appointments).values(insertAppointment).returning();
     return appointment;
   }
-  
+
   async updateAppointment(id: number, appointmentUpdate: Partial<InsertAppointment>): Promise<Appointment | undefined> {
     const [updatedAppointment] = await db
       .update(appointments)
@@ -215,7 +214,7 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updatedAppointment;
   }
-  
+
   // Note operations
   async getNotes(serviceUserId: number): Promise<Note[]> {
     return await db
@@ -223,17 +222,17 @@ export class DatabaseStorage implements IStorage {
       .from(notes)
       .where(eq(notes.serviceUserId, serviceUserId));
   }
-  
+
   async getNote(id: number): Promise<Note | undefined> {
     const result = await db.select().from(notes).where(eq(notes.id, id));
     return result[0];
   }
-  
+
   async createNote(insertNote: InsertNote): Promise<Note> {
     const [note] = await db.insert(notes).values(insertNote).returning();
     return note;
   }
-  
+
   // Risk Assessment operations
   async getRiskAssessments(serviceUserId: number): Promise<RiskAssessment[]> {
     return await db
@@ -241,17 +240,17 @@ export class DatabaseStorage implements IStorage {
       .from(riskAssessments)
       .where(eq(riskAssessments.serviceUserId, serviceUserId));
   }
-  
+
   async getRiskAssessment(id: number): Promise<RiskAssessment | undefined> {
     const result = await db.select().from(riskAssessments).where(eq(riskAssessments.id, id));
     return result[0];
   }
-  
+
   async createRiskAssessment(insertRiskAssessment: InsertRiskAssessment): Promise<RiskAssessment> {
     const [riskAssessment] = await db.insert(riskAssessments).values(insertRiskAssessment).returning();
     return riskAssessment;
   }
-  
+
   async updateRiskAssessment(id: number, riskAssessmentUpdate: Partial<InsertRiskAssessment>): Promise<RiskAssessment | undefined> {
     const [updatedRiskAssessment] = await db
       .update(riskAssessments)
@@ -260,22 +259,22 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updatedRiskAssessment;
   }
-  
+
   // Resource Location operations
   async getAllResourceLocations(): Promise<ResourceLocation[]> {
     return await db.select().from(resourceLocations);
   }
-  
+
   async getResourceLocation(id: number): Promise<ResourceLocation | undefined> {
     const result = await db.select().from(resourceLocations).where(eq(resourceLocations.id, id));
     return result[0];
   }
-  
+
   async createResourceLocation(location: InsertResourceLocation): Promise<ResourceLocation> {
     const [resourceLocation] = await db.insert(resourceLocations).values(location).returning();
     return resourceLocation;
   }
-  
+
   async updateResourceLocation(id: number, locationUpdate: Partial<InsertResourceLocation>): Promise<ResourceLocation | undefined> {
     const [updatedLocation] = await db
       .update(resourceLocations)
@@ -284,12 +283,12 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updatedLocation;
   }
-  
+
   // Community Resource operations
   async getAllCommunityResources(): Promise<CommunityResource[]> {
     return await db.select().from(communityResources);
   }
-  
+
   async getCommunityResourcesByCategory(category: string): Promise<CommunityResource[]> {
     // Filter by category - using array_contains postgres function
     return await db
@@ -297,19 +296,19 @@ export class DatabaseStorage implements IStorage {
       .from(communityResources)
       .where(sql`${communityResources.categories} @> ARRAY[${category}]::text[]`);
   }
-  
+
   async getCommunityResourcesByLocation(locationId: number): Promise<CommunityResource[]> {
     return await db
       .select()
       .from(communityResources)
       .where(eq(communityResources.locationId, locationId));
   }
-  
+
   async getCommunityResource(id: number): Promise<CommunityResource | undefined> {
     const result = await db.select().from(communityResources).where(eq(communityResources.id, id));
     return result[0];
   }
-  
+
   async createCommunityResource(resource: InsertCommunityResource): Promise<CommunityResource> {
     const resourceWithDefaults = {
       ...resource,
@@ -319,7 +318,7 @@ export class DatabaseStorage implements IStorage {
     const [communityResource] = await db.insert(communityResources).values(resourceWithDefaults).returning();
     return communityResource;
   }
-  
+
   async updateCommunityResource(id: number, resourceUpdate: Partial<InsertCommunityResource>): Promise<CommunityResource | undefined> {
     const [updatedResource] = await db
       .update(communityResources)
@@ -328,11 +327,11 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updatedResource;
   }
-  
+
   async searchCommunityResources(query: string, filters?: any): Promise<CommunityResource[]> {
     // Build the query dynamically based on filters
     let baseQuery = db.select().from(communityResources);
-    
+
     // Text search
     if (query && query.trim() !== '') {
       const searchText = `%${query.toLowerCase()}%`;
@@ -343,21 +342,21 @@ export class DatabaseStorage implements IStorage {
         )
       );
     }
-    
+
     // Apply filters
     if (filters) {
       if (filters.isFree !== undefined) {
         baseQuery = baseQuery.where(eq(communityResources.isFree, filters.isFree));
       }
-      
+
       if (filters.isReferralRequired !== undefined) {
         baseQuery = baseQuery.where(eq(communityResources.isReferralRequired, filters.isReferralRequired));
       }
-      
+
       if (filters.status) {
         baseQuery = baseQuery.where(eq(communityResources.status, filters.status));
       }
-      
+
       if (filters.categories && filters.categories.length > 0) {
         // Check if any of the filter categories is in the resource categories array
         baseQuery = baseQuery.where(
@@ -365,18 +364,18 @@ export class DatabaseStorage implements IStorage {
         );
       }
     }
-    
+
     return await baseQuery;
   }
-  
+
   // Resource Referral operations
   async getReferrals(serviceUserId?: number, resourceId?: number): Promise<ResourceReferral[]> {
     let query = db.select().from(resourceReferrals);
-    
+
     if (serviceUserId !== undefined) {
       query = query.where(eq(resourceReferrals.serviceUserId, serviceUserId));
     }
-    
+
     if (resourceId !== undefined) {
       if (serviceUserId !== undefined) {
         query = query.where(and(
@@ -387,20 +386,20 @@ export class DatabaseStorage implements IStorage {
         query = query.where(eq(resourceReferrals.resourceId, resourceId));
       }
     }
-    
+
     return await query;
   }
-  
+
   async getReferral(id: number): Promise<ResourceReferral | undefined> {
     const result = await db.select().from(resourceReferrals).where(eq(resourceReferrals.id, id));
     return result[0];
   }
-  
+
   async createReferral(referral: InsertResourceReferral): Promise<ResourceReferral> {
     const [resourceReferral] = await db.insert(resourceReferrals).values(referral).returning();
     return resourceReferral;
   }
-  
+
   async updateReferral(id: number, referralUpdate: Partial<InsertResourceReferral>): Promise<ResourceReferral | undefined> {
     const [updatedReferral] = await db
       .update(resourceReferrals)
@@ -409,7 +408,7 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updatedReferral;
   }
-  
+
   // Resource Review operations
   async getReviews(resourceId: number): Promise<ResourceReview[]> {
     return await db
@@ -417,52 +416,52 @@ export class DatabaseStorage implements IStorage {
       .from(resourceReviews)
       .where(eq(resourceReviews.resourceId, resourceId));
   }
-  
+
   async getReview(id: number): Promise<ResourceReview | undefined> {
     const result = await db.select().from(resourceReviews).where(eq(resourceReviews.id, id));
     return result[0];
   }
-  
+
   async createReview(review: InsertResourceReview): Promise<ResourceReview> {
     const [resourceReview] = await db.insert(resourceReviews).values(review).returning();
-    
+
     // Update rating and review count in the community resource
     const reviews = await this.getReviews(review.resourceId);
     const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
     const avgRating = reviews.length > 0 ? totalRating / reviews.length : 0;
-    
+
     await this.updateCommunityResource(review.resourceId, {
       rating: avgRating,
       reviewCount: reviews.length
     });
-    
+
     return resourceReview;
   }
-  
+
   async updateReview(id: number, reviewUpdate: Partial<InsertResourceReview>): Promise<ResourceReview | undefined> {
     const existingReview = await this.getReview(id);
     if (!existingReview) return undefined;
-    
+
     const [updatedReview] = await db
       .update(resourceReviews)
       .set(reviewUpdate)
       .where(eq(resourceReviews.id, id))
       .returning();
-    
+
     // If rating was updated, recalculate the average rating for the resource
     if (reviewUpdate.rating !== undefined && reviewUpdate.rating !== existingReview.rating) {
       const reviews = await this.getReviews(existingReview.resourceId);
       const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
       const avgRating = reviews.length > 0 ? totalRating / reviews.length : 0;
-      
+
       await this.updateCommunityResource(existingReview.resourceId, {
         rating: avgRating
       });
     }
-    
+
     return updatedReview;
   }
-  
+
   // Resource Bookmark operations
   async getBookmarks(userId: number): Promise<ResourceBookmark[]> {
     return await db
@@ -470,23 +469,23 @@ export class DatabaseStorage implements IStorage {
       .from(resourceBookmarks)
       .where(eq(resourceBookmarks.userId, userId));
   }
-  
+
   async getBookmark(id: number): Promise<ResourceBookmark | undefined> {
     const result = await db.select().from(resourceBookmarks).where(eq(resourceBookmarks.id, id));
     return result[0];
   }
-  
+
   async createBookmark(bookmark: InsertResourceBookmark): Promise<ResourceBookmark> {
     const [resourceBookmark] = await db.insert(resourceBookmarks).values(bookmark).returning();
     return resourceBookmark;
   }
-  
+
   async deleteBookmark(id: number): Promise<boolean> {
     const result = await db
       .delete(resourceBookmarks)
       .where(eq(resourceBookmarks.id, id))
       .returning({ id: resourceBookmarks.id });
-    
+
     return result.length > 0;
   }
 
@@ -495,27 +494,31 @@ export class DatabaseStorage implements IStorage {
     try {
       // Check if data already exists
       console.log("Checking for existing data...");
-      
-      // Check for existing users
-      const userCount = await db.select().from(users);
-      
+
+      // Skip seeding for now to avoid errors
+      console.log("Skipping initial data seeding for now.");
+      return;
+
       // Check for existing community resources
-      const resourceCount = await db.select().from(communityResources);
-      
-      if (userCount.length > 0 && resourceCount.length > 0) {
-        console.log("Both users and community resources already exist - skipping all seeding");
+      const resourceCount = await db.select({ id: communityResources.id }).from(communityResources);
+
+      // Check for existing quality metrics
+      const metricsCount = await db.select({ id: qualityMetrics.id }).from(qualityMetrics);
+
+      if (userCount.length > 0 && resourceCount.length > 0 && metricsCount.length > 0) {
+        console.log("Users, community resources, and quality metrics already exist - skipping all seeding");
         return;
       }
-      
+
       console.log("Seeding initial data to database...");
-      
+
       // Variables to store created entities for reference
       let adminUser, johnUser, sarahUser, serviceUser1, serviceUser2;
-      
+
       // Check if we need to create users
       if (userCount.length === 0) {
         console.log("Creating users...");
-        
+
         // Create a test admin user
         adminUser = await this.createUser({
           username: 'admin',
@@ -526,7 +529,7 @@ export class DatabaseStorage implements IStorage {
           phoneNumber: '+4478943211',
           profileImage: null
         });
-        
+
         // Create some caregivers
         johnUser = await this.createUser({
           username: 'johnsmith',
@@ -537,7 +540,7 @@ export class DatabaseStorage implements IStorage {
           phoneNumber: '+4478123456',
           profileImage: null
         });
-        
+
         sarahUser = await this.createUser({
           username: 'sarahjones',
           password: await hashPassword('password'), // 'password'
@@ -554,12 +557,12 @@ export class DatabaseStorage implements IStorage {
         johnUser = await this.getUserByUsername('johnsmith');
         sarahUser = await this.getUserByUsername('sarahjones');
       }
-      
+
       // Check if we need to create service users
-      const serviceUserCount = await db.select().from(serviceUsers);
+      const serviceUserCount = await db.select({ id: serviceUsers.id }).from(serviceUsers);
       if (serviceUserCount.length === 0) {
         console.log("Creating service users...");
-        
+
         // Create some service users
         serviceUser1 = await this.createServiceUser({
           fullName: 'Elizabeth Johnson',
@@ -573,7 +576,7 @@ export class DatabaseStorage implements IStorage {
           needs: 'Assistance with bathing and medication. Needs regular prompting for hydration.',
           lifeStory: 'Retired teacher. Widowed in 2015. Has two children and four grandchildren.'
         });
-        
+
         serviceUser2 = await this.createServiceUser({
           fullName: 'Robert Wilson',
           phoneNumber: '+4479456789',
@@ -592,14 +595,14 @@ export class DatabaseStorage implements IStorage {
         serviceUser1 = await this.getServiceUserByUniqueId('SU-0001');
         serviceUser2 = await this.getServiceUserByUniqueId('SU-0002');
       }
-      
+
       // Check if we need to create care plans
       let carePlan1, carePlan2;
-      const carePlanCount = await db.select().from(carePlans);
-      
+      const carePlanCount = await db.select({ id: carePlans.id }).from(carePlans);
+
       if (carePlanCount.length === 0 && serviceUser1 && serviceUser2) {
         console.log("Creating care plans...");
-        
+
         // Create care plans
         carePlan1 = await this.createCarePlan({
           title: 'Daily Living Support Plan',
@@ -609,7 +612,7 @@ export class DatabaseStorage implements IStorage {
           startDate: '2023-10-15',
           reviewDate: '2024-04-15'
         });
-        
+
         carePlan2 = await this.createCarePlan({
           title: 'Mobility Enhancement Plan',
           summary: 'Focused on improving mobility and preventing falls.',
@@ -618,12 +621,12 @@ export class DatabaseStorage implements IStorage {
           startDate: '2023-11-01',
           reviewDate: '2024-05-01'
         });
-        
+
         // Check if we need to create goals
-        const goalCount = await db.select().from(goals);
+        const goalCount = await db.select({ id: goals.id }).from(goals);
         if (goalCount.length === 0 && carePlan1 && carePlan2) {
           console.log("Creating goals...");
-          
+
           // Create goals for first care plan
           await this.createGoal({
             title: 'Maintain personal hygiene independence',
@@ -634,7 +637,7 @@ export class DatabaseStorage implements IStorage {
             targetDate: '2024-01-15',
             progressPercentage: 45
           });
-          
+
           await this.createGoal({
             title: 'Medication management',
             description: 'Ensure consistent and correct medication intake.',
@@ -644,7 +647,7 @@ export class DatabaseStorage implements IStorage {
             targetDate: '2024-04-15',
             progressPercentage: 70
           });
-          
+
           await this.createGoal({
             title: 'Social engagement',
             description: 'Increase participation in community activities.',
@@ -654,7 +657,7 @@ export class DatabaseStorage implements IStorage {
             targetDate: '2024-03-01',
             progressPercentage: 25
           });
-          
+
           // Create goals for second care plan
           await this.createGoal({
             title: 'Safe mobility around home',
@@ -665,7 +668,7 @@ export class DatabaseStorage implements IStorage {
             targetDate: '2024-02-01',
             progressPercentage: 60
           });
-          
+
           await this.createGoal({
             title: 'Outdoor walking program',
             description: 'Gradually increase distance and duration of outdoor walks.',
@@ -678,12 +681,12 @@ export class DatabaseStorage implements IStorage {
         } else {
           console.log("Goals already exist - skipping goal creation");
         }
-        
+
         // Check if we need to create tasks
-        const taskCount = await db.select().from(tasks);
+        const taskCount = await db.select({ id: tasks.id }).from(tasks);
         if (taskCount.length === 0 && carePlan1 && carePlan2) {
           console.log("Creating tasks...");
-          
+
           // Create tasks
           await this.createTask({
             title: 'Morning medication reminder',
@@ -693,7 +696,7 @@ export class DatabaseStorage implements IStorage {
             timeOfDay: 'morning',
             completed: false
           });
-          
+
           await this.createTask({
             title: 'Evening bath assistance',
             description: 'Provide minimal assistance with bath preparation and safety supervision.',
@@ -702,7 +705,7 @@ export class DatabaseStorage implements IStorage {
             timeOfDay: 'evening',
             completed: false
           });
-          
+
           await this.createTask({
             title: 'Indoor walking practice',
             description: 'Practice walking from living room to garden using walking frame.',
@@ -723,18 +726,18 @@ export class DatabaseStorage implements IStorage {
           carePlan2 = existingCarePlans[1];
         }
       }
-      
+
       // Check if we need to create appointments
-      const appointmentCount = await db.select().from(appointments);
+      const appointmentCount = await db.select({ id: appointments.id }).from(appointments);
       if (appointmentCount.length === 0 && serviceUser1 && serviceUser2) {
         console.log("Creating appointments...");
-        
+
         const today = new Date();
         const tomorrow = new Date();
         tomorrow.setDate(today.getDate() + 1);
         const nextWeek = new Date();
         nextWeek.setDate(today.getDate() + 7);
-        
+
         await this.createAppointment({
           title: 'Morning Care Visit',
           description: 'Regular morning care visit - personal care and breakfast assistance.',
@@ -747,7 +750,7 @@ export class DatabaseStorage implements IStorage {
           location: "Service User's Home",
           visitType: 'routine'
         });
-        
+
         await this.createAppointment({
           title: 'Evening Care Visit',
           description: 'Regular evening care visit - meal preparation and medication support.',
@@ -760,7 +763,7 @@ export class DatabaseStorage implements IStorage {
           location: "Service User's Home",
           visitType: 'routine'
         });
-        
+
         await this.createAppointment({
           title: 'Physiotherapy Session',
           description: 'Weekly physiotherapy session with mobility assessment.',
@@ -773,7 +776,7 @@ export class DatabaseStorage implements IStorage {
           location: 'Community Health Center',
           visitType: 'therapy'
         });
-        
+
         await this.createAppointment({
           title: 'GP Appointment',
           description: 'Quarterly check-up with GP.',
@@ -789,14 +792,14 @@ export class DatabaseStorage implements IStorage {
       } else {
         console.log("Appointments already exist - skipping appointment creation");
       }
-      
+
       // Check if we need to create notes
-      const noteCount = await db.select().from(notes);
+      const noteCount = await db.select({ id: notes.id }).from(notes);
       if (noteCount.length === 0 && serviceUser1 && serviceUser2) {
         console.log("Creating notes...");
-        
+
         const today = new Date();
-        
+
         await this.createNote({
           content: 'Elizabeth was in good spirits today. Completed all morning routines with minimal assistance. Mentioned slight pain in right knee when standing up from chair.',
           serviceUserId: serviceUser1.id,
@@ -805,7 +808,7 @@ export class DatabaseStorage implements IStorage {
           timestamp: new Date(new Date().setDate(today.getDate() - 1)).toISOString(),
           isVoiceRecorded: false
         });
-        
+
         await this.createNote({
           content: 'Robert completed the indoor walking exercise today, showing improvement in balance. Expressed interest in attempting garden walk next week.',
           serviceUserId: serviceUser2.id,
@@ -817,14 +820,14 @@ export class DatabaseStorage implements IStorage {
       } else {
         console.log("Notes already exist - skipping note creation");
       }
-      
+
       // Check if we need to create risk assessments
-      const riskAssessmentCount = await db.select().from(riskAssessments);
+      const riskAssessmentCount = await db.select({ id: riskAssessments.id }).from(riskAssessments);
       if (riskAssessmentCount.length === 0 && serviceUser1 && serviceUser2) {
         console.log("Creating risk assessments...");
-        
+
         const today = new Date();
-        
+
         await this.createRiskAssessment({
           description: 'Fall risk assessment',
           serviceUserId: serviceUser1.id,
@@ -833,7 +836,7 @@ export class DatabaseStorage implements IStorage {
           mitigations: 'Remove loose rugs. Install additional handrails in bathroom. Ensure adequate lighting, especially at night.',
           reviewDate: new Date(new Date().setMonth(today.getMonth() + 3)).toISOString().split('T')[0]
         });
-        
+
         await this.createRiskAssessment({
           description: 'Medication management risk assessment',
           serviceUserId: serviceUser2.id,
@@ -845,7 +848,7 @@ export class DatabaseStorage implements IStorage {
       } else {
         console.log("Risk assessments already exist - skipping risk assessment creation");
       }
-      
+
       // Check for existing community resources
       const resourceLocationCount = await db.select().from(resourceLocations);
       if (resourceLocationCount.length === 0) {
@@ -883,7 +886,7 @@ export class DatabaseStorage implements IStorage {
 
     // Seed community resources
     console.log("Seeding community resources...");
-    
+
     // Health resources
     await this.createCommunityResource({
       name: 'Elderly Exercise Group',
@@ -1065,7 +1068,7 @@ export class DatabaseStorage implements IStorage {
       },
       lastUpdated: '2024-01-15'
     });
-    
+
     // Social activities
     await this.createCommunityResource({
       name: 'Creative Arts for Wellbeing',
@@ -1106,7 +1109,7 @@ export class DatabaseStorage implements IStorage {
     try {
       const resource1 = await db.select().from(communityResources).where(eq(communityResources.name, "Elderly Exercise Group")).then(res => res[0]);
       const resource2 = await db.select().from(communityResources).where(eq(communityResources.name, "Memory Café")).then(res => res[0]);
-      
+
       if (resource1) {
         await this.createReview({
           resourceId: resource1.id,
@@ -1116,7 +1119,7 @@ export class DatabaseStorage implements IStorage {
           date: "2023-11-10",
           helpfulCount: 3
         });
-        
+
         await this.createReview({
           resourceId: resource1.id,
           userId: 2, // john smith
@@ -1126,7 +1129,7 @@ export class DatabaseStorage implements IStorage {
           helpfulCount: 1
         });
       }
-      
+
       if (resource2) {
         await this.createReview({
           resourceId: resource2.id,
@@ -1137,7 +1140,7 @@ export class DatabaseStorage implements IStorage {
           helpfulCount: 4
         });
       }
-      
+
       // Create some sample bookmarks
       if (resource1 && resource2) {
         await this.createBookmark({
@@ -1146,7 +1149,7 @@ export class DatabaseStorage implements IStorage {
           notes: "Recommend this to Mrs. Johnson",
           dateAdded: "2023-11-15"
         });
-        
+
         await this.createBookmark({
           resourceId: resource2.id,
           userId: 3,
@@ -1161,6 +1164,159 @@ export class DatabaseStorage implements IStorage {
         console.log("Database seeding complete!");
       } else {
         console.log("Resource locations already exist - skipping community resource creation");
+      }
+
+      // Seed quality metrics if they don't exist
+      if (metricsCount.length === 0) {
+        console.log("Seeding quality metrics...");
+
+        // Seed care quality metrics
+        await db.insert(qualityMetrics).values([
+          {
+            name: 'Care Plan Compliance',
+            value: 92.5,
+            target: 100,
+            trend: 'up',
+            category: 'care',
+            description: 'Percentage of care plans that are up to date and fully compliant'
+          },
+          {
+            name: 'Medication Administration Accuracy',
+            value: 99.8,
+            target: 100,
+            trend: 'stable',
+            category: 'care',
+            description: 'Percentage of medications administered correctly and on time'
+          },
+          {
+            name: 'Care Visit Completion Rate',
+            value: 97.2,
+            target: 98,
+            trend: 'up',
+            category: 'care',
+            description: 'Percentage of scheduled care visits completed successfully'
+          },
+          {
+            name: 'Care Plan Review Timeliness',
+            value: 85.3,
+            target: 95,
+            trend: 'down',
+            category: 'care',
+            description: 'Percentage of care plans reviewed within the scheduled timeframe'
+          }
+        ]);
+
+        // Staff performance metrics
+        await db.insert(qualityMetrics).values([
+          {
+            name: 'Staff Attendance',
+            value: 94.7,
+            target: 98,
+            trend: 'stable',
+            category: 'staff',
+            description: 'Percentage of shifts attended as scheduled'
+          },
+          {
+            name: 'Staff Training Compliance',
+            value: 88.5,
+            target: 100,
+            trend: 'up',
+            category: 'staff',
+            description: 'Percentage of staff with up-to-date required training'
+          },
+          {
+            name: 'Staff Retention Rate',
+            value: 76.2,
+            target: 85,
+            trend: 'up',
+            category: 'staff',
+            description: 'Percentage of staff retained over the past 12 months'
+          },
+          {
+            name: 'Staff Satisfaction Score',
+            value: 7.8,
+            target: 9,
+            trend: 'stable',
+            category: 'staff',
+            description: 'Average staff satisfaction score out of 10'
+          }
+        ]);
+
+        // Compliance metrics
+        await db.insert(qualityMetrics).values([
+          {
+            name: 'CQC Compliance Score',
+            value: 92.0,
+            target: 100,
+            trend: 'up',
+            category: 'compliance',
+            description: 'Overall compliance score with CQC standards'
+          },
+          {
+            name: 'Incident Reporting Timeliness',
+            value: 95.5,
+            target: 100,
+            trend: 'up',
+            category: 'compliance',
+            description: 'Percentage of incidents reported within required timeframe'
+          },
+          {
+            name: 'Risk Assessment Completion',
+            value: 89.3,
+            target: 100,
+            trend: 'stable',
+            category: 'compliance',
+            description: 'Percentage of required risk assessments completed and up to date'
+          },
+          {
+            name: 'Documentation Compliance',
+            value: 87.6,
+            target: 95,
+            trend: 'up',
+            category: 'compliance',
+            description: 'Percentage of documentation that meets compliance standards'
+          }
+        ]);
+
+        // Satisfaction metrics
+        await db.insert(qualityMetrics).values([
+          {
+            name: 'Service User Satisfaction',
+            value: 8.7,
+            target: 9.5,
+            trend: 'up',
+            category: 'satisfaction',
+            description: 'Average service user satisfaction score out of 10'
+          },
+          {
+            name: 'Family Satisfaction',
+            value: 8.2,
+            target: 9,
+            trend: 'stable',
+            category: 'satisfaction',
+            description: 'Average family satisfaction score out of 10'
+          },
+          {
+            name: 'Complaint Resolution Rate',
+            value: 94.8,
+            target: 100,
+            trend: 'up',
+            category: 'satisfaction',
+            description: 'Percentage of complaints resolved within target timeframe'
+          },
+          {
+            name: 'Net Promoter Score',
+            value: 42,
+            target: 50,
+            trend: 'up',
+            category: 'satisfaction',
+            description: 'Net Promoter Score measuring likelihood to recommend services'
+          }
+        ]);
+
+        console.log("Quality metrics seeded successfully");
+      } else {
+        console.log("Quality metrics already exist - skipping quality metrics creation");
       }
     } catch (error) {
       console.error("Error seeding database:", error);

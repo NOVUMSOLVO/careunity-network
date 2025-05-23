@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Basic Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #4338ca;
+        }
+        button {
+            background-color: #4338ca;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #3730a3;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Basic HTML Test</h1>
+        <p>If you can see this text, basic HTML rendering is working correctly.</p>
+        <button onclick="testBasicJS()">Test Basic JavaScript</button>
+        <button onclick="testServerConnection()">Test Server Connection</button>
+        <button onclick="testReactLoading()">Test React Loading</button>
+        <div id="basic-result" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h1>Diagnostics</h1>
+        <p>Browser information and environment details:</p>
+        <div id="diagnostics" class="result"></div>
+        <button onclick="runFullDiagnostics()">Run Full Diagnostics</button>
+    </div>
+
+    <script>
+        // Display basic browser information on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const diagnosticsDiv = document.getElementById('diagnostics');
+            diagnosticsDiv.innerHTML = `
+                <p><strong>User Agent:</strong> ${navigator.userAgent}</p>
+                <p><strong>Page Loaded:</strong> ${new Date().toLocaleTimeString()}</p>
+                <p><strong>Window Size:</strong> ${window.innerWidth}x${window.innerHeight}</p>
+            `;
+        });
+
+        // Test basic JavaScript functionality
+        function testBasicJS() {
+            const resultDiv = document.getElementById('basic-result');
+            resultDiv.innerHTML = `
+                <p class="success">JavaScript is working correctly!</p>
+                <p>Current time: ${new Date().toLocaleTimeString()}</p>
+            `;
+        }
+
+        // Test server connection
+        function testServerConnection() {
+            const resultDiv = document.getElementById('basic-result');
+            resultDiv.innerHTML = '<p>Testing server connection...</p>';
+
+            fetch('/ml-models-test.html')
+                .then(response => {
+                    if (response.ok) {
+                        resultDiv.innerHTML = `
+                            <p class="success">Server connection successful!</p>
+                            <p>Status: ${response.status}</p>
+                            <p>Server is responding correctly</p>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `
+                            <p class="error">Server responded with error!</p>
+                            <p>Status: ${response.status}</p>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `
+                        <p class="error">Connection error!</p>
+                        <p>${error.message}</p>
+                    `;
+                });
+        }
+
+        // Test if React can be loaded
+        function testReactLoading() {
+            const resultDiv = document.getElementById('basic-result');
+            resultDiv.innerHTML = '<p>Testing React loading...</p>';
+
+            // Try to load React from CDN
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/react@18/umd/react.development.js';
+            script.onload = function() {
+                resultDiv.innerHTML = `
+                    <p class="success">React loaded successfully!</p>
+                    <p>Version: ${window.React ? window.React.version : 'unknown'}</p>
+                `;
+            };
+            script.onerror = function() {
+                resultDiv.innerHTML = `
+                    <p class="error">Failed to load React!</p>
+                    <p>Check your internet connection and browser console for more details.</p>
+                `;
+            };
+            document.head.appendChild(script);
+        }
+
+        // Run comprehensive diagnostics
+        function runFullDiagnostics() {
+            const diagnosticsDiv = document.getElementById('diagnostics');
+            diagnosticsDiv.innerHTML = '<p>Running diagnostics...</p>';
+
+            // Collect system information
+            const info = {
+                browser: navigator.userAgent,
+                viewport: `${window.innerWidth}x${window.innerHeight}`,
+                language: navigator.language,
+                cookiesEnabled: navigator.cookieEnabled,
+                onlineStatus: navigator.onLine ? 'Online' : 'Offline',
+                platform: navigator.platform,
+                time: new Date().toString()
+            };
+
+            // Check for localStorage support
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                info.localStorage = 'Available';
+            } catch (e) {
+                info.localStorage = 'Not available: ' + e.message;
+            }
+
+            // Display results
+            let html = '<h3>System Information</h3>';
+            for (const [key, value] of Object.entries(info)) {
+                html += `<p><strong>${key}:</strong> ${value}</p>`;
+            }
+
+            // Check network connectivity
+            html += '<h3>Network Tests</h3>';
+            html += '<p id="network-test">Testing network connectivity...</p>';
+
+            diagnosticsDiv.innerHTML = html;
+
+            // Perform network test
+            fetch('https://www.google.com', { mode: 'no-cors' })
+                .then(() => {
+                    document.getElementById('network-test').innerHTML =
+                        '<span class="success">Internet connection appears to be working</span>';
+                })
+                .catch(error => {
+                    document.getElementById('network-test').innerHTML =
+                        `<span class="error">Internet connection issue: ${error.message}</span>`;
+                });
+        }
+    </script>
+</body>
+</html>

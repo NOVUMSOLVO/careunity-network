@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareUnity Enhanced Notifications Demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    .notification-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .notification-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .priority-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    
+    .priority-critical { background-color: #dc2626; }
+    .priority-high { background-color: #f59e0b; }
+    .priority-medium { background-color: #3b82f6; }
+    .priority-low { background-color: #6b7280; }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
+      <div class="flex items-center">
+        <img src="/icon-192.png" alt="CareUnity Logo" class="h-10 w-10 mr-3">
+        <div>
+          <h1 class="text-xl font-bold text-gray-900">CareUnity</h1>
+          <p class="text-sm text-gray-500">Enhanced Notifications Demo</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center space-x-4">
+        <button id="notifications-btn" class="p-2 text-gray-500 hover:text-gray-700 focus:outline-none relative">
+          <span class="material-icons">notifications</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <!-- Demo Controls Section -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <h2 class="text-lg font-medium text-gray-900 mb-4">Notification Demo Controls</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Basic Notification Form -->
+        <div class="border border-gray-200 rounded-md p-4">
+          <h3 class="font-medium text-gray-800 mb-3">Send Immediate Notification</h3>
+          
+          <form id="basic-notification-form" class="space-y-4">
+            <div>
+              <label for="notification-title" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+              <input type="text" id="notification-title" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="Sample Notification">
+            </div>
+            
+            <div>
+              <label for="notification-message" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+              <textarea id="notification-message" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">This is a sample notification message.</textarea>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="notification-category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <select id="notification-category" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <option value="care_plan">Care Plan</option>
+                  <option value="medication">Medication</option>
+                  <option value="appointment">Appointment</option>
+                  <option value="alert">Alert</option>
+                  <option value="system">System</option>
+                  <option value="message">Message</option>
+                </select>
+              </div>
+              
+              <div>
+                <label for="notification-priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                <select id="notification-priority" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Notification Channels</label>
+              <div class="flex space-x-4">
+                <label class="inline-flex items-center">
+                  <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" id="channel-in_app" checked>
+                  <span class="ml-2 text-sm text-gray-700">In-App</span>
+                </label>
+                <label class="inline-flex items-center">
+                  <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" id="channel-push" checked>
+                  <span class="ml-2 text-sm text-gray-700">Push</span>
+                </label>
+                <label class="inline-flex items-center">
+                  <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" id="channel-sms">
+                  <span class="ml-2 text-sm text-gray-700">SMS</span>
+                </label>
+                <label class="inline-flex items-center">
+                  <input type="checkbox" class="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" id="channel-email">
+                  <span class="ml-2 text-sm text-gray-700">Email</span>
+                </label>
+              </div>
+            </div>
+            
+            <div>
+              <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Send Notification
+              </button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Scheduled Notification Form -->
+        <div class="border border-gray-200 rounded-md p-4">
+          <h3 class="font-medium text-gray-800 mb-3">Schedule Notification</h3>
+          
+          <form id="scheduled-notification-form" class="space-y-4">
+            <div>
+              <label for="scheduled-title" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+              <input type="text" id="scheduled-title" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="Scheduled Notification">
+            </div>
+            
+            <div>
+              <label for="scheduled-message" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+              <textarea id="scheduled-message" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">This is a scheduled notification.</textarea>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="scheduled-category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <select id="scheduled-category" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <option value="care_plan">Care Plan</option>
+                  <option value="medication">Medication</option>
+                  <option value="appointment" selected>Appointment</option>
+                  <option value="alert">Alert</option>
+                  <option value="system">System</option>
+                  <option value="message">Message</option>
+                </select>
+              </div>
+              
+              <div>
+                <label for="scheduled-priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                <select id="scheduled-priority" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+              </div>
+            </div>
+            
+            <div>
+              <label for="scheduled-time" class="block text-sm font-medium text-gray-700 mb-1">Delivery Time</label>
+              <input type="datetime-local" id="scheduled-time" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            </div>
+            
+            <div>
+              <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Schedule Notification
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Preset Scenarios Section -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <h2 class="text-lg font-medium text-gray-900 mb-4">Notification Scenarios</h2>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <!-- Scenario 1: Medication Reminder -->
+        <div class="notification-card border border-gray-200 rounded-md p-4 bg-white shadow-sm">
+          <div class="flex items-center mb-2">
+            <span class="material-icons text-cyan-600 mr-2">medication</span>
+            <h3 class="font-medium text-gray-800">Medication Reminder</h3>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Schedule a reminder to take medication in the near future.</p>
+          <button type="button" id="scenario-medication" class="w-full inline-flex justify-center items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+            Run Scenario
+          </button>
+        </div>
+        
+        <!-- Scenario 2: Appointment Reminders -->
+        <div class="notification-card border border-gray-200 rounded-md p-4 bg-white shadow-sm">
+          <div class="flex items-center mb-2">
+            <span class="material-icons text-emerald-600 mr-2">event</span>
+            <h3 class="font-medium text-gray-800">Appointment Reminders</h3>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Schedule multiple reminders for an upcoming appointment.</p>
+          <button type="button" id="scenario-appointment" class="w-full inline-flex justify-center items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+            Run Scenario
+          </button>
+        </div>
+        
+        <!-- Scenario 3: Care Plan Update -->
+        <div class="notification-card border border-gray-200 rounded-md p-4 bg-white shadow-sm">
+          <div class="flex items-center mb-2">
+            <span class="material-icons text-indigo-600 mr-2">assignment</span>
+            <h3 class="font-medium text-gray-800">Care Plan Update</h3>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Send a notification about an updated care plan.</p>
+          <button type="button" id="scenario-care-plan" class="w-full inline-flex justify-center items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+            Run Scenario
+          </button>
+        </div>
+        
+        <!-- Scenario 4: Emergency Alert -->
+        <div class="notification-card border border-gray-200 rounded-md p-4 bg-white shadow-sm">
+          <div class="flex items-center mb-2">
+            <span class="material-icons text-red-600 mr-2">warning</span>
+            <h3 class="font-medium text-gray-800">Emergency Alert</h3>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Trigger a high-priority emergency alert notification.</p>
+          <button type="button" id="scenario-emergency" class="w-full inline-flex justify-center items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+            Run Scenario
+          </button>
+        </div>
+        
+        <!-- Scenario 5: Message Notification -->
+        <div class="notification-card border border-gray-200 rounded-md p-4 bg-white shadow-sm">
+          <div class="flex items-center mb-2">
+            <span class="material-icons text-violet-600 mr-2">chat</span>
+            <h3 class="font-medium text-gray-800">New Message</h3>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Simulate receiving a new message notification.</p>
+          <button type="button" id="scenario-message" class="w-full inline-flex justify-center items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+            Run Scenario
+          </button>
+        </div>
+        
+        <!-- Scenario 6: Do Not Disturb Test -->
+        <div class="notification-card border border-gray-200 rounded-md p-4 bg-white shadow-sm">
+          <div class="flex items-center mb-2">
+            <span class="material-icons text-gray-600 mr-2">do_not_disturb</span>
+            <h3 class="font-medium text-gray-800">Do Not Disturb Test</h3>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">Test notifications with Do Not Disturb enabled.</p>
+          <button type="button" id="scenario-dnd" class="w-full inline-flex justify-center items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+            Run Scenario
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scheduled Notifications -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-medium text-gray-900">Scheduled Notifications</h2>
+        <div>
+          <button type="button" id="refresh-scheduled" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+            <span class="material-icons text-sm mr-1">refresh</span>
+            Refresh
+          </button>
+        </div>
+      </div>
+      
+      <div id="scheduled-notifications-container" class="border border-gray-200 rounded-md overflow-hidden">
+        <div class="bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 border-b border-gray-200">
+          Upcoming Notifications
+        </div>
+        <div id="scheduled-notifications-list" class="divide-y divide-gray-200">
+          <div class="p-4 text-sm text-gray-500 text-center">
+            No scheduled notifications
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Notification History -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-medium text-gray-900">Notification History</h2>
+        <div>
+          <button type="button" id="refresh-history" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+            <span class="material-icons text-sm mr-1">refresh</span>
+            Refresh
+          </button>
+        </div>
+      </div>
+      
+      <div id="notification-history-container" class="border border-gray-200 rounded-md overflow-hidden">
+        <div class="bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 border-b border-gray-200">
+          Recent Notifications
+        </div>
+        <div id="notification-history-list" class="divide-y divide-gray-200">
+          <div class="p-4 text-sm text-gray-500 text-center">
+            No notification history
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Toast container for messages -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50"></div>
+
+  <!-- Scripts -->
+  <script src="/js/careunity-notifications.js"></script>
+  <script src="/js/careunity-notifications-enhanced.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Initialize the enhanced notification manager
+      const notificationManager = new CareUnity.EnhancedNotificationManager();
+      await notificationManager.init();
+      
+      // Set the default time for scheduled notifications to 5 minutes from now
+      const defaultTime = new Date();
+      defaultTime.setMinutes(defaultTime.getMinutes() + 5);
+      document.getElementById('scheduled-time').valueAsNumber = defaultTime.getTime() - (defaultTime.getTimezoneOffset() * 60000);
+      
+      // Basic notification form
+      document.getElementById('basic-notification-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Get form values
+        const title = document.getElementById('notification-title').value.trim();
+        const message = document.getElementById('notification-message').value.trim();
+        const category = document.getElementById('notification-category').value;
+        const priority = document.getElementById('notification-priority').value;
+        
+        // Get selected channels
+        const channels = [];
+        if (document.getElementById('channel-in_app').checked) channels.push('in_app');
+        if (document.getElementById('channel-push').checked) channels.push('push');
+        if (document.getElementById('channel-sms').checked) channels.push('sms');
+        if (document.getElementById('channel-email').checked) channels.push('email');
+        
+        // Validate form
+        if (!title || !message) {
+          showToast('Please fill in all required fields', true);
+          return;
+        }
+        
+        // Send notification
+        const notificationId = notificationManager.addNotification({
+          title,
+          message,
+          category,
+          priority,
+          channels
+        });
+        
+        // Show success message
+        showToast(`Notification sent with ID: ${notificationId}`);
+        
+        // Refresh notification history
+        refreshNotificationHistory();
+      });
+      
+      // Scheduled notification form
+      document.getElementById('scheduled-notification-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Get form values
+        const title = document.getElementById('scheduled-title').value.trim();
+        const message = document.getElementById('scheduled-message').value.trim();
+        const category = document.getElementById('scheduled-category').value;
+        const priority = document.getElementById('scheduled-priority').value;
+        const deliverAt = new Date(document.getElementById('scheduled-time').value);
+        
+        // Validate form
+        if (!title || !message || isNaN(deliverAt.getTime())) {
+          showToast('Please fill in all required fields', true);
+          return;
+        }
+        
+        // Check if delivery time is in the past
+        if (deliverAt < new Date()) {
+          showToast('Delivery time must be in the future', true);
+          return;
+        }
+        
+        // Schedule notification
+        const notificationId = notificationManager.addNotification({
+          title,
+          message,
+          category,
+          priority,
+          deliverAt
+        });
+        
+        // Show success message
+        showToast(`Notification scheduled for ${deliverAt.toLocaleString()}`);
+        
+        // Refresh scheduled notifications
+        refreshScheduledNotifications();
+      });
+      
+      // Scenario: Medication Reminder
+      document.getElementById('scenario-medication').addEventListener('click', () => {
+        const medication = {
+          id: 'med_' + Date.now(),
+          name: 'Lisinopril',
+          dosage: '10mg',
+          instructions: 'Take with food'
+        };
+        
+        const reminderTime = new Date();
+        reminderTime.setMinutes(reminderTime.getMinutes() + 1); // 1 minute from now
+        
+        const notificationId = notificationManager.scheduleMedicationReminder(medication, reminderTime);
+        
+        showToast(`Medication reminder scheduled for ${reminderTime.toLocaleTimeString()}`);
+        refreshScheduledNotifications();
+      });
+      
+      // Scenario: Appointment Reminders
+      document.getElementById('scenario-appointment').addEventListener('click', () => {
+        const appointment = {
+          id: 'apt_' + Date.now(),
+          provider: 'Dr. Sarah Johnson',
+          datetime: new Date(Date.now() + (24 * 60 * 60 * 1000)) // Tomorrow
+        };
+        
+        const notificationIds = notificationManager.scheduleAppointmentReminders(appointment);
+        
+        showToast(`${notificationIds.length} appointment reminders scheduled`);
+        refreshScheduledNotifications();
+      });
+      
+      // Scenario: Care Plan Update
+      document.getElementById('scenario-care-plan').addEventListener('click', () => {
+        const carePlan = {
+          id: 'plan_' + Date.now(),
+          title: 'Cardiac Rehabilitation Plan'
+        };
+        
+        const notificationId = notificationManager.sendCarePlanUpdate(carePlan);
+        
+        showToast('Care plan update notification sent');
+        refreshNotificationHistory();
+      });
+      
+      // Scenario: Emergency Alert
+      document.getElementById('scenario-emergency').addEventListener('click', () => {
+        const alert = {
+          id: 'alert_' + Date.now(),
+          message: 'Fall detected. Please check on patient or acknowledge this alert.'
+        };
+        
+        const notificationId = notificationManager.sendEmergencyAlert(alert);
+        
+        showToast('Emergency alert notification sent', false, true);
+        refreshNotificationHistory();
+      });
+      
+      // Scenario: Message Notification
+      document.getElementById('scenario-message').addEventListener('click', () => {
+        const notificationId = notificationManager.addNotification({
+          title: 'New Message from Dr. Taylor',
+          message: 'I've reviewed your latest test results. Everything looks good!',
+          category: notificationManager.categories.MESSAGE,
+          priority: notificationManager.priorities.MEDIUM,
+          action: () => {
+            console.log('Opening message from Dr. Taylor');
+          }
+        });
+        
+        showToast('Message notification sent');
+        refreshNotificationHistory();
+      });
+      
+      // Scenario: Do Not Disturb Test
+      document.getElementById('scenario-dnd').addEventListener('click', () => {
+        // Toggle DND
+        notificationManager.userPreferences.doNotDisturb = !notificationManager.userPreferences.doNotDisturb;
+        notificationManager.saveUserPreferences();
+        
+        // Show status
+        if (notificationManager.userPreferences.doNotDisturb) {
+          showToast('Do Not Disturb enabled - only critical notifications will be shown');
+          
+          // Send various notifications
+          setTimeout(() => {
+            notificationManager.addNotification({
+              title: 'Low Priority Notification',
+              message: 'This should be blocked by Do Not Disturb',
+              priority: notificationManager.priorities.LOW
+            });
+          }, 1000);
+          
+          setTimeout(() => {
+            notificationManager.addNotification({
+              title: 'Medium Priority Notification',
+              message: 'This should be blocked by Do Not Disturb',
+              priority: notificationManager.priorities.MEDIUM
+            });
+          }, 2000);
+          
+          setTimeout(() => {
+            notificationManager.addNotification({
+              title: 'High Priority Notification',
+              message: 'This should be blocked by Do Not Disturb',
+              priority: notificationManager.priorities.HIGH
+            });
+          }, 3000);
+          
+          setTimeout(() => {
+            notificationManager.addNotification({
+              title: 'CRITICAL Notification',
+              message: 'This should still show despite Do Not Disturb!',
+              priority: notificationManager.priorities.CRITICAL
+            });
+          }, 4000);
+        } else {
+          showToast('Do Not Disturb disabled - all notifications will be shown');
+          
+          // Send a test notification
+          setTimeout(() => {
+            notificationManager.addNotification({
+              title: 'Do Not Disturb Test',
+              message: 'This notification should be visible now',
+              priority: notificationManager.priorities.MEDIUM
+            });
+          }, 1000);
+        }
+        
+        refreshNotificationHistory();
+      });
+      
+      // Refresh buttons
+      document.getElementById('refresh-scheduled').addEventListener('click', refreshScheduledNotifications);
+      document.getElementById('refresh-history').addEventListener('click', refreshNotificationHistory);
+      
+      // Function to refresh scheduled notifications
+      function refreshScheduledNotifications() {
+        const container = document.getElementById('scheduled-notifications-list');
+        const scheduledNotifications = notificationManager.scheduledNotifications;
+        
+        // Clear container
+        container.innerHTML = '';
+        
+        if (scheduledNotifications.length === 0) {
+          container.innerHTML = `
+            <div class="p-4 text-sm text-gray-500 text-center">
+              No scheduled notifications
+            </div>
+          `;
+          return;
+        }
+        
+        // Add each scheduled notification
+        scheduledNotifications.forEach(item => {
+          const notification = item.notification;
+          const deliverAt = item.deliverAt;
+          
+          const notificationElement = document.createElement('div');
+          notificationElement.className = 'p-4 hover:bg-gray-50';
+          
+          notificationElement.innerHTML = `
+            <div class="flex items-start">
+              <span class="material-icons text-gray-400 mr-3">${notification.icon}</span>
+              <div class="flex-1">
+                <div class="flex items-center">
+                  <span class="priority-indicator priority-${notification.priority}"></span>
+                  <p class="font-medium text-gray-900">${notification.title}</p>
+                </div>
+                <p class="text-sm text-gray-600 mt-1">${notification.message}</p>
+                <p class="text-xs text-gray-500 mt-1">
+                  <span class="font-medium">Scheduled for:</span> ${deliverAt.toLocaleString()}
+                </p>
+                <p class="text-xs text-gray-500">
+                  <span class="font-medium">Category:</span> ${formatCategoryName(notification.category)} | 
+                  <span class="font-medium">Priority:</span> ${notification.priority}
+                </p>
+              </div>
+              <button type="button" class="text-gray-400 hover:text-gray-600 cancel-scheduled" data-id="${notification.id}">
+                <span class="material-icons">cancel</span>
+              </button>
+            </div>
+          `;
+          
+          // Add to container
+          container.appendChild(notificationElement);
+          
+          // Add cancel button handler
+          notificationElement.querySelector('.cancel-scheduled').addEventListener('click', (e) => {
+            const id = e.currentTarget.dataset.id;
+            if (notificationManager.cancelScheduledNotification(id)) {
+              showToast('Scheduled notification canceled');
+              refreshScheduledNotifications();
+            }
+          });
+        });
+      }
+      
+      // Function to refresh notification history
+      function refreshNotificationHistory() {
+        const container = document.getElementById('notification-history-list');
+        const history = notificationManager.notificationHistory;
+        
+        // Clear container
+        container.innerHTML = '';
+        
+        if (history.length === 0) {
+          container.innerHTML = `
+            <div class="p-4 text-sm text-gray-500 text-center">
+              No notification history
+            </div>
+          `;
+          return;
+        }
+        
+        // Add each notification
+        history.forEach(notification => {
+          const notificationElement = document.createElement('div');
+          notificationElement.className = 'p-4 hover:bg-gray-50';
+          
+          const timestamp = new Date(notification.timestamp);
+          const timeAgo = getTimeAgo(timestamp);
+          
+          notificationElement.innerHTML = `
+            <div class="flex items-start">
+              <span class="material-icons mr-3" style="color: ${notification.color}">${notification.icon}</span>
+              <div class="flex-1">
+                <div class="flex items-center">
+                  <span class="priority-indicator priority-${notification.priority}"></span>
+                  <p class="font-medium text-gray-900">${notification.title}</p>
+                </div>
+                <p class="text-sm text-gray-600 mt-1">${notification.message}</p>
+                <p class="text-xs text-gray-500 mt-1">${timeAgo}</p>
+                <p class="text-xs text-gray-500">
+                  <span class="font-medium">Category:</span> ${formatCategoryName(notification.category)} | 
+                  <span class="font-medium">Priority:</span> ${notification.priority}
+                </p>
+              </div>
+            </div>
+          `;
+          
+          // Add to container
+          container.appendChild(notificationElement);
+        });
+      }
+      
+      // Helper function to format category name
+      function formatCategoryName(category) {
+        return category
+          .split('_')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+      }
+      
+      // Helper function to get time ago string
+      function getTimeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        
+        let interval = Math.floor(seconds / 31536000);
+        if (interval >= 1) {
+          return interval === 1 ? '1 year ago' : `${interval} years ago`;
+        }
+        
+        interval = Math.floor(seconds / 2592000);
+        if (interval >= 1) {
+          return interval === 1 ? '1 month ago' : `${interval} months ago`;
+        }
+        
+        interval = Math.floor(seconds / 86400);
+        if (interval >= 1) {
+          return interval === 1 ? '1 day ago' : `${interval} days ago`;
+        }
+        
+        interval = Math.floor(seconds / 3600);
+        if (interval >= 1) {
+          return interval === 1 ? '1 hour ago' : `${interval} hours ago`;
+        }
+        
+        interval = Math.floor(seconds / 60);
+        if (interval >= 1) {
+          return interval === 1 ? '1 minute ago' : `${interval} minutes ago`;
+        }
+        
+        return 'Just now';
+      }
+      
+      // Helper function to show toast message
+      function showToast(message, isError = false, isAlert = false) {
+        // Check if toast container exists
+        let toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+          toastContainer = document.createElement('div');
+          toastContainer.id = 'toast-container';
+          toastContainer.className = 'fixed bottom-4 right-4 z-50';
+          document.body.appendChild(toastContainer);
+        }
+        
+        // Create toast element
+        const toast = document.createElement('div');
+        
+        let bgColor = 'bg-green-500';
+        let icon = 'check_circle';
+        
+        if (isError) {
+          bgColor = 'bg-red-500';
+          icon = 'error';
+        } else if (isAlert) {
+          bgColor = 'bg-yellow-500';
+          icon = 'warning';
+        }
+        
+        toast.className = `py-2 px-4 rounded-md shadow-md text-white mb-2 flex items-center ${bgColor}`;
+        toast.innerHTML = `
+          <span class="material-icons mr-2">${icon}</span>
+          <span>${message}</span>
+        `;
+        
+        // Add to container
+        toastContainer.appendChild(toast);
+        
+        // Remove after delay
+        setTimeout(() => {
+          toast.classList.add('opacity-0');
+          toast.style.transition = 'opacity 0.5s ease-out';
+          
+          setTimeout(() => {
+            toast.remove();
+          }, 500);
+        }, 3000);
+      }
+      
+      // Initialize the UI
+      refreshScheduledNotifications();
+      refreshNotificationHistory();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareUnity Enhanced Biometric Authentication Demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    .auth-container {
+      max-width: 500px;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+      }
+      
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+      }
+      
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+      }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+  <!-- Main Authentication Container -->
+  <div class="auth-container bg-white rounded-lg shadow-lg p-6">
+    <!-- Stage 1: Initial Login Form -->
+    <div id="login-form" class="fade-in">
+      <div class="text-center mb-6">
+        <img src="/icon-192.png" alt="CareUnity Logo" class="h-16 mx-auto mb-4">
+        <h1 class="text-2xl font-bold text-gray-800">CareUnity Login</h1>
+        <p class="text-gray-600">Enhanced Security Demo</p>
+      </div>
+      
+      <form id="auth-form" class="space-y-4">
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+          <input type="text" id="username" name="username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <input type="password" id="password" name="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        
+        <div id="biometric-auth-container" class="hidden">
+          <button type="button" id="biometric-button" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <span class="material-icons mr-2">fingerprint</span>
+            <span id="biometric-button-text">Use Fingerprint</span>
+          </button>
+        </div>
+        
+        <div>
+          <button type="submit" id="login-button" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Sign in
+          </button>
+        </div>
+      </form>
+      
+      <div class="mt-4 text-sm">
+        <a href="#" id="register-link" class="text-blue-600 hover:text-blue-800">Register biometric authentication</a>
+      </div>
+      
+      <div id="auth-message" class="mt-4 p-3 rounded-md hidden"></div>
+    </div>
+    
+    <!-- Stage 2: MFA Verification Form -->
+    <div id="mfa-form" class="hidden fade-in">
+      <div class="text-center mb-6">
+        <div class="flex items-center justify-center mb-4">
+          <span class="material-icons text-blue-500 text-4xl">security</span>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800">Additional Verification</h1>
+        <p class="text-gray-600">Please complete the verification step</p>
+      </div>
+      
+      <div id="mfa-biometric-container" class="mb-6 hidden">
+        <button type="button" id="mfa-biometric-button" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+          <span class="material-icons mr-2">fingerprint</span>
+          <span>Verify with biometrics</span>
+        </button>
+      </div>
+      
+      <div id="mfa-pin-container" class="mb-6 hidden">
+        <label for="pin-code" class="block text-sm font-medium text-gray-700 mb-1">Enter your PIN</label>
+        <div class="flex space-x-2">
+          <input type="tel" maxlength="1" class="pin-digit w-12 h-12 text-center text-xl border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          <input type="tel" maxlength="1" class="pin-digit w-12 h-12 text-center text-xl border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          <input type="tel" maxlength="1" class="pin-digit w-12 h-12 text-center text-xl border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          <input type="tel" maxlength="1" class="pin-digit w-12 h-12 text-center text-xl border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <input type="hidden" id="pin-code" value="">
+        <button type="button" id="verify-pin-button" class="mt-4 w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+          Verify PIN
+        </button>
+      </div>
+      
+      <div id="mfa-totp-container" class="mb-6 hidden">
+        <label for="totp-code" class="block text-sm font-medium text-gray-700 mb-1">Enter verification code from your authenticator app</label>
+        <input type="text" id="totp-code" maxlength="6" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-center text-xl tracking-widest focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        <button type="button" id="verify-totp-button" class="mt-4 w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+          Verify Code
+        </button>
+      </div>
+      
+      <div id="mfa-security-question-container" class="mb-6 hidden">
+        <label id="security-question-text" class="block text-sm font-medium text-gray-700 mb-1">Security question goes here?</label>
+        <input type="text" id="security-question-answer" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        <button type="button" id="verify-security-question-button" class="mt-4 w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+          Verify Answer
+        </button>
+      </div>
+      
+      <div class="flex justify-between">
+        <button type="button" id="mfa-back-button" class="text-gray-600 hover:text-gray-800">
+          <span class="material-icons align-middle text-sm">arrow_back</span> Back
+        </button>
+        <a href="#" id="mfa-help-link" class="text-blue-600 hover:text-blue-800">Need help?</a>
+      </div>
+      
+      <div id="mfa-message" class="mt-4 p-3 rounded-md hidden"></div>
+    </div>
+    
+    <!-- Stage 3: Device Verification -->
+    <div id="device-verification-form" class="hidden fade-in">
+      <div class="text-center mb-6">
+        <div class="flex items-center justify-center mb-4">
+          <span class="material-icons text-blue-500 text-4xl">devices</span>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800">New Device Detected</h1>
+        <p class="text-gray-600">For your security, we need to verify this device</p>
+      </div>
+      
+      <div class="bg-gray-50 p-4 rounded-md mb-4">
+        <p class="text-sm text-gray-600">
+          We've detected that you're signing in from a new device or browser. To protect your account, please verify your identity.
+        </p>
+        <div class="mt-2">
+          <div class="flex items-center">
+            <span class="material-icons text-gray-500 mr-2 text-sm">devices</span>
+            <span id="device-name" class="text-sm text-gray-700">Unknown Device</span>
+          </div>
+          <div class="flex items-center mt-1">
+            <span class="material-icons text-gray-500 mr-2 text-sm">access_time</span>
+            <span id="login-time" class="text-sm text-gray-700">Just now</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="space-y-3">
+        <button type="button" id="send-email-code-button" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <span class="material-icons mr-2">email</span>
+          Send code to my email
+        </button>
+        
+        <button type="button" id="send-sms-code-button" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <span class="material-icons mr-2">smartphone</span>
+          Send code to my phone
+        </button>
+      </div>
+      
+      <div id="verification-code-container" class="mt-4 hidden">
+        <label for="verification-code" class="block text-sm font-medium text-gray-700 mb-1">Enter verification code</label>
+        <input type="text" id="verification-code" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-center text-xl tracking-widest focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        <button type="button" id="verify-code-button" class="mt-3 w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+          Verify Code
+        </button>
+      </div>
+      
+      <div class="mt-4 flex items-center">
+        <input type="checkbox" id="trust-device" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+        <label for="trust-device" class="ml-2 block text-sm text-gray-700">
+          Trust this device for 30 days
+        </label>
+      </div>
+      
+      <div class="mt-4 text-center">
+        <button type="button" id="try-another-method-button" class="text-blue-600 hover:text-blue-800 text-sm">
+          Try another method
+        </button>
+      </div>
+      
+      <div id="device-verification-message" class="mt-4 p-3 rounded-md hidden"></div>
+    </div>
+    
+    <!-- Stage 4: Dashboard/Success -->
+    <div id="dashboard" class="hidden fade-in">
+      <div class="text-center mb-6">
+        <div class="flex items-center justify-center mb-4">
+          <span class="material-icons text-green-500 text-4xl">check_circle</span>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800">Authentication Successful</h1>
+        <p class="text-gray-600">Welcome back, <span id="user-greeting">User</span>!</p>
+      </div>
+      
+      <div class="bg-blue-50 p-4 rounded-md mb-6">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <span class="material-icons text-blue-400">info</span>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-blue-800">Session Information</h3>
+            <div class="mt-2 text-sm text-blue-700">
+              <p>Your session will expire in <span id="session-timer">30:00</span></p>
+              <p class="mt-1">Last login: <span id="last-login-time">Unknown</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="space-y-4">
+        <button type="button" id="logout-button" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+          <span class="material-icons mr-2">logout</span>
+          Logout
+        </button>
+        
+        <button type="button" id="manage-security-button" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+          <span class="material-icons mr-2">security</span>
+          Manage Security Settings
+        </button>
+      </div>
+    </div>
+    
+    <!-- Session Expiry Warning Modal -->
+    <div id="session-expiry-modal" class="hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4" style="z-index: 50;">
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <div class="flex items-center justify-center mb-4">
+          <span class="material-icons text-yellow-500 text-4xl">timer</span>
+        </div>
+        <h2 class="text-lg font-medium text-gray-900 text-center">Your session is about to expire</h2>
+        <p class="mt-2 text-sm text-gray-500 text-center">
+          Due to inactivity, your session will expire in <span id="expiry-countdown">60</span> seconds.
+        </p>
+        <div class="mt-4 flex justify-center space-x-3">
+          <button type="button" id="extend-session-button" class="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+            Extend Session
+          </button>
+          <button type="button" id="logout-now-button" class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+            Logout Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/careunity-biometric-auth.js"></script>
+  <script src="/js/careunity-biometric-auth-enhanced.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Initialize enhanced biometric auth
+      const authSystem = new CareUnity.EnhancedBiometricAuth();
+      await authSystem.init();
+      
+      // Element references
+      const loginForm = document.getElementById('login-form');
+      const mfaForm = document.getElementById('mfa-form');
+      const deviceVerificationForm = document.getElementById('device-verification-form');
+      const dashboard = document.getElementById('dashboard');
+      const authMessage = document.getElementById('auth-message');
+      const mfaMessage = document.getElementById('mfa-message');
+      const deviceVerificationMessage = document.getElementById('device-verification-message');
+      
+      // Get the biometric info
+      const biometricInfo = authSystem.getBiometricInfo();
+      
+      // Setup biometric button if available
+      const biometricAuthContainer = document.getElementById('biometric-auth-container');
+      const biometricButton = document.getElementById('biometric-button');
+      const biometricButtonText = document.getElementById('biometric-button-text');
+      
+      if (biometricInfo.available) {
+        biometricAuthContainer.classList.remove('hidden');
+        biometricButtonText.textContent = `Use ${biometricInfo.typeName}`;
+        document.querySelector('#biometric-button .material-icons').textContent = biometricInfo.iconName;
+      }
+      
+      // Display a message
+      function showMessage(container, message, type = 'info') {
+        container.textContent = message;
+        container.classList.remove('hidden', 'bg-green-100', 'bg-red-100', 'bg-blue-100', 'bg-yellow-100');
+        
+        switch (type) {
+          case 'success':
+            container.classList.add('bg-green-100', 'text-green-800');
+            break;
+          case 'error':
+            container.classList.add('bg-red-100', 'text-red-800');
+            break;
+          case 'warning':
+            container.classList.add('bg-yellow-100', 'text-yellow-800');
+            break;
+          default:
+            container.classList.add('bg-blue-100', 'text-blue-800');
+        }
+      }
+      
+      // Hide all forms and show one
+      function showForm(formId) {
+        loginForm.classList.add('hidden');
+        mfaForm.classList.add('hidden');
+        deviceVerificationForm.classList.add('hidden');
+        dashboard.classList.add('hidden');
+        
+        document.getElementById(formId).classList.remove('hidden');
+      }
+      
+      // Variables to track authentication state
+      let currentUsername = '';
+      let authenticationStep = 'login';
+      let requiredMFAFactors = [];
+      let requestId = '';
+      let sessionToken = '';
+      
+      // Biometric login handler
+      biometricButton.addEventListener('click', async () => {
+        const username = document.getElementById('username').value.trim();
+        
+        if (!username) {
+          showMessage(authMessage, 'Please enter your username first', 'error');
+          return;
+        }
+        
+        if (!authSystem.biometricAuth.hasCredentials(username)) {
+          showMessage(authMessage, 'No biometric credentials found for this username. Please register first.', 'error');
+          return;
+        }
+        
+        try {
+          // Start authentication process
+          const result = await authSystem.authenticate(username);
+          
+          if (result.success) {
+            // Store session token
+            sessionToken = result.sessionToken;
+            currentUsername = username;
+            
+            // Update greeting
+            document.getElementById('user-greeting').textContent = username;
+            
+            // Simulate last login time
+            document.getElementById('last-login-time').textContent = new Date().toLocaleString();
+            
+            // If device verification is required
+            if (result.requiresDeviceVerification) {
+              authenticationStep = 'device-verification';
+              showForm('device-verification-form');
+              // Set device name
+              document.getElementById('device-name').textContent = navigator.userAgent;
+              document.getElementById('login-time').textContent = new Date().toLocaleString();
+            } else {
+              // Show dashboard directly
+              authenticationStep = 'dashboard';
+              showForm('dashboard');
+              startSessionTimer();
+            }
+          } else if (result.error === 'MISSING_FACTORS') {
+            // MFA required
+            authenticationStep = 'mfa';
+            requiredMFAFactors = result.requiredFactors;
+            requestId = result.requestId;
+            
+            // Show MFA form
+            showForm('mfa-form');
+            setupMFAForm();
+          } else {
+            // Show error
+            showMessage(authMessage, result.message || 'Authentication failed', 'error');
+          }
+        } catch (error) {
+          console.error('Authentication error:', error);
+          showMessage(authMessage, 'An error occurred during authentication', 'error');
+        }
+      });
+      
+      // Register link handler
+      document.getElementById('register-link').addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        const username = document.getElementById('username').value.trim();
+        
+        if (!username) {
+          showMessage(authMessage, 'Please enter a username to register', 'error');
+          return;
+        }
+        
+        try {
+          // Register with enhanced security features
+          const registered = await authSystem.register(username, {
+            mfaEnabled: true,
+            securityLevel: 'standard',
+            mfaMethods: {
+              biometric: true,
+              pin: true,
+              totp: false,
+              securityQuestion: false
+            }
+          });
+          
+          if (registered) {
+            showMessage(authMessage, 'Biometric registration successful! You can now log in.', 'success');
+            
+            // Ask user to set up PIN
+            setTimeout(() => {
+              const pin = prompt('Please set a 4-digit PIN code for multi-factor authentication:');
+              if (pin && /^\d{4,6}$/.test(pin)) {
+                authSystem.setPin(username, pin);
+                alert('PIN set successfully! You will need this PIN as a backup authentication method.');
+              } else if (pin) {
+                alert('Invalid PIN format. PIN must be 4-6 digits.');
+              }
+            }, 500);
+          } else {
+            showMessage(authMessage, 'Registration failed. Please try again.', 'error');
+          }
+        } catch (error) {
+          console.error('Registration error:', error);
+          showMessage(authMessage, 'An error occurred during registration', 'error');
+        }
+      });
+      
+      // Setup MFA form based on required factors
+      function setupMFAForm() {
+        // Hide all MFA method containers
+        document.getElementById('mfa-biometric-container').classList.add('hidden');
+        document.getElementById('mfa-pin-container').classList.add('hidden');
+        document.getElementById('mfa-totp-container').classList.add('hidden');
+        document.getElementById('mfa-security-question-container').classList.add('hidden');
+        
+        // Show required factors
+        if (requiredMFAFactors.includes('pin')) {
+          document.getElementById('mfa-pin-container').classList.remove('hidden');
+          // Focus first PIN digit
+          setTimeout(() => {
+            document.querySelector('.pin-digit').focus();
+          }, 100);
+        }
+        
+        if (requiredMFAFactors.includes('totp')) {
+          document.getElementById('mfa-totp-container').classList.remove('hidden');
+          document.getElementById('totp-code').focus();
+        }
+        
+        if (requiredMFAFactors.includes('securityQuestion')) {
+          const securityQuestion = authSystem.getSecurityQuestion(currentUsername);
+          if (securityQuestion) {
+            document.getElementById('security-question-text').textContent = securityQuestion;
+            document.getElementById('mfa-security-question-container').classList.remove('hidden');
+          }
+        }
+      }
+      
+      // PIN code handling
+      const pinDigits = document.querySelectorAll('.pin-digit');
+      
+      pinDigits.forEach((digit, index) => {
+        digit.addEventListener('input', () => {
+          // Auto-advance to next input
+          if (digit.value.length === 1 && index < pinDigits.length - 1) {
+            pinDigits[index + 1].focus();
+          }
+          
+          // Collect PIN digits
+          let pin = '';
+          pinDigits.forEach(d => pin += d.value);
+          document.getElementById('pin-code').value = pin;
+        });
+        
+        digit.addEventListener('keydown', (e) => {
+          // Handle backspace by going to previous input
+          if (e.key === 'Backspace' && index > 0 && digit.value === '') {
+            pinDigits[index - 1].focus();
+          }
+        });
+      });
+      
+      // Verify PIN button
+      document.getElementById('verify-pin-button').addEventListener('click', async () => {
+        const pin = document.getElementById('pin-code').value;
+        
+        if (pin.length !== 4) {
+          showMessage(mfaMessage, 'Please enter all 4 digits of your PIN', 'error');
+          return;
+        }
+        
+        try {
+          // Complete authentication with PIN
+          const result = await authSystem.authenticate(currentUsername, {
+            pin: pin
+          });
+          
+          if (result.success) {
+            // Store session token
+            sessionToken = result.sessionToken;
+            
+            // Update greeting
+            document.getElementById('user-greeting').textContent = currentUsername;
+            
+            // Simulate last login time
+            document.getElementById('last-login-time').textContent = new Date().toLocaleString();
+            
+            // If device verification is required
+            if (result.requiresDeviceVerification) {
+              authenticationStep = 'device-verification';
+              showForm('device-verification-form');
+              // Set device name
+              document.getElementById('device-name').textContent = navigator.userAgent;
+              document.getElementById('login-time').textContent = new Date().toLocaleString();
+            } else {
+              // Show dashboard directly
+              authenticationStep = 'dashboard';
+              showForm('dashboard');
+              startSessionTimer();
+            }
+          } else {
+            showMessage(mfaMessage, result.message || 'PIN verification failed', 'error');
+          }
+        } catch (error) {
+          console.error('PIN verification error:', error);
+          showMessage(mfaMessage, 'An error occurred during PIN verification', 'error');
+        }
+      });
+      
+      // MFA back button
+      document.getElementById('mfa-back-button').addEventListener('click', () => {
+        showForm('login-form');
+        authenticationStep = 'login';
+      });
+      
+      // Simulate device verification
+      document.getElementById('send-email-code-button').addEventListener('click', () => {
+        // Show verification code input
+        document.getElementById('verification-code-container').classList.remove('hidden');
+        showMessage(deviceVerificationMessage, 'Verification code sent to your email', 'success');
+      });
+      
+      document.getElementById('send-sms-code-button').addEventListener('click', () => {
+        // Show verification code input
+        document.getElementById('verification-code-container').classList.remove('hidden');
+        showMessage(deviceVerificationMessage, 'Verification code sent to your phone', 'success');
+      });
+      
+      // Verify code button
+      document.getElementById('verify-code-button').addEventListener('click', () => {
+        const code = document.getElementById('verification-code').value.trim();
+        
+        if (!code) {
+          showMessage(deviceVerificationMessage, 'Please enter the verification code', 'error');
+          return;
+        }
+        
+        // Simulate verification - in demo, any code works
+        const trustDevice = document.getElementById('trust-device').checked;
+        
+        // Show dashboard
+        authenticationStep = 'dashboard';
+        showForm('dashboard');
+        showMessage(deviceVerificationMessage, '', 'info');
+        startSessionTimer();
+      });
+      
+      // Logout button
+      document.getElementById('logout-button').addEventListener('click', () => {
+        authSystem.logout();
+        authenticationStep = 'login';
+        showForm('login-form');
+        sessionToken = '';
+      });
+      
+      // Session timer functionality
+      let sessionInterval;
+      
+      function startSessionTimer() {
+        // Get session timeout in minutes (default 30)
+        const timeoutMinutes = 30;
+        let timeLeft = timeoutMinutes * 60; // in seconds
+        
+        // Update timer immediately
+        updateSessionTimer(timeLeft);
+        
+        // Clear any existing interval
+        if (sessionInterval) {
+          clearInterval(sessionInterval);
+        }
+        
+        // Set up the interval
+        sessionInterval = setInterval(() => {
+          timeLeft--;
+          
+          if (timeLeft <= 0) {
+            clearInterval(sessionInterval);
+            handleSessionExpiry();
+          } else if (timeLeft <= 60) {
+            // Show warning at 60 seconds
+            showSessionExpiryWarning(timeLeft);
+          }
+          
+          updateSessionTimer(timeLeft);
+        }, 1000);
+      }
+      
+      function updateSessionTimer(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        document.getElementById('session-timer').textContent = 
+          `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+      }
+      
+      function showSessionExpiryWarning(secondsRemaining) {
+        document.getElementById('session-expiry-modal').classList.remove('hidden');
+        document.getElementById('expiry-countdown').textContent = secondsRemaining;
+        
+        // Update countdown
+        const countdownInterval = setInterval(() => {
+          const currentValue = parseInt(document.getElementById('expiry-countdown').textContent);
+          if (currentValue <= 1) {
+            clearInterval(countdownInterval);
+          } else {
+            document.getElementById('expiry-countdown').textContent = currentValue - 1;
+          }
+        }, 1000);
+      }
+      
+      function handleSessionExpiry() {
+        authSystem.logout();
+        authenticationStep = 'login';
+        showForm('login-form');
+        sessionToken = '';
+        document.getElementById('session-expiry-modal').classList.add('hidden');
+        showMessage(authMessage, 'Your session has expired due to inactivity', 'warning');
+      }
+      
+      // Session expiry modal buttons
+      document.getElementById('extend-session-button').addEventListener('click', () => {
+        document.getElementById('session-expiry-modal').classList.add('hidden');
+        startSessionTimer(); // Reset timer
+      });
+      
+      document.getElementById('logout-now-button').addEventListener('click', () => {
+        document.getElementById('session-expiry-modal').classList.add('hidden');
+        handleSessionExpiry();
+      });
+      
+      // Check for existing session on page load
+      const activeSession = authSystem.getActiveSession();
+      if (activeSession) {
+        currentUsername = activeSession.username;
+        sessionToken = activeSession.token;
+        
+        // Update greeting
+        document.getElementById('user-greeting').textContent = currentUsername;
+        
+        // Go directly to dashboard
+        authenticationStep = 'dashboard';
+        showForm('dashboard');
+        startSessionTimer();
+      }
+      
+      // Set auth system callbacks
+      authSystem.setCallbacks({
+        onSessionExpiring: (info) => {
+          showSessionExpiryWarning(info.secondsRemaining);
+        },
+        onSessionExpired: () => {
+          handleSessionExpiry();
+        },
+        onAuthSuccess: (data) => {
+          console.log('Authentication successful:', data);
+        },
+        onAuthFailure: (error) => {
+          console.error('Authentication failed:', error);
+        },
+        onAccountLocked: (info) => {
+          showMessage(authMessage, `Account locked due to too many failed attempts. Try again in ${info.lockoutDuration} minutes.`, 'error');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

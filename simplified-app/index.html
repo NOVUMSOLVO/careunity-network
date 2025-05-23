@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <title>CareUnity - Next Generation Care Management</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <!-- Add a service worker registration script -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+          .then(function(registration) {
+            console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch(function(error) {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
+    }
+  </script>
+  <style>
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div id="root">
+    <!-- Header -->
+    <header class="bg-indigo-700 text-white shadow-lg">
+      <div class="container mx-auto px-4 py-6 flex justify-between items-center">
+        <div class="flex items-center">
+          <h1 class="text-3xl font-bold">CareUnity</h1>
+          <span class="ml-2 text-indigo-200">Next Generation Care Management</span>
+        </div>
+        <nav class="hidden md:flex space-x-6">
+          <a href="#features" class="hover:text-indigo-200">Features</a>
+          <a href="#modules" class="hover:text-indigo-200">Modules</a>
+          <a href="#benefits" class="hover:text-indigo-200">Benefits</a>
+          <button class="bg-white text-indigo-700 px-4 py-2 rounded-lg font-semibold hover:bg-indigo-100">Get Started</button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="py-20 bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+      <div class="container mx-auto px-4 text-center">
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">Revolutionizing Care Management</h2>
+        <p class="text-xl mb-10 max-w-3xl mx-auto">A unified platform that brings together care planning, scheduling, and documentation in one seamless experience.</p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <button class="bg-white text-indigo-700 px-6 py-3 rounded-lg font-semibold text-lg hover:bg-indigo-100">Request Demo</button>
+          <button class="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold text-lg hover:bg-white hover:bg-opacity-10">Learn More</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 bg-white">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12">Key Features</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="feature-card bg-gray-50 p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold mb-3 text-indigo-700">Unified Experience</h3>
+            <p>Seamless integration between care planning, scheduling, and documentation with a single login across all devices.</p>
+          </div>
+          <div class="feature-card bg-gray-50 p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold mb-3 text-indigo-700">AI-Powered Allocation</h3>
+            <p>Predictive scheduling that learns from past allocations and suggests optimal care matches based on multiple factors.</p>
+          </div>
+          <div class="feature-card bg-gray-50 p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold mb-3 text-indigo-700">Person-Centered Design</h3>
+            <p>Digital care plans that update in real-time based on visit outcomes, with service user preferences driving allocation decisions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modules Section -->
+    <section id="modules" class="py-16 bg-gray-100">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12">Administrative Modules</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-3 text-indigo-700">Care Coordinator Dashboard</h3>
+            <ul class="list-disc pl-5 space-y-1 text-sm">
+              <li>Daily operations management</li>
+              <li>Advanced allocation tools</li>
+              <li>Communication center</li>
+              <li>Incident reporting system</li>
+            </ul>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-3 text-indigo-700">Staff Management</h3>
+            <ul class="list-disc pl-5 space-y-1 text-sm">
+              <li>Comprehensive staff records</li>
+              <li>Training expiration alerts</li>
+              <li>Performance metrics dashboard</li>
+              <li>Qualification matrix</li>
+            </ul>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-3 text-indigo-700">Payroll Integration</h3>
+            <ul class="list-disc pl-5 space-y-1 text-sm">
+              <li>Visit verification</li>
+              <li>Automatic calculations</li>
+              <li>Electronic timesheet approval</li>
+              <li>Integration with payroll systems</li>
+            </ul>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-lg font-semibold mb-3 text-indigo-700">Reporting Suite</h3>
+            <ul class="list-disc pl-5 space-y-1 text-sm">
+              <li>Customizable report builder</li>
+              <li>CQC compliance reporting</li>
+              <li>Key performance indicators</li>
+              <li>Data visualization tools</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-indigo-900 text-white py-10">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between">
+          <div class="mb-6 md:mb-0">
+            <h2 class="text-2xl font-bold mb-4">CareUnity</h2>
+            <p class="max-w-xs">Next generation care management platform for healthcare providers.</p>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+            <div>
+              <h3 class="text-lg font-semibold mb-3">Product</h3>
+              <ul class="space-y-2">
+                <li><a href="#" class="hover:text-indigo-300">Features</a></li>
+                <li><a href="#" class="hover:text-indigo-300">Pricing</a></li>
+                <li><a href="#" class="hover:text-indigo-300">Testimonials</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold mb-3">Company</h3>
+              <ul class="space-y-2">
+                <li><a href="#" class="hover:text-indigo-300">About</a></li>
+                <li><a href="#" class="hover:text-indigo-300">Careers</a></li>
+                <li><a href="#" class="hover:text-indigo-300">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold mb-3">Resources</h3>
+              <ul class="space-y-2">
+                <li><a href="#" class="hover:text-indigo-300">Blog</a></li>
+                <li><a href="#" class="hover:text-indigo-300">Documentation</a></li>
+                <li><a href="#" class="hover:text-indigo-300">Support</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-indigo-800 mt-8 pt-8 text-center text-indigo-300">
+          <p>&copy; 2025 CareUnity. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- No external scripts needed for this static version -->
+</body>
+</html>

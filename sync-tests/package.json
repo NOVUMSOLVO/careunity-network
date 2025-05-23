@@ -1,0 +1,29 @@
+{
+  "name": "careunity-sync-tests",
+  "version": "1.0.0",
+  "description": "Test scripts for CareUnity Sync API",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start-mock": "node src/mock-sync-server.cjs",
+    "test": "node src/simple-sync-test.js",
+    "test:auth": "node src/auth-tests.js",
+    "test:performance": "node src/performance-tests.js",
+    "test:conflicts": "node src/conflict-tests.js",
+    "test:errors": "node src/error-handling-tests.js",
+    "test:all": "npm run test && npm run test:auth && npm run test:performance",
+    "test:extended": "npm run test:conflicts && npm run test:errors",
+    "test:complete": "npm run test:all && npm run test:extended",
+    "serve": "node src/serve-test-page.js",
+    "dashboard": "node src/serve-dashboard.js",
+    "all": "node run-all-tests.js",
+    "ci": "node src/mock-sync-server.cjs & sleep 5 && npm run test:all",
+    "generate-report": "node src/generate-performance-report.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2",
+    "uuid": "^9.0.1"
+  }
+}

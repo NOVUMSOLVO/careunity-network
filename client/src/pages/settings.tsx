@@ -1,13 +1,48 @@
 import React, { useState } from 'react';
-import { Settings as SettingsIcon, User, Bell, Lock, Database, Shield, Monitor, Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Settings as SettingsIcon, User, Bell, Lock, Database, Shield, Monitor, Users, Globe, Accessibility } from 'lucide-react';
+import { AccessibilitySettings } from '@/components/settings/accessibility-settings';
+import { LanguageSettings } from '@/components/settings/language-settings';
+import { VoiceInput } from '@/components/ui/voice-input';
+import { useAccessibility } from '@/contexts/accessibility-context';
 
 export default function Settings() {
+  const { t } = useTranslation();
+  const { enableVoiceCommands } = useAccessibility();
   const [activeTab, setActiveTab] = useState('profile');
 
+  // Handle voice commands
+  const handleVoiceCommand = (command: string) => {
+    const lowerCommand = command.toLowerCase();
+
+    // Tab navigation commands
+    if (lowerCommand.includes('profile')) {
+      setActiveTab('profile');
+    } else if (lowerCommand.includes('notification')) {
+      setActiveTab('notifications');
+    } else if (lowerCommand.includes('security')) {
+      setActiveTab('security');
+    } else if (lowerCommand.includes('data')) {
+      setActiveTab('data');
+    } else if (lowerCommand.includes('privacy')) {
+      setActiveTab('privacy');
+    } else if (lowerCommand.includes('appearance')) {
+      setActiveTab('appearance');
+    } else if (lowerCommand.includes('team')) {
+      setActiveTab('team');
+    } else if (lowerCommand.includes('accessibility')) {
+      setActiveTab('accessibility');
+    } else if (lowerCommand.includes('language')) {
+      setActiveTab('language');
+    }
+  };
+
   const tabs = [
-    { id: 'profile', label: 'Profile', icon: <User className="h-5 w-5" /> },
-    { id: 'notifications', label: 'Notifications', icon: <Bell className="h-5 w-5" /> },
+    { id: 'profile', label: t('profile.title'), icon: <User className="h-5 w-5" /> },
+    { id: 'notifications', label: t('notifications.title'), icon: <Bell className="h-5 w-5" /> },
     { id: 'security', label: 'Security', icon: <Lock className="h-5 w-5" /> },
+    { id: 'accessibility', label: t('accessibility.title'), icon: <Accessibility className="h-5 w-5" /> },
+    { id: 'language', label: t('settings.language'), icon: <Globe className="h-5 w-5" /> },
     { id: 'data', label: 'Data Management', icon: <Database className="h-5 w-5" /> },
     { id: 'privacy', label: 'Privacy', icon: <Shield className="h-5 w-5" /> },
     { id: 'appearance', label: 'Appearance', icon: <Monitor className="h-5 w-5" /> },
@@ -35,7 +70,7 @@ export default function Settings() {
                   </button>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -61,7 +96,7 @@ export default function Settings() {
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                     Email Address
@@ -73,7 +108,7 @@ export default function Settings() {
                     defaultValue="john.doe@example.com"
                   />
                 </div>
-                
+
                 <div>
                   <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
                     Role
@@ -88,7 +123,7 @@ export default function Settings() {
                     <option value="admin">Administrator</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
                     Bio
@@ -101,7 +136,7 @@ export default function Settings() {
                   ></textarea>
                 </div>
               </div>
-              
+
               <div className="flex justify-end space-x-2 pt-4">
                 <button className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
                   Cancel
@@ -113,7 +148,7 @@ export default function Settings() {
             </div>
           </>
         );
-      
+
       case 'notifications':
         return (
           <>
@@ -121,7 +156,7 @@ export default function Settings() {
             <div className="space-y-6">
               <div className="space-y-4">
                 <h3 className="font-medium text-gray-800">Email Notifications</h3>
-                
+
                 <div className="space-y-3">
                   {[
                     { id: 'email-appointments', label: 'Appointment Reminders' },
@@ -146,10 +181,10 @@ export default function Settings() {
                   ))}
                 </div>
               </div>
-              
+
               <div className="space-y-4 pt-4 border-t border-gray-200">
                 <h3 className="font-medium text-gray-800">Push Notifications</h3>
-                
+
                 <div className="space-y-3">
                   {[
                     { id: 'push-appointments', label: 'Appointment Reminders' },
@@ -174,7 +209,7 @@ export default function Settings() {
                   ))}
                 </div>
               </div>
-              
+
               <div className="flex justify-end space-x-2 pt-4">
                 <button className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
                   Cancel
@@ -186,7 +221,23 @@ export default function Settings() {
             </div>
           </>
         );
-      
+
+      case 'accessibility':
+        return (
+          <>
+            <h2 className="text-xl font-semibold text-gray-800 mb-6">{t('accessibility.title')}</h2>
+            <AccessibilitySettings />
+          </>
+        );
+
+      case 'language':
+        return (
+          <>
+            <h2 className="text-xl font-semibold text-gray-800 mb-6">{t('settings.language')}</h2>
+            <LanguageSettings />
+          </>
+        );
+
       default:
         return (
           <div className="text-center py-16">
@@ -200,9 +251,23 @@ export default function Settings() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-800">Settings</h1>
-        <p className="text-gray-600">Manage your account settings and preferences</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">{t('settings.title')}</h1>
+          <p className="text-gray-600">Manage your account settings and preferences</p>
+        </div>
+
+        {/* Voice command button for page navigation */}
+        {enableVoiceCommands && (
+          <VoiceInput
+            commandMode
+            onCommand={handleVoiceCommand}
+            size="default"
+            variant="outline"
+            placeholder={t('voiceInput.tap')}
+            ariaLabel={t('voiceInput.tap')}
+          />
+        )}
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -215,8 +280,8 @@ export default function Settings() {
                   <button
                     onClick={() => setActiveTab(tab.id)}
                     className={`w-full px-4 py-2.5 flex items-center gap-3 text-left ${
-                      activeTab === tab.id 
-                        ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600' 
+                      activeTab === tab.id
+                        ? 'bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600'
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
@@ -227,7 +292,7 @@ export default function Settings() {
               ))}
             </ul>
           </div>
-          
+
           {/* Main content */}
           <div className="flex-1 p-6">
             {renderTabContent()}

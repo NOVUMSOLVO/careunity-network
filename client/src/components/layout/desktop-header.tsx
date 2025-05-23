@@ -3,8 +3,11 @@ import { Link } from 'wouter';
 import { AvatarWithStatus } from '@/components/ui/avatar-with-status';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Bell, Search, Sun, Moon } from 'lucide-react';
+import { Search, Sun, Moon } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { NotificationCenter } from '@/components/notifications/notification-center';
+import { OfflineStatus } from '@/components/offline/offline-status';
+import { VoiceCommandButton } from '@/components/voice/voice-command-button';
 
 interface User {
   id: number;
@@ -20,14 +23,14 @@ export function DesktopHeader() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { theme, setTheme } = useTheme();
-  
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await fetch('/api/user', {
           credentials: 'include',
         });
-        
+
         if (response.ok) {
           const userData = await response.json();
           setUser(userData);
@@ -41,10 +44,10 @@ export function DesktopHeader() {
         setIsLoading(false);
       }
     };
-    
+
     fetchUser();
   }, []);
-  
+
   // Generate initials for avatar fallback
   const initials = user?.fullName
     ? user.fullName
@@ -54,11 +57,11 @@ export function DesktopHeader() {
         .toUpperCase()
         .substring(0, 2)
     : 'NA';
-    
+
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
-  
+
   return (
     <div className="relative z-10 flex-shrink-0 h-16 bg-white dark:bg-gray-800 shadow-sm">
       <div className="flex-1 px-4 flex justify-between">
@@ -68,11 +71,11 @@ export function DesktopHeader() {
               <div className="absolute inset-y-0 left-0 flex items-center pointer-events-none">
                 <Search className="h-5 w-5 ml-3 text-gray-400" />
               </div>
-              <Input 
-                id="search-field" 
-                className="block w-full h-full pl-10 pr-3 py-2 border-transparent text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-0 focus:border-transparent sm:text-sm bg-gray-50 dark:bg-gray-700 rounded-md" 
-                placeholder="Search" 
-                type="search" 
+              <Input
+                id="search-field"
+                className="block w-full h-full pl-10 pr-3 py-2 border-transparent text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-0 focus:border-transparent sm:text-sm bg-gray-50 dark:bg-gray-700 rounded-md"
+                placeholder="Search"
+                type="search"
                 name="search"
               />
             </div>
@@ -92,15 +95,16 @@ export function DesktopHeader() {
             )}
             <span className="sr-only">Toggle dark mode</span>
           </Button>
-          
-          <Button
-            variant="outline"
-            size="icon"
-            className="bg-gray-100 dark:bg-gray-700 p-1 rounded-full text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 mr-3"
-          >
-            <Bell className="h-5 w-5" />
-            <span className="sr-only">View notifications</span>
-          </Button>
+
+          <div className="mr-3">
+            <OfflineStatus />
+          </div>
+          <div className="mr-3">
+            <VoiceCommandButton />
+          </div>
+          <div className="mr-3">
+            <NotificationCenter />
+          </div>
 
           <div className="bg-gray-100 dark:bg-gray-700 p-1 rounded-full text-gray-500 dark:text-gray-300 flex items-center">
             <Link href="/profile">

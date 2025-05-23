@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Gesture Controls</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .test-area {
+      width: 300px;
+      height: 300px;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    .log {
+      background-color: #f8f8f8;
+      border: 1px solid #ddd;
+      padding: 10px;
+      height: 200px;
+      overflow-y: auto;
+      font-family: monospace;
+      margin-top: 20px;
+      border-radius: 4px;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gesture Controls Test</h1>
+  <p>This page tests if the gesture controls module is loading correctly.</p>
+  
+  <div class="test-area" id="test-area">
+    Touch/Gesture Test Area
+  </div>
+  
+  <div class="log" id="log"></div>
+  
+  <script>
+    // Function to log messages
+    function log(message, type = 'info') {
+      const logElement = document.getElementById('log');
+      const entry = document.createElement('div');
+      entry.className = type;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logElement.appendChild(entry);
+      logElement.scrollTop = logElement.scrollHeight;
+    }
+    
+    // Check if the script loads
+    window.addEventListener('load', function() {
+      log('Page loaded');
+      
+      // Try to load the gesture controls script
+      const script = document.createElement('script');
+      script.src = 'ml-models-gestures.js';
+      script.onload = function() {
+        log('Gesture controls script loaded successfully', 'success');
+        
+        // Check if the global object is available
+        if (window.mlModelsGestures) {
+          log('mlModelsGestures global object is available', 'success');
+          
+          // Register the test area for gesture controls
+          const testArea = document.getElementById('test-area');
+          if (testArea) {
+            try {
+              window.mlModelsGestures.registerElement('test-area', {
+                tap: (data) => {
+                  log(`Tap detected at x: ${data.x}, y: ${data.y}`, 'success');
+                  testArea.textContent = 'Tap detected!';
+                  setTimeout(() => {
+                    testArea.textContent = 'Touch/Gesture Test Area';
+                  }, 1000);
+                },
+                longPress: (data) => {
+                  log(`Long press detected at x: ${data.x}, y: ${data.y}`, 'success');
+                  testArea.textContent = 'Long press detected!';
+                  setTimeout(() => {
+                    testArea.textContent = 'Touch/Gesture Test Area';
+                  }, 1000);
+                },
+                swipe: (data) => {
+                  log(`Swipe ${data.direction} detected`, 'success');
+                  testArea.textContent = `Swipe ${data.direction} detected!`;
+                  setTimeout(() => {
+                    testArea.textContent = 'Touch/Gesture Test Area';
+                  }, 1000);
+                },
+                pinch: (data) => {
+                  log(`Pinch detected with scale: ${data.scale.toFixed(2)}`, 'success');
+                  testArea.textContent = `Pinch scale: ${data.scale.toFixed(2)}`;
+                  setTimeout(() => {
+                    testArea.textContent = 'Touch/Gesture Test Area';
+                  }, 1000);
+                },
+                rotate: (data) => {
+                  log(`Rotation detected: ${data.rotation.toFixed(2)}°`, 'success');
+                  testArea.textContent = `Rotation: ${data.rotation.toFixed(2)}°`;
+                  setTimeout(() => {
+                    testArea.textContent = 'Touch/Gesture Test Area';
+                  }, 1000);
+                }
+              });
+              log('Test area registered for gesture controls', 'success');
+            } catch (error) {
+              log(`Error registering test area: ${error.message}`, 'error');
+            }
+          }
+        } else {
+          log('mlModelsGestures global object is NOT available', 'error');
+        }
+      };
+      
+      script.onerror = function() {
+        log('Failed to load gesture controls script', 'error');
+      };
+      
+      document.body.appendChild(script);
+    });
+  </script>
+</body>
+</html>

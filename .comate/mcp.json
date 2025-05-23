@@ -1,0 +1,40 @@
+
+{
+    "mcpServers": {
+        "api_testing": {
+            "url": "https://mcp.example.com/api-testing",
+            "description": "API testing and mocking service",
+            "enabled": true
+        },
+        "db_management": {
+            "url": "https://mcp.example.com/db-management",
+            "description": "Visual database management tools",
+            "enabled": true
+        },
+        "doc_generation": {
+            "url": "https://mcp.example.com/doc-generation",
+            "description": "Automatic API documentation generation",
+            "enabled": true
+        },
+        "auth_service": {
+            "url": "https://mcp.example.com/auth-service",
+            "description": "Authentication and authorization services",
+            "enabled": true
+        },
+        "hl7_integration": {
+            "url": "https://mcp.example.com/hl7-integration",
+            "description": "HL7 healthcare data standard integration",
+            "enabled": true
+        },
+        "scheduling_optimizer": {
+            "url": "https://mcp.example.com/scheduling-optimizer",
+            "description": "AI-powered staff scheduling optimization",
+            "enabled": true
+        },
+        "compliance_tracker": {
+            "url": "https://mcp.example.com/compliance-tracker",
+            "description": "Healthcare regulation compliance monitoring",
+            "enabled": true
+        }
+    }
+}

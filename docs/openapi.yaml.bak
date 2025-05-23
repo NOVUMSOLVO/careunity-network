@@ -1,0 +1,2104 @@
+openapi: 3.1.0
+info:
+  title: CareUnity API
+  description: >
+    # CareUnity Care Management Platform API
+
+
+    This API provides access to the CareUnity care management platform, enabling:
+
+
+    - Service user management
+
+    - Care plan creation and management
+
+    - Goal and task tracking
+
+    - Visit scheduling and management
+
+    - Document management
+
+    - Family portal access
+
+    - ML-powered care allocation
+
+    - Offline data synchronization
+
+
+    ## Authentication
+
+
+    All API requests require authentication using JWT tokens. To authenticate, send a POST request to `/auth/login` with
+    your credentials to receive a token, then include it in the `Authorization` header of subsequent requests.
+
+
+    ## Response Format
+
+
+    All API responses follow a standardized format:
+
+
+    ```json
+
+    {
+      "data": <response data or null if error>,
+      "error": {
+        "code": <error code>,
+        "message": <error message>,
+        "details": <optional error details>
+      } or null if success,
+      "meta": {
+        "pagination": {
+          "page": <current page>,
+          "limit": <items per page>,
+          "total": <total items>,
+          "totalPages": <total pages>
+        },
+        ... other metadata
+      }
+    }
+
+    ```
+
+
+    ## Rate Limiting
+
+
+    API requests are rate-limited to protect against abuse. If you exceed the rate limit, you'll receive a 429 response
+    with a `Retry-After` header indicating when you can retry.
+  version: 1.0.0
+  contact:
+    name: CareUnity Support
+    email: support@careunity.example.com
+servers:
+  - url: http://localhost:5000/api
+    description: Local development server
+  - url: https://api.careunity.example.com
+    description: Production server
+tags:
+  - name: Authentication
+    description: Authentication endpoints
+  - name: Service Users
+    description: Service user management
+  - name: Care Plans
+    description: Care plan management
+  - name: Goals
+    description: Goal management
+  - name: Tasks
+    description: Task management
+  - name: ML Models
+    description: Machine learning model endpoints
+  - name: Visits
+    description: Visit management
+  - name: Documents
+    description: Document management
+  - name: Family Portal
+    description: Family portal endpoints
+  - name: External Integration
+    description: External system integration
+  - name: Monitoring
+    description: System monitoring endpoints
+  - name: Sync
+    description: Data synchronization endpoints
+  - name: Notifications
+    description: Real-time notification endpoints
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login to the system
+      description: Authenticate a user and get an access token
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              admin:
+                summary: Admin login
+                value:
+                  username: admin@example.com
+                  password: password123
+              caregiver:
+                summary: Caregiver login
+                value:
+                  username: caregiver@example.com
+                  password: password123
+              login: &ref_0
+                value:
+                  email: john.smith@example.com
+                  password: SecureP@ssw0rd!
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              examples:
+                success:
+                  summary: Successful login response
+                  value:
+                    data:
+                      token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      user:
+                        id: 1
+                        username: admin@example.com
+                        email: admin@example.com
+                        fullName: Admin User
+                        role: admin
+                        isActive: true
+                        createdAt: '2023-01-01T00:00:00.000Z'
+                        updatedAt: '2023-01-01T00:00:00.000Z'
+                    error: null
+                login: *ref_0
+                loginResponse:
+                  value:
+                    token: >-
+                      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImpvaG4uc21pdGhAZXhhbXBsZS5jb20iLCJyb2xlIjoiY2FyZWdpdmVyIiwiaWF0IjoxNjg3MzQ1NjAwLCJleHAiOjE2ODc0MzIwMDB9.8Uty5uKDvAMPn4Ktt1Ldj8MPX5JLJ6HJpjSb4FVD7Uw
+                    user:
+                      id: 550e8400-e29b-41d4-a716-446655440000
+                      name: John Smith
+                      email: john.smith@example.com
+                      role: caregiver
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidCredentials:
+                  summary: Invalid credentials error
+                  value:
+                    data: null
+                    error:
+                      code: unauthorized
+                      message: Invalid username or password
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+  /service-users:
+    get:
+      tags:
+        - Service Users
+      summary: Get all service users
+      description: Retrieve a list of service users with pagination
+      operationId: getServiceUsers
+      parameters:
+        - $ref: '#/components/parameters/QueryParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/LimitParam'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ServiceUser'
+                  error:
+                    type: 'null'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+              examples:
+                success:
+                  summary: Successful response with pagination
+                  value:
+                    data:
+                      - id: 1
+                        uniqueId: SU001
+                        fullName: John Doe
+                        dateOfBirth: '1980-01-01'
+                        gender: male
+                        address: 123 Main St, Anytown
+                        phone: 555-123-4567
+                        email: john.doe@example.com
+                        emergencyContact: Jane Doe (555-987-6543)
+                        primaryCaregiverId: 2
+                        notes: Prefers morning visits
+                        status: active
+                        createdAt: '2023-01-01T00:00:00.000Z'
+                        updatedAt: '2023-01-01T00:00:00.000Z'
+                      - id: 2
+                        uniqueId: SU002
+                        fullName: Jane Smith
+                        dateOfBirth: '1975-05-15'
+                        gender: female
+                        address: 456 Oak Ave, Somewhere
+                        phone: 555-234-5678
+                        email: jane.smith@example.com
+                        emergencyContact: John Smith (555-876-5432)
+                        primaryCaregiverId: 3
+                        notes: Allergic to latex
+                        status: active
+                        createdAt: '2023-01-02T00:00:00.000Z'
+                        updatedAt: '2023-01-02T00:00:00.000Z'
+                    error: null
+                    meta:
+                      pagination:
+                        page: 1
+                        limit: 10
+                        total: 25
+                        totalPages: 3
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+    post:
+      tags:
+        - Service Users
+      summary: Create a new service user
+      description: Add a new service user to the system
+      operationId: createServiceUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateServiceUserRequest'
+            examples:
+              newServiceUser:
+                summary: New service user example
+                value:
+                  uniqueId: SU025
+                  fullName: Robert Johnson
+                  dateOfBirth: '1990-08-12'
+                  gender: male
+                  address: 789 Pine St, Elsewhere
+                  phone: 555-345-6789
+                  email: robert.johnson@example.com
+                  emergencyContact: Mary Johnson (555-765-4321)
+                  primaryCaregiverId: 4
+                  notes: Prefers afternoon visits
+                  status: active
+      responses:
+        '201':
+          description: Service user created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ServiceUser'
+                  error:
+                    type: 'null'
+              examples:
+                created:
+                  summary: Service user created successfully
+                  value:
+                    data:
+                      id: 25
+                      uniqueId: SU025
+                      fullName: Robert Johnson
+                      dateOfBirth: '1990-08-12'
+                      gender: male
+                      address: 789 Pine St, Elsewhere
+                      phone: 555-345-6789
+                      email: robert.johnson@example.com
+                      emergencyContact: Mary Johnson (555-765-4321)
+                      primaryCaregiverId: 4
+                      notes: Prefers afternoon visits
+                      status: active
+                      createdAt: '2023-06-15T10:30:00.000Z'
+                      updatedAt: '2023-06-15T10:30:00.000Z'
+                    error: null
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+  /service-users/{id}:
+    get:
+      tags:
+        - Service Users
+      summary: Get a service user by ID
+      description: Retrieve a specific service user by their ID
+      operationId: getServiceUserById
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ServiceUser'
+                  error:
+                    type: 'null'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/allocation/unallocated:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - allocation
+      responses:
+        '200':
+          description: Successful operation
+  /api/allocation/allocated:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - allocation
+      responses:
+        '200':
+          description: Successful operation
+  /api/allocation/caregivers:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - allocation
+      responses:
+        '200':
+          description: Successful operation
+  /api/allocation/suggest:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - allocation
+      responses:
+        '200':
+          description: Successful operation
+  /api/allocation/run:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - allocation
+      responses:
+        '200':
+          description: Successful operation
+  /api/allocation/manual:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - allocation
+      responses:
+        '200':
+          description: Successful operation
+  /api/allocation/routes:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - allocation
+      responses:
+        '200':
+          description: Successful operation
+  /api/allocation/metrics:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - allocation
+      responses:
+        '200':
+          description: Successful operation
+  /api/allocation/predict-visits:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - allocation
+      responses:
+        '200':
+          description: Successful operation
+  /api/allocation/predict-workload:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - allocation
+      responses:
+        '200':
+          description: Successful operation
+  /api/allocation/ml-allocation:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - allocation
+      responses:
+        '200':
+          description: Successful operation
+  /api/allocation/explanations/{visitId}:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - allocation
+      responses:
+        '200':
+          description: Successful operation
+  /api/audit-routes/logs:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - audit-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/audit-routes/event-types:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - audit-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/audit-routes/verify:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - audit-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/audit-routes/summary:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - audit-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/audit-routes/export:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - audit-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/care-plans:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - care-plans
+      responses:
+        '200':
+          description: Successful operation
+    post:
+      summary: /
+      description: ''
+      tags:
+        - care-plans
+      responses:
+        '200':
+          description: Successful operation
+  /api/care-plans/{id}:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - care-plans
+      responses:
+        '200':
+          description: Successful operation
+    patch:
+      summary: /
+      description: ''
+      tags:
+        - care-plans
+      responses:
+        '200':
+          description: Successful operation
+    delete:
+      summary: /
+      description: ''
+      tags:
+        - care-plans
+      responses:
+        '200':
+          description: Successful operation
+  /api/care-plans/{id}/with-goals-and-tasks:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - care-plans
+      responses:
+        '200':
+          description: Successful operation
+  /api/care-plans/{id}/goals:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - care-plans
+      responses:
+        '200':
+          description: Successful operation
+    post:
+      summary: /
+      description: ''
+      tags:
+        - care-plans
+      responses:
+        '200':
+          description: Successful operation
+  /api/dashboard/api/v2/dashboard:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - dashboard
+      responses:
+        '200':
+          description: Successful operation
+  /api/document-routes:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - document-routes
+      responses:
+        '200':
+          description: Successful operation
+    post:
+      summary: /
+      description: ''
+      tags:
+        - document-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/document-routes/{id}:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - document-routes
+      responses:
+        '200':
+          description: Successful operation
+    patch:
+      summary: /
+      description: ''
+      tags:
+        - document-routes
+      responses:
+        '200':
+          description: Successful operation
+    delete:
+      summary: /
+      description: ''
+      tags:
+        - document-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/document-routes/{id}/share:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - document-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/document-routes/{id}/sharing:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - document-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/document-routes/{id}/share/{userId}:
+    delete:
+      summary: /
+      description: ''
+      tags:
+        - document-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/external-integration/service-users/{id}/systems:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - external-integration
+      responses:
+        '200':
+          description: Successful operation
+  /api/family-portal/service-users:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - family-portal
+      responses:
+        '200':
+          description: Successful operation
+  /api/family-portal/service-users/{id}:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - family-portal
+      responses:
+        '200':
+          description: Successful operation
+  /api/family-portal/service-users/{id}/care-plans:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - family-portal
+      responses:
+        '200':
+          description: Successful operation
+  /api/family-portal/service-users/{id}/appointments:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - family-portal
+      responses:
+        '200':
+          description: Successful operation
+  /api/family-portal/service-users/{id}/notes:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - family-portal
+      responses:
+        '200':
+          description: Successful operation
+  /api/family-portal/service-users/{id}/documents:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - family-portal
+      responses:
+        '200':
+          description: Successful operation
+  /api/goals/{id}:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - goals
+      responses:
+        '200':
+          description: Successful operation
+    patch:
+      summary: /
+      description: ''
+      tags:
+        - goals
+      responses:
+        '200':
+          description: Successful operation
+    delete:
+      summary: /
+      description: ''
+      tags:
+        - goals
+      responses:
+        '200':
+          description: Successful operation
+  /api/goals/{id}/tasks:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - goals
+      responses:
+        '200':
+          description: Successful operation
+    post:
+      summary: /
+      description: ''
+      tags:
+        - goals
+      responses:
+        '200':
+          description: Successful operation
+  /api/image-routes/optimize:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - image-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/image-routes/info:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - image-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/ml-models:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - ml-models
+      responses:
+        '200':
+          description: Successful operation
+  /api/ml-models/{id}:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - ml-models
+      responses:
+        '200':
+          description: Successful operation
+  /api/ml-models/train/recommendation:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - ml-models
+      responses:
+        '200':
+          description: Successful operation
+  /api/ml-models/train/timeseries:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - ml-models
+      responses:
+        '200':
+          description: Successful operation
+  /api/ml-models/train/satisfaction:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - ml-models
+      responses:
+        '200':
+          description: Successful operation
+  /api/ml-models/predict:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - ml-models
+      responses:
+        '200':
+          description: Successful operation
+  /api/ml-models/explain:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - ml-models
+      responses:
+        '200':
+          description: Successful operation
+  /api/ml-models/detect-drift:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - ml-models
+      responses:
+        '200':
+          description: Successful operation
+  /api/ml-models/{id}/check-retraining:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - ml-models
+      responses:
+        '200':
+          description: Successful operation
+  /api/ml-models/{id}/performance:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - ml-models
+      responses:
+        '200':
+          description: Successful operation
+  /api/ml-models/registry:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - ml-models
+      responses:
+        '200':
+          description: Successful operation
+  /api/ml-models/registry/{name}:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - ml-models
+      responses:
+        '200':
+          description: Successful operation
+  /api/ml-models/registry/promote:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - ml-models
+      responses:
+        '200':
+          description: Successful operation
+  /api/monitoring-routes/health:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - monitoring-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/monitoring-routes/performance:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - monitoring-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/monitoring-routes/errors:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - monitoring-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/monitoring-routes/system:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - monitoring-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/monitoring-routes/analytics:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - monitoring-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/monitoring-routes/performance/summary:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - monitoring-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/monitoring-routes/errors/summary:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - monitoring-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/monitoring-routes/analytics/summary:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - monitoring-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/performance-routes/queries:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - performance-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/performance-routes/slow-queries:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - performance-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/performance-routes/index-recommendations:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - performance-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/performance-routes/cache-stats:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - performance-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/performance-routes/clear-cache:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - performance-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/performance-routes/api:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - performance-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/performance-routes/system:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - performance-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/report-routes/care-quality:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - report-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/report-routes/staff-performance:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - report-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/report-routes/visit-statistics:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - report-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/service-users:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - service-users
+      responses:
+        '200':
+          description: Successful operation
+    post:
+      summary: /
+      description: ''
+      tags:
+        - service-users
+      responses:
+        '200':
+          description: Successful operation
+  /api/service-users/{id}:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - service-users
+      responses:
+        '200':
+          description: Successful operation
+    patch:
+      summary: /
+      description: ''
+      tags:
+        - service-users
+      responses:
+        '200':
+          description: Successful operation
+    delete:
+      summary: /
+      description: ''
+      tags:
+        - service-users
+      responses:
+        '200':
+          description: Successful operation
+  /api/service-users/{id}/with-care-plans:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - service-users
+      responses:
+        '200':
+          description: Successful operation
+  /api/service-users/search:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - service-users
+      responses:
+        '200':
+          description: Successful operation
+  /api/sync/status:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - sync
+      responses:
+        '200':
+          description: Successful operation
+  /api/sync/operations:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - sync
+      responses:
+        '200':
+          description: Successful operation
+    post:
+      summary: /
+      description: ''
+      tags:
+        - sync
+      responses:
+        '200':
+          description: Successful operation
+  /api/sync/operations/{id}:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - sync
+      responses:
+        '200':
+          description: Successful operation
+    patch:
+      summary: /
+      description: ''
+      tags:
+        - sync
+      responses:
+        '200':
+          description: Successful operation
+    delete:
+      summary: /
+      description: ''
+      tags:
+        - sync
+      responses:
+        '200':
+          description: Successful operation
+  /api/sync/process:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - sync
+      responses:
+        '200':
+          description: Successful operation
+  /api/sync/batch:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - sync
+      responses:
+        '200':
+          description: Successful operation
+  /api/sync/completed:
+    delete:
+      summary: /
+      description: ''
+      tags:
+        - sync
+      responses:
+        '200':
+          description: Successful operation
+  /api/notifications:
+    get:
+      summary: Get notifications
+      description: Get all notifications for the current user
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/LimitParam'
+        - $ref: '#/components/parameters/PageParam'
+        - name: unreadOnly
+          in: query
+          description: Only return unread notifications
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Notification'
+                  error:
+                    type: 'null'
+                  meta:
+                    type: object
+                    properties:
+                      pagination:
+                        $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+    delete:
+      summary: Delete all notifications
+      description: Delete all notifications for the current user
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                      message:
+                        type: string
+                  error:
+                    type: 'null'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/notifications/{id}:
+    get:
+      summary: Get notification by ID
+      description: Get a specific notification by ID
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Notification'
+                  error:
+                    type: 'null'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      summary: Delete notification
+      description: Delete a notification by ID
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      deleted:
+                        type: boolean
+                  error:
+                    type: 'null'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/notifications/{id}/read:
+    put:
+      summary: Mark notification as read
+      description: Mark a notification as read
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      read:
+                        type: boolean
+                  error:
+                    type: 'null'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/notifications/read-all:
+    put:
+      summary: Mark all notifications as read
+      description: Mark all notifications as read for the current user
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                      message:
+                        type: string
+                  error:
+                    type: 'null'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/notifications/send:
+    post:
+      summary: Send notification
+      description: Send a notification to a specific user (admin only)
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                title:
+                  type: string
+                message:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - info
+                    - success
+                    - warning
+                    - error
+                  default: info
+                link:
+                  type: string
+                  format: uri
+                data:
+                  type: object
+              required:
+                - userId
+                - title
+                - message
+      responses:
+        '201':
+          description: Notification sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Notification'
+                  error:
+                    type: 'null'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/notifications/broadcast:
+    post:
+      summary: Broadcast notification
+      description: Broadcast a notification to all users or a specific group (admin only)
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userIds:
+                  type: array
+                  items:
+                    type: integer
+                title:
+                  type: string
+                message:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - info
+                    - success
+                    - warning
+                    - error
+                  default: info
+                link:
+                  type: string
+                  format: uri
+                data:
+                  type: object
+              required:
+                - title
+                - message
+      responses:
+        '201':
+          description: Notification broadcast
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                      message:
+                        type: string
+                  error:
+                    type: 'null'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/tasks/{id}:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - tasks
+      responses:
+        '200':
+          description: Successful operation
+    patch:
+      summary: /
+      description: ''
+      tags:
+        - tasks
+      responses:
+        '200':
+          description: Successful operation
+    delete:
+      summary: /
+      description: ''
+      tags:
+        - tasks
+      responses:
+        '200':
+          description: Successful operation
+  /api/tasks/{id}/complete:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - tasks
+      responses:
+        '200':
+          description: Successful operation
+  /api/two-factor-routes/status:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - two-factor-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/two-factor-routes/setup:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - two-factor-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/two-factor-routes/enable:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - two-factor-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/two-factor-routes/disable:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - two-factor-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/two-factor-routes/verify:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - two-factor-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/two-factor-routes/verify-backup:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - two-factor-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/two-factor-routes/regenerate-backup:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - two-factor-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/user-routes/me:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - user-routes
+      responses:
+        '200':
+          description: Successful operation
+    patch:
+      summary: /
+      description: ''
+      tags:
+        - user-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/user-routes/me/preferences:
+    patch:
+      summary: /
+      description: ''
+      tags:
+        - user-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/user-routes/{id}:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - user-routes
+      responses:
+        '200':
+          description: Successful operation
+  /api/visits:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - visits
+      responses:
+        '200':
+          description: Successful operation
+    post:
+      summary: /
+      description: ''
+      tags:
+        - visits
+      responses:
+        '200':
+          description: Successful operation
+  /api/visits/{id}:
+    get:
+      summary: /
+      description: ''
+      tags:
+        - visits
+      responses:
+        '200':
+          description: Successful operation
+    put:
+      summary: /
+      description: ''
+      tags:
+        - visits
+      responses:
+        '200':
+          description: Successful operation
+  /api/visits/{id}/complete:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - visits
+      responses:
+        '200':
+          description: Successful operation
+  /api/visits/{id}/cancel:
+    post:
+      summary: /
+      description: ''
+      tags:
+        - visits
+      responses:
+        '200':
+          description: Successful operation
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      description: Resource ID
+      required: true
+      schema:
+        type: integer
+        format: int32
+    QueryParam:
+      name: query
+      in: query
+      description: Search query
+      required: false
+      schema:
+        type: string
+    PageParam:
+      name: page
+      in: query
+      description: Page number
+      required: false
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    LimitParam:
+      name: limit
+      in: query
+      description: Number of items per page
+      required: false
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 100
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            validationError:
+              summary: Validation error
+              value:
+                data: null
+                error:
+                  code: validation_error
+                  message: Validation error
+                  details:
+                    errors:
+                      - path:
+                          - body
+                          - name
+                        message: Required
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            unauthorized:
+              summary: Unauthorized error
+              value:
+                data: null
+                error:
+                  code: unauthorized
+                  message: Authentication required
+            authError:
+              value:
+                error: Authentication Error
+                message: Invalid credentials
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            forbidden:
+              summary: Forbidden error
+              value:
+                data: null
+                error:
+                  code: forbidden
+                  message: You don't have permission to access this resource
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            notFound:
+              summary: Resource not found error
+              value:
+                data: null
+                error:
+                  code: not_found
+                  message: Resource not found
+            notFoundError:
+              value:
+                error: Not Found
+                message: Resource not found
+    Conflict:
+      description: Resource conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            conflict:
+              summary: Resource conflict error
+              value:
+                data: null
+                error:
+                  code: conflict
+                  message: Resource already exists
+    RateLimitExceeded:
+      description: Rate limit exceeded
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Time in seconds to wait before retrying
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            rateLimitExceeded:
+              summary: Rate limit exceeded error
+              value:
+                data: null
+                error:
+                  code: rate_limit_exceeded
+                  message: Too many requests, please try again later
+                  details:
+                    retryAfter: 60
+  schemas:
+    Error:
+      type: object
+      properties:
+        data:
+          type: 'null'
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              enum:
+                - bad_request
+                - unauthorized
+                - forbidden
+                - not_found
+                - conflict
+                - validation_error
+                - internal_error
+            message:
+              type: string
+            details:
+              type: object
+      required:
+        - data
+        - error
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+      required:
+        - page
+        - limit
+        - total
+        - totalPages
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+    LoginResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+            user:
+              $ref: '#/components/schemas/User'
+          required:
+            - token
+            - user
+        error:
+          type: 'null'
+      required:
+        - data
+        - error
+      example:
+        token: >-
+          eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImpvaG4uc21pdGhAZXhhbXBsZS5jb20iLCJyb2xlIjoiY2FyZWdpdmVyIiwiaWF0IjoxNjg3MzQ1NjAwLCJleHAiOjE2ODc0MzIwMDB9.8Uty5uKDvAMPn4Ktt1Ldj8MPX5JLJ6HJpjSb4FVD7Uw
+        user:
+          id: 550e8400-e29b-41d4-a716-446655440000
+          name: John Smith
+          email: john.smith@example.com
+          role: caregiver
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        fullName:
+          type: string
+        role:
+          type: string
+          enum:
+            - admin
+            - manager
+            - caregiver
+            - client
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - username
+        - email
+        - fullName
+        - role
+        - isActive
+      example:
+        id: 550e8400-e29b-41d4-a716-446655440000
+        name: John Smith
+        email: john.smith@example.com
+        role: caregiver
+        createdAt: '2023-01-15T08:30:00Z'
+        updatedAt: '2023-06-20T14:45:00Z'
+        status: active
+        profileImageUrl: https://careunity.example/images/profiles/john-smith.jpg
+        phoneNumber: +1-555-123-4567
+        lastLoginAt: '2023-06-20T14:30:00Z'
+    ServiceUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        uniqueId:
+          type: string
+        fullName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+            - other
+            - prefer_not_to_say
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+        emergencyContact:
+          type: string
+        primaryCaregiverId:
+          type: integer
+          format: int32
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+            - on_hold
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - uniqueId
+        - fullName
+        - status
+      example:
+        id: 660e8400-e29b-41d4-a716-446655440000
+        name: Alice Brown
+        dateOfBirth: '1945-03-12'
+        address: 123 Main St, Apt 4B
+        city: Springfield
+        state: IL
+        zipCode: '62704'
+        phone: +1-555-234-5678
+        email: alice.brown@example.com
+        emergencyContact: Bob Brown
+        emergencyPhone: +1-555-876-5432
+        createdAt: '2023-01-10T09:15:00Z'
+        updatedAt: '2023-06-15T11:30:00Z'
+        status: active
+        primaryCaregiverId: 550e8400-e29b-41d4-a716-446655440000
+        notes: Prefers morning visits. Allergic to penicillin.
+    CreateServiceUserRequest:
+      type: object
+      properties:
+        uniqueId:
+          type: string
+        fullName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+            - other
+            - prefer_not_to_say
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+        emergencyContact:
+          type: string
+        primaryCaregiverId:
+          type: integer
+          format: int32
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+            - on_hold
+          default: active
+      required:
+        - uniqueId
+        - fullName
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: integer
+          format: int32
+        title:
+          type: string
+        message:
+          type: string
+        type:
+          type: string
+          enum:
+            - info
+            - success
+            - warning
+            - error
+        read:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        link:
+          type: string
+          format: uri
+          nullable: true
+        data:
+          type: object
+          nullable: true
+      required:
+        - id
+        - userId
+        - title
+        - message
+        - type
+        - read
+        - createdAt

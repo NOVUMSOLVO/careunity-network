@@ -1,68 +1,80 @@
 import React from 'react';
-import { MetricCard } from '@/components/ui/metric-card';
-import { Clock, Users, ClipboardCheck } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 
 interface DashboardStatsProps {
-  careHours: string;
-  serviceUsersCount: number;
-  carePlanCompliance: string;
-  isLoading?: boolean;
+  title: string;
+  value: string;
+  description: string;
+  icon?: React.ReactNode;
+  trend?: {
+    value: string;
+    label: string;
+    direction?: 'up' | 'down';
+  };
+  trendDirection?: 'up' | 'down';
+  valueColor?: string;
+  className?: string;
 }
 
+/**
+ * Dashboard Stats Component
+ *
+ * This component displays a statistic card for dashboards with optional
+ * trend indicators and customizable styling.
+ */
 export function DashboardStats({
-  careHours,
-  serviceUsersCount,
-  carePlanCompliance,
-  isLoading = false
+  title,
+  value,
+  description,
+  icon,
+  trend,
+  trendDirection,
+  valueColor,
+  className
 }: DashboardStatsProps) {
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <div className="animate-pulse flex items-center">
-                <div className="flex-shrink-0 bg-gray-200 dark:bg-gray-700 rounded-md p-3 h-12 w-12"></div>
-                <div className="ml-5 w-0 flex-1">
-                  <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
-                  <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
+  // Determine trend direction if not explicitly provided
+  const direction = trendDirection || (trend?.direction || (trend?.value.startsWith('-') ? 'down' : 'up'));
 
   return (
-    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      <MetricCard
-        title="Care Hours Delivered"
-        value={careHours}
-        icon={Clock}
-        color="secondary"
-        subtitle="This week"
-      />
-      
-      <MetricCard
-        title="Service Users Supported"
-        value={serviceUsersCount}
-        icon={Users}
-        color="primary"
-        subtitle="This week"
-      />
-      
-      <MetricCard
-        title="Care Plan Compliance"
-        value={carePlanCompliance}
-        icon={ClipboardCheck}
-        color="accent"
-        trend={{
-          value: "2% from last week",
-          positive: true
-        }}
-      />
-    </div>
+    <Card className={cn("overflow-hidden", className)}>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className={cn("text-2xl font-bold", valueColor)}>{value}</p>
+          </div>
+          {icon && (
+            <div className="p-2 bg-primary/10 rounded-full">
+              {icon}
+            </div>
+          )}
+        </div>
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-xs text-muted-foreground">{description}</p>
+          {trend && (
+            <div className="flex items-center gap-1">
+              {direction === 'up' ? (
+                <ArrowUpRight className="h-3 w-3 text-emerald-500" />
+              ) : (
+                <ArrowDownRight className="h-3 w-3 text-rose-500" />
+              )}
+              <span className={cn(
+                "text-xs font-medium",
+                direction === 'up' ? "text-emerald-500" : "text-rose-500"
+              )}>
+                {trend.value}
+              </span>
+              {trend.label && (
+                <span className="text-xs text-muted-foreground">
+                  {trend.label}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

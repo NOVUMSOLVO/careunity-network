@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <title>CareUnity - Service Users</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    /* Fix CSS compatibility issues */
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    button {
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .offline.inverted {
+      -webkit-filter: invert(100%);
+      filter: invert(100%);
+    }
+
+    .bing-search .search-input {
+      -webkit-backdrop-filter: blur(30px);
+      backdrop-filter: blur(30px);
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <div class="w-64 bg-indigo-700 text-white">
+      <div class="p-4 text-xl font-bold">CareUnity</div>
+      <nav class="mt-6">
+        <a href="fixed-dashboard.html" class="block px-4 py-2 hover:bg-indigo-800">Dashboard</a>
+        <a href="service-users.html" class="block px-4 py-2 bg-indigo-800">Service Users</a>
+        <a href="staff.html" class="block px-4 py-2 hover:bg-indigo-800">Staff</a>
+        <a href="scheduling.html" class="block px-4 py-2 hover:bg-indigo-800">Scheduling</a>
+        <a href="care-plans.html" class="block px-4 py-2 hover:bg-indigo-800">Care Plans</a>
+        <a href="reports.html" class="block px-4 py-2 hover:bg-indigo-800">Reports</a>
+        <a href="admin-dashboard.html" class="block px-4 py-2 hover:bg-indigo-800">Admin</a>
+        <a href="holiday-management.html" class="block px-4 py-2 hover:bg-indigo-800">Holiday Management</a>
+        <a href="settings.html" class="block px-4 py-2 hover:bg-indigo-800">Settings</a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1">
+      <!-- Header -->
+      <header class="bg-white shadow-sm">
+        <div class="px-4 py-3 flex justify-between items-center">
+          <h1 class="text-xl font-semibold">Service Users</h1>
+          <div class="flex items-center space-x-4">
+            <button class="p-2 rounded-full hover:bg-gray-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </button>
+            <div class="relative">
+              <button class="flex items-center space-x-2">
+                <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="User" class="w-8 h-8 rounded-full">
+                <span class="font-medium">Sarah Johnson</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Service Users Content -->
+      <div class="p-6">
+        <div class="bg-white rounded-lg shadow mb-8">
+          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 class="text-lg font-semibold">Service Users</h2>
+            <button class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Add New</button>
+          </div>
+          <div class="p-6">
+            <div class="mb-4">
+              <input type="text" placeholder="Search service users..." class="w-full px-4 py-2 border rounded-md">
+            </div>
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Care Package</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">John Smith</td>
+                  <td class="px-6 py-4 whitespace-nowrap">78</td>
+                  <td class="px-6 py-4 whitespace-nowrap">123 Main St, London</td>
+                  <td class="px-6 py-4 whitespace-nowrap">Daily visits (2x)</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-indigo-600 hover:text-indigo-900">View</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Mary Johnson</td>
+                  <td class="px-6 py-4 whitespace-nowrap">85</td>
+                  <td class="px-6 py-4 whitespace-nowrap">456 Oak Ave, Manchester</td>
+                  <td class="px-6 py-4 whitespace-nowrap">Daily visits (3x)</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-indigo-600 hover:text-indigo-900">View</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Robert Brown</td>
+                  <td class="px-6 py-4 whitespace-nowrap">72</td>
+                  <td class="px-6 py-4 whitespace-nowrap">789 Pine Rd, Birmingham</td>
+                  <td class="px-6 py-4 whitespace-nowrap">Weekly visits</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-indigo-600 hover:text-indigo-900">View</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Jane Doe</td>
+                  <td class="px-6 py-4 whitespace-nowrap">68</td>
+                  <td class="px-6 py-4 whitespace-nowrap">101 Elm St, Liverpool</td>
+                  <td class="px-6 py-4 whitespace-nowrap">Daily visits (1x)</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-indigo-600 hover:text-indigo-900">View</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

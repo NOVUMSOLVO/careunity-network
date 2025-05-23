@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CareUnity Network - Accessibility Demo">
+    <title>CareUnity Network - Accessibility Demo</title>
+    
+    <!-- Link to accessibility stylesheet -->
+    <link rel="stylesheet" href="/accessibility/accessibility-styles.css">
+    
+    <style>
+        /* Basic page styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            margin-bottom: 2rem;
+        }
+        
+        main {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        @media (min-width: 768px) {
+            main {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        
+        footer {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+        
+        /* Sample components for testing accessibility */
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn {
+            background-color: var(--button-primary-bg, #0277bd);
+            color: var(--button-primary-text, #ffffff);
+            border: none;
+            border-radius: 4px;
+            padding: 10px 16px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .btn-secondary {
+            background-color: var(--button-secondary-bg, #ffffff);
+            color: var(--button-secondary-text, #0277bd);
+            border: 1px solid var(--button-secondary-border, #0277bd);
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 400px;
+        }
+        
+        input, select, textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        label {
+            font-weight: 500;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-info {
+            background-color: #e1f5fe;
+            color: var(--info-color, #0277bd);
+        }
+        
+        .alert-success {
+            background-color: #e8f5e9;
+            color: var(--success-color, #2e7d32);
+        }
+        
+        .alert-warning {
+            background-color: #fff8e1;
+            color: var(--warning-color, #af6c00);
+        }
+        
+        .alert-error {
+            background-color: #ffebee;
+            color: var(--error-color, #d32f2f);
+        }
+        
+        /* Animated element to test reduced motion preference */
+        .animated-element {
+            width: 100px;
+            height: 100px;
+            background-color: #3f51b5;
+            margin: 1rem 0;
+            animation: pulse 2s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from {
+                transform: scale(1);
+                background-color: #3f51b5;
+            }
+            to {
+                transform: scale(1.2);
+                background-color: #7986cb;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to main content link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <h1>CareUnity Network</h1>
+        <p>Accessibility Demo Page</p>
+    </header>
+
+    <nav role="navigation" aria-label="Main navigation">
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">Resources</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content" role="main">
+        <div class="content">
+            <section aria-labelledby="intro-heading">
+                <h2 id="intro-heading">Accessibility Features</h2>
+                <div class="alert alert-info" role="region" aria-label="Information">
+                    <p>This page demonstrates the accessibility features implemented in the CareUnity Network application.</p>
+                </div>
+                
+                <div class="card">
+                    <h3>ARIA Attributes Implementation</h3>
+                    <p>This page uses appropriate ARIA landmarks, labels and attributes to enhance screen reader experience.</p>
+                    <button class="btn" aria-label="Learn more about ARIA">Learn More</button>
+                </div>
+                
+                <div class="card">
+                    <h3>Keyboard Navigation</h3>
+                    <p>Try navigating this page using only your keyboard. Press the Tab key to move through interactive elements.</p>
+                    <div role="group" aria-label="Keyboard navigation demo">
+                        <button class="btn">Button 1</button>
+                        <button class="btn btn-secondary">Button 2</button>
+                        <button class="btn">Button 3</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Color Contrast</h3>
+                    <p>All text and interface elements meet WCAG 2.1 AA standards for color contrast.</p>
+                    <div>
+                        <span style="color: var(--text-default-color);">Default text color</span> |
+                        <span style="color: var(--link-color);">Link color</span> |
+                        <span style="color: var(--error-color);">Error message color</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Reduced Motion</h3>
+                    <p>Users who prefer reduced motion can enable this setting in the accessibility menu.</p>
+                    <div class="animated-element" aria-label="Animated box that pulses"></div>
+                </div>
+            </section>
+            
+            <section aria-labelledby="form-heading">
+                <h2 id="form-heading">Sample Form</h2>
+                <form>
+                    <div>
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" aria-describedby="name-help" required>
+                        <div id="name-help" class="form-help">Please enter your full name</div>
+                    </div>
+                    
+                    <div>
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div>
+                        <label for="service">Preferred Service</label>
+                        <select id="service" name="service">
+                            <option value="">--Please choose--</option>
+                            <option value="consultation">Medical Consultation</option>
+                            <option value="appointment">Schedule Appointment</option>
+                            <option value="followup">Follow-up Visit</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" rows="4"></textarea>
+                    </div>
+                    
+                    <div>
+                        <button type="submit" class="btn">Submit</button>
+                        <button type="reset" class="btn btn-secondary">Reset</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+        
+        <aside role="complementary">
+            <div class="card">
+                <h3>Accessibility Tips</h3>
+                <ul>
+                    <li>Use the accessibility menu to customize your experience</li>
+                    <li>Press <kbd>Alt + A</kbd> to quickly access the accessibility menu</li>
+                    <li>Press <kbd>Tab</kbd> to navigate through interactive elements</li>
+                    <li>Press <kbd>Enter</kbd> or <kbd>Space</kbd> to activate buttons</li>
+                </ul>
+            </div>
+            
+            <div class="alert alert-success">
+                <p>The accessibility features in this application help ensure that all users, regardless of ability, can effectively use our services.</p>
+            </div>
+            
+            <div class="alert alert-warning">
+                <p>If you encounter any accessibility issues, please report them using our feedback form.</p>
+            </div>
+        </aside>
+    </main>
+
+    <footer role="contentinfo">
+        <p>&copy; 2025 CareUnity Network. All rights reserved.</p>
+    </footer>
+
+    <!-- Add the accessibility menu component -->
+    <accessibility-menu></accessibility-menu>
+
+    <!-- Load accessibility scripts -->
+    <script src="/accessibility/accessibility-utils.js"></script>
+    <script src="/accessibility/accessibility-menu.js"></script>
+    
+    <!-- Register the service worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/workbox-service-worker.js')
+                    .then(registration => {
+                        console.log('Service worker registered:', registration);
+                    })
+                    .catch(error => {
+                        console.error('Service worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

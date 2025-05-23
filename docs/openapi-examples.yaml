@@ -1,0 +1,438 @@
+# OpenAPI Examples for CareUnity API
+# This file contains examples for the CareUnity API endpoints
+#
+# These examples are used to enhance the OpenAPI specification with realistic
+# request and response examples for each endpoint.
+
+# User Examples
+users:
+  # Example of a user object
+  user:
+    value:
+      id: "550e8400-e29b-41d4-a716-446655440000"
+      name: "John Smith"
+      email: "john.smith@example.com"
+      role: "caregiver"
+      createdAt: "2023-01-15T08:30:00Z"
+      updatedAt: "2023-06-20T14:45:00Z"
+      status: "active"
+      profileImageUrl: "https://careunity.example/images/profiles/john-smith.jpg"
+      phoneNumber: "+1-555-123-4567"
+      lastLoginAt: "2023-06-20T14:30:00Z"
+
+  # Example of a user list response
+  userList:
+    value:
+      data:
+        - id: "550e8400-e29b-41d4-a716-446655440000"
+          name: "John Smith"
+          email: "john.smith@example.com"
+          role: "caregiver"
+          status: "active"
+        - id: "550e8400-e29b-41d4-a716-446655440001"
+          name: "Jane Doe"
+          email: "jane.doe@example.com"
+          role: "admin"
+          status: "active"
+        - id: "550e8400-e29b-41d4-a716-446655440002"
+          name: "Robert Johnson"
+          email: "robert.johnson@example.com"
+          role: "caregiver"
+          status: "inactive"
+      pagination:
+        total: 42
+        page: 1
+        pageSize: 10
+        totalPages: 5
+
+  # Example of a user creation request
+  userCreate:
+    value:
+      name: "Sarah Williams"
+      email: "sarah.williams@example.com"
+      password: "SecureP@ssw0rd!"
+      role: "caregiver"
+      phoneNumber: "+1-555-987-6543"
+
+  # Example of a user update request
+  userUpdate:
+    value:
+      name: "Sarah Johnson"
+      phoneNumber: "+1-555-987-1234"
+      status: "active"
+
+# Service User Examples
+serviceUsers:
+  # Example of a service user object
+  serviceUser:
+    value:
+      id: "660e8400-e29b-41d4-a716-446655440000"
+      name: "Alice Brown"
+      dateOfBirth: "1945-03-12"
+      address: "123 Main St, Apt 4B"
+      city: "Springfield"
+      state: "IL"
+      zipCode: "62704"
+      phone: "+1-555-234-5678"
+      email: "alice.brown@example.com"
+      emergencyContact: "Bob Brown"
+      emergencyPhone: "+1-555-876-5432"
+      createdAt: "2023-01-10T09:15:00Z"
+      updatedAt: "2023-06-15T11:30:00Z"
+      status: "active"
+      primaryCaregiverId: "550e8400-e29b-41d4-a716-446655440000"
+      notes: "Prefers morning visits. Allergic to penicillin."
+
+  # Example of a service user list response
+  serviceUserList:
+    value:
+      data:
+        - id: "660e8400-e29b-41d4-a716-446655440000"
+          name: "Alice Brown"
+          dateOfBirth: "1945-03-12"
+          status: "active"
+          primaryCaregiverId: "550e8400-e29b-41d4-a716-446655440000"
+        - id: "660e8400-e29b-41d4-a716-446655440001"
+          name: "Thomas Wilson"
+          dateOfBirth: "1938-11-22"
+          status: "active"
+          primaryCaregiverId: "550e8400-e29b-41d4-a716-446655440001"
+        - id: "660e8400-e29b-41d4-a716-446655440002"
+          name: "Margaret Davis"
+          dateOfBirth: "1950-07-04"
+          status: "inactive"
+          primaryCaregiverId: null
+      pagination:
+        total: 28
+        page: 1
+        pageSize: 10
+        totalPages: 3
+
+# Care Plan Examples
+carePlans:
+  # Example of a care plan object
+  carePlan:
+    value:
+      id: "770e8400-e29b-41d4-a716-446655440000"
+      title: "Daily Assistance Plan"
+      serviceUserId: "660e8400-e29b-41d4-a716-446655440000"
+      startDate: "2023-02-01"
+      endDate: "2023-12-31"
+      status: "active"
+      createdBy: "550e8400-e29b-41d4-a716-446655440001"
+      createdAt: "2023-01-25T14:20:00Z"
+      updatedAt: "2023-06-10T09:45:00Z"
+      goals:
+        - id: "880e8400-e29b-41d4-a716-446655440000"
+          title: "Improve mobility"
+          description: "Increase walking distance by 50 feet per week"
+          status: "in-progress"
+        - id: "880e8400-e29b-41d4-a716-446655440001"
+          title: "Medication adherence"
+          description: "Take all medications as prescribed"
+          status: "completed"
+      tasks:
+        - id: "990e8400-e29b-41d4-a716-446655440000"
+          title: "Morning walk"
+          description: "Assist with walking around the block"
+          frequency: "daily"
+          timeOfDay: "morning"
+        - id: "990e8400-e29b-41d4-a716-446655440001"
+          title: "Medication reminder"
+          description: "Remind to take heart medication with breakfast"
+          frequency: "daily"
+          timeOfDay: "morning"
+        - id: "990e8400-e29b-41d4-a716-446655440002"
+          title: "Grocery shopping"
+          description: "Assist with weekly grocery shopping"
+          frequency: "weekly"
+          timeOfDay: "afternoon"
+
+# Care Allocation Examples
+careAllocations:
+  # Example of a care allocation object
+  careAllocation:
+    value:
+      id: "aa0e8400-e29b-41d4-a716-446655440000"
+      serviceUserId: "660e8400-e29b-41d4-a716-446655440000"
+      caregiverId: "550e8400-e29b-41d4-a716-446655440000"
+      carePlanId: "770e8400-e29b-41d4-a716-446655440000"
+      startDate: "2023-02-01"
+      endDate: "2023-12-31"
+      status: "active"
+      createdBy: "550e8400-e29b-41d4-a716-446655440001"
+      createdAt: "2023-01-28T10:15:00Z"
+      updatedAt: "2023-01-28T10:15:00Z"
+      visitSchedule:
+        - dayOfWeek: "monday"
+          startTime: "09:00"
+          endTime: "11:00"
+        - dayOfWeek: "wednesday"
+          startTime: "09:00"
+          endTime: "11:00"
+        - dayOfWeek: "friday"
+          startTime: "09:00"
+          endTime: "11:00"
+      notes: "Caregiver has key to front door. Park in visitor spot."
+
+# Visit Examples
+visits:
+  # Example of a visit object
+  visit:
+    value:
+      id: "bb0e8400-e29b-41d4-a716-446655440000"
+      serviceUserId: "660e8400-e29b-41d4-a716-446655440000"
+      caregiverId: "550e8400-e29b-41d4-a716-446655440000"
+      careAllocationId: "aa0e8400-e29b-41d4-a716-446655440000"
+      scheduledStartTime: "2023-06-21T09:00:00Z"
+      scheduledEndTime: "2023-06-21T11:00:00Z"
+      actualStartTime: "2023-06-21T09:05:00Z"
+      actualEndTime: "2023-06-21T10:55:00Z"
+      status: "completed"
+      notes: "Completed all tasks. Service user in good spirits."
+      tasksCompleted:
+        - id: "990e8400-e29b-41d4-a716-446655440000"
+          completed: true
+          notes: "Walked 2 blocks today, an improvement from last week."
+        - id: "990e8400-e29b-41d4-a716-446655440001"
+          completed: true
+          notes: "Medication taken as scheduled."
+      createdAt: "2023-06-14T10:00:00Z"
+      updatedAt: "2023-06-21T11:00:00Z"
+
+# Authentication Examples
+auth:
+  # Example of a login request
+  login:
+    value:
+      email: "john.smith@example.com"
+      password: "SecureP@ssw0rd!"
+
+  # Example of a login response
+  loginResponse:
+    value:
+      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6ImpvaG4uc21pdGhAZXhhbXBsZS5jb20iLCJyb2xlIjoiY2FyZWdpdmVyIiwiaWF0IjoxNjg3MzQ1NjAwLCJleHAiOjE2ODc0MzIwMDB9.8Uty5uKDvAMPn4Ktt1Ldj8MPX5JLJ6HJpjSb4FVD7Uw"
+      user:
+        id: "550e8400-e29b-41d4-a716-446655440000"
+        name: "John Smith"
+        email: "john.smith@example.com"
+        role: "caregiver"
+
+  # Example of a password reset request
+  passwordReset:
+    value:
+      email: "john.smith@example.com"
+
+# Performance Metrics Examples
+performance:
+  # Example of performance metrics response
+  metrics:
+    value:
+      success: true
+      data:
+        - id: "cc0e8400-e29b-41d4-a716-446655440000"
+          timestamp: 1687345600000
+          route: "/api/v2/service-users"
+          method: "GET"
+          statusCode: 200
+          responseTime: 45.32
+          userId: "550e8400-e29b-41d4-a716-446655440000"
+          userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+          ipAddress: "192.168.1.1"
+        - id: "cc0e8400-e29b-41d4-a716-446655440001"
+          timestamp: 1687345610000
+          route: "/api/v2/care-plans"
+          method: "GET"
+          statusCode: 200
+          responseTime: 78.45
+          userId: "550e8400-e29b-41d4-a716-446655440000"
+          userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+          ipAddress: "192.168.1.1"
+
+  # Example of query metrics response
+  queries:
+    value:
+      success: true
+      data:
+        - id: "dd0e8400-e29b-41d4-a716-446655440000"
+          timestamp: 1687345600000
+          query: "SELECT * FROM users WHERE id = ?"
+          params: ["550e8400-e29b-41d4-a716-446655440000"]
+          executionTime: 12.45
+          source: "user-service"
+        - id: "dd0e8400-e29b-41d4-a716-446655440001"
+          timestamp: 1687345610000
+          query: "SELECT * FROM care_plans WHERE service_user_id = ?"
+          params: ["660e8400-e29b-41d4-a716-446655440000"]
+          executionTime: 34.56
+          source: "care-plan-service"
+
+  # Example of system metrics response
+  system:
+    value:
+      success: true
+      data:
+        - id: "ee0e8400-e29b-41d4-a716-446655440000"
+          timestamp: 1687345600000
+          cpuUsage: 45.67
+          memoryUsage: 512.34
+          activeConnections: 24
+          pendingRequests: 5
+        - id: "ee0e8400-e29b-41d4-a716-446655440001"
+          timestamp: 1687345660000
+          cpuUsage: 48.12
+          memoryUsage: 523.78
+          activeConnections: 26
+          pendingRequests: 3
+
+  # Example of cache metrics response
+  cache:
+    value:
+      success: true
+      data:
+        - id: "ff0e8400-e29b-41d4-a716-446655440000"
+          timestamp: 1687345600000
+          cacheType: "memory"
+          hits: 156
+          misses: 23
+          size: 1024
+          evictions: 5
+        - id: "ff0e8400-e29b-41d4-a716-446655440001"
+          timestamp: 1687345660000
+          cacheType: "memory"
+          hits: 178
+          misses: 27
+          size: 1048
+          evictions: 8
+
+  # Example of cache statistics response
+  cacheStats:
+    value:
+      success: true
+      data:
+        type: "memory"
+        size: 1048
+        hits: 178
+        misses: 27
+        hitRate: 86.82
+        evictions: 8
+        oldestEntry: 1687342000000
+        newestEntry: 1687345660000
+
+  # Example of clear cache request
+  clearCache:
+    value:
+      cacheType: "api"
+
+  # Example of clear cache response
+  clearCacheResponse:
+    value:
+      success: true
+      message: "Cache api cleared successfully"
+
+# Mobile Optimizations Examples
+mobile:
+  # Example of progressive loading request
+  progressiveLoading:
+    value:
+      page: 1
+      pageSize: 20
+      filter: {
+        status: "active"
+      }
+
+  # Example of progressive loading response
+  progressiveLoadingResponse:
+    value:
+      items:
+        - id: "660e8400-e29b-41d4-a716-446655440000"
+          name: "Alice Brown"
+          dateOfBirth: "1945-03-12"
+          status: "active"
+        - id: "660e8400-e29b-41d4-a716-446655440001"
+          name: "Thomas Wilson"
+          dateOfBirth: "1938-11-22"
+          status: "active"
+      total: 28
+
+  # Example of offline sync request
+  offlineSync:
+    value:
+      changes:
+        - type: "update"
+          entity: "visit"
+          id: "bb0e8400-e29b-41d4-a716-446655440000"
+          data:
+            notes: "Updated while offline"
+            tasksCompleted:
+              - id: "990e8400-e29b-41d4-a716-446655440000"
+                completed: true
+                notes: "Completed while offline"
+          timestamp: 1687345600000
+      deviceId: "device-123"
+      lastSyncTimestamp: 1687342000000
+
+  # Example of offline sync response
+  offlineSyncResponse:
+    value:
+      success: true
+      syncedChanges: 1
+      conflicts: 0
+      serverChanges:
+        - type: "update"
+          entity: "care-plan"
+          id: "770e8400-e29b-41d4-a716-446655440000"
+          data:
+            status: "updated"
+          timestamp: 1687344000000
+      currentTimestamp: 1687345660000
+
+# Error Examples
+errors:
+  # Example of a validation error
+  validationError:
+    value:
+      error: "Validation Error"
+      message: "Invalid input data"
+      details:
+        - field: "email"
+          message: "Must be a valid email address"
+        - field: "password"
+          message: "Password must be at least 8 characters long"
+
+  # Example of an authentication error
+  authError:
+    value:
+      error: "Authentication Error"
+      message: "Invalid credentials"
+
+  # Example of a not found error
+  notFoundError:
+    value:
+      error: "Not Found"
+      message: "Resource not found"
+
+  # Example of a server error
+  serverError:
+    value:
+      error: "Server Error"
+      message: "An unexpected error occurred"
+
+  # Example of a conflict error
+  conflictError:
+    value:
+      error: "Conflict Error"
+      message: "Resource already exists"
+
+  # Example of a forbidden error
+  forbiddenError:
+    value:
+      error: "Forbidden Error"
+      message: "You do not have permission to access this resource"
+
+  # Example of a rate limit error
+  rateLimitError:
+    value:
+      error: "Rate Limit Error"
+      message: "Too many requests"
+      retryAfter: 60

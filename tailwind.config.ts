@@ -3,6 +3,8 @@ import type { Config } from "tailwindcss";
 export default {
   darkMode: ["class"],
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
+  // Enable JIT mode
+  jit: true,
   theme: {
     extend: {
       borderRadius: {
@@ -120,6 +122,26 @@ export default {
           "75%": { opacity: "1" },
           "100%": { opacity: "0.2" }
         },
+        "ripple": {
+          "0%": { transform: "scale(0)", opacity: "0.5" },
+          "100%": { transform: "scale(1)", opacity: "0" }
+        },
+        "swipe-right": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(0)" }
+        },
+        "swipe-left": {
+          "0%": { transform: "translateX(100%)" },
+          "100%": { transform: "translateX(0)" }
+        },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" }
+        },
+        "fade-out": {
+          "0%": { opacity: "1" },
+          "100%": { opacity: "0" }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -134,8 +156,15 @@ export default {
         "pill-fill": "pill-fill 2s ease-in-out infinite",
         "pill-fill-delay": "pill-fill-delay 2s ease-in-out infinite",
         "spin-slow": "spin 3s linear infinite",
+        "ripple": "ripple 0.6s ease-out forwards",
+        "swipe-right": "swipe-right 0.3s ease-out",
+        "swipe-left": "swipe-left 0.3s ease-out",
+        "fade-in": "fade-in 0.3s ease-out",
+        "fade-out": "fade-out 0.3s ease-out",
       },
     },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;
+
+

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareUnity Mobile Demos</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-8">
+      <div class="flex items-center">
+        <img src="/icon-192.png" alt="CareUnity Logo" class="h-12 w-12 mr-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">CareUnity Mobile</h1>
+          <p class="text-sm text-gray-500">Enhanced Features Demos</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold text-gray-900">Featured Demonstrations</h2>
+      <p class="text-gray-600">Explore the enhanced capabilities of the CareUnity mobile application</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Enhanced Biometric Authentication Demo -->
+      <a href="/enhanced-biometric-auth-demo.html" class="feature-card bg-white rounded-lg shadow overflow-hidden hover:shadow-lg">
+        <div class="p-6">
+          <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-md mb-4">
+            <span class="material-icons text-blue-600">fingerprint</span>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900">Enhanced Biometric Authentication</h3>
+          <p class="mt-2 text-sm text-gray-500">
+            Experience multi-factor authentication with biometrics, PIN codes, TOTP, and more. Includes cross-device compatibility, session management, and security levels.
+          </p>
+          <div class="mt-4 flex items-center text-blue-600">
+            <span>Try the demo</span>
+            <span class="material-icons text-sm ml-1">arrow_forward</span>
+          </div>
+        </div>
+        <div class="px-6 py-3 bg-gray-50">
+          <div class="flex space-x-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+              Multi-factor Auth
+            </span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+              Session Management
+            </span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+              Device Trust
+            </span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Offline Functionality Demo -->
+      <a href="/careunity-mobile.html" class="feature-card bg-white rounded-lg shadow overflow-hidden hover:shadow-lg">
+        <div class="p-6">
+          <div class="flex items-center justify-center w-12 h-12 bg-green-100 rounded-md mb-4">
+            <span class="material-icons text-green-600">sync</span>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900">Enhanced Offline Functionality</h3>
+          <p class="mt-2 text-sm text-gray-500">
+            Try out queue-based synchronization with conflict resolution strategies, offline indicators, and improved user experience for offline operations.
+          </p>
+          <div class="mt-4 flex items-center text-blue-600">
+            <span>Try the demo</span>
+            <span class="material-icons text-sm ml-1">arrow_forward</span>
+          </div>
+        </div>
+        <div class="px-6 py-3 bg-gray-50">
+          <div class="flex space-x-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+              Conflict Resolution
+            </span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+              Offline First
+            </span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+              Priority Sync
+            </span>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="mt-12 bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-6 py-5 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">Coming Soon</h3>
+      </div>
+      <div class="px-6 py-5">
+        <ul class="space-y-4">
+          <li class="flex">
+            <span class="material-icons text-gray-400 mr-3">mic</span>
+            <div>
+              <h4 class="text-sm font-medium text-gray-900">Expanded Voice Command Capabilities</h4>
+              <p class="text-xs text-gray-500">Enhanced voice recognition with natural language processing for better care management</p>
+            </div>
+          </li>
+          <li class="flex">
+            <span class="material-icons text-gray-400 mr-3">notifications</span>
+            <div>
+              <h4 class="text-sm font-medium text-gray-900">Enhanced Notifications System</h4>
+              <p class="text-xs text-gray-500">Priority-based notifications with smart delivery timing and custom channels</p>
+            </div>
+          </li>
+          <li class="flex">
+            <span class="material-icons text-gray-400 mr-3">description</span>
+            <div>
+              <h4 class="text-sm font-medium text-gray-900">Advanced Care Plan Features</h4>
+              <p class="text-xs text-gray-500">Interactive care plans with progress tracking and AI-assisted recommendations</p>
+            </div>
+          </li>
+          <li class="flex">
+            <span class="material-icons text-gray-400 mr-3">bar_chart</span>
+            <div>
+              <h4 class="text-sm font-medium text-gray-900">Reporting and Analytics</h4>
+              <p class="text-xs text-gray-500">Comprehensive dashboards with insights for care providers</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-white mt-12 border-t border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+      <p class="text-sm text-gray-500 text-center">
+        &copy; 2023 CareUnity Network. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Check if service worker is supported
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/mobile-service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registered successfully:', registration);
+          })
+          .catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
+    }
+  </script>
+</body>
+</html>

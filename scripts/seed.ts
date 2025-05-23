@@ -1,13 +1,13 @@
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { Pool, neonConfig } from '@neondatabase/serverless';
-import ws from 'ws';
+import { WebSocket } from 'ws';
 import * as schema from '../shared/schema';
 import { users, serviceUsers, resourceLocations, communityResources, resourceReviews, resourceBookmarks } from '../shared/schema';
 import { eq } from 'drizzle-orm';
 import { scrypt, randomBytes } from 'crypto';
 import { promisify } from 'util';
 
-neonConfig.webSocketConstructor = ws;
+neonConfig.webSocketConstructor = WebSocket;
 const scryptAsync = promisify(scrypt);
 
 async function hashPassword(password: string) {
@@ -25,7 +25,7 @@ async function seedDatabase() {
   const db = drizzle(pool, { schema });
 
   console.log('Seeding database with sample data...');
-  
+
   try {
     // Seed users
     console.log('Seeding users...');
@@ -38,7 +38,7 @@ async function seedDatabase() {
       phoneNumber: '07700900000',
       profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin'
     }).returning().then(res => res[0]);
-    
+
     const johnUser = await db.insert(users).values({
       username: 'jsmith',
       password: await hashPassword('password123'),
@@ -48,7 +48,7 @@ async function seedDatabase() {
       phoneNumber: '07700900001',
       profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=john'
     }).returning().then(res => res[0]);
-    
+
     const sarahUser = await db.insert(users).values({
       username: 'sjones',
       password: await hashPassword('password123'),
@@ -58,7 +58,7 @@ async function seedDatabase() {
       phoneNumber: '07700900002',
       profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=sarah'
     }).returning().then(res => res[0]);
-    
+
     // Seed service users
     console.log('Seeding service users...');
     const alice = await db.insert(serviceUsers).values({
@@ -79,7 +79,7 @@ async function seedDatabase() {
         personalCare: 'Independent with washing, needs help with bathing'
       })
     }).returning().then(res => res[0]);
-    
+
     const bob = await db.insert(serviceUsers).values({
       uniqueId: 'SU00002',
       fullName: 'Bob Williams',
@@ -99,7 +99,7 @@ async function seedDatabase() {
       }),
       lifeStory: 'Bob was a carpenter for over 40 years. He has three children and five grandchildren. He loves telling stories about his time working on historic buildings in London.'
     }).returning().then(res => res[0]);
-    
+
     // Seed resource locations
     console.log('Seeding resource locations...');
     const location1 = await db.insert(resourceLocations).values({
@@ -111,7 +111,7 @@ async function seedDatabase() {
       longitude: '-0.1975',
       isVirtual: false
     }).returning().then(res => res[0]);
-    
+
     const location2 = await db.insert(resourceLocations).values({
       name: 'Northside Care Hub',
       city: 'London',
@@ -121,14 +121,14 @@ async function seedDatabase() {
       longitude: '-0.1065',
       isVirtual: false
     }).returning().then(res => res[0]);
-    
+
     const location3 = await db.insert(resourceLocations).values({
       name: 'Online Services',
       city: 'London',
       region: 'Virtual',
       isVirtual: true
     }).returning().then(res => res[0]);
-    
+
     // Seed community resources
     console.log('Seeding community resources...');
     const resource1 = await db.insert(communityResources).values({
@@ -163,7 +163,7 @@ async function seedDatabase() {
       reviewCount: 2,
       lastUpdated: '2023-11-15'
     }).returning().then(res => res[0]);
-    
+
     const resource2 = await db.insert(communityResources).values({
       name: 'Memory Café',
       description: 'A welcoming and supportive environment for people living with dementia and their carers. The café offers activities, information sharing, and a chance to socialize in a safe space.',
@@ -192,7 +192,7 @@ async function seedDatabase() {
       reviewCount: 1,
       lastUpdated: '2024-01-08'
     }).returning().then(res => res[0]);
-    
+
     const resource3 = await db.insert(communityResources).values({
       name: 'Creative Arts Therapy',
       description: 'Art therapy sessions designed to improve mental wellbeing through creative expression. No previous art experience necessary. Materials provided.',
@@ -223,7 +223,7 @@ async function seedDatabase() {
       status: 'active',
       lastUpdated: '2023-11-20'
     }).returning().then(res => res[0]);
-    
+
     // Create some sample reviews
     console.log('Seeding reviews and bookmarks...');
     try {
@@ -236,7 +236,7 @@ async function seedDatabase() {
           date: "2023-11-10",
           helpfulCount: 3
         });
-        
+
         await db.insert(resourceReviews).values({
           resourceId: resource1.id,
           userId: johnUser.id, // john smith
@@ -246,7 +246,7 @@ async function seedDatabase() {
           helpfulCount: 1
         });
       }
-      
+
       if (resource2) {
         await db.insert(resourceReviews).values({
           resourceId: resource2.id,
@@ -257,7 +257,7 @@ async function seedDatabase() {
           helpfulCount: 4
         });
       }
-      
+
       // Create some sample bookmarks
       if (resource1 && resource2) {
         await db.insert(resourceBookmarks).values({
@@ -266,7 +266,7 @@ async function seedDatabase() {
           notes: "Recommend this to Mrs. Johnson",
           dateAdded: "2023-11-15"
         });
-        
+
         await db.insert(resourceBookmarks).values({
           resourceId: resource2.id,
           userId: sarahUser.id,
@@ -277,7 +277,7 @@ async function seedDatabase() {
     } catch (error) {
       console.error("Error seeding reviews and bookmarks:", error);
     }
-    
+
     console.log('Database seeding completed successfully!');
   } catch (error) {
     console.error('Database seeding failed:', error);

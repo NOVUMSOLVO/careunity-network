@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check Gesture Controls</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Check Gesture Controls</h1>
+  <button id="check-btn">Check Gesture Controls</button>
+  <div id="result" class="result"></div>
+  
+  <script>
+    document.getElementById('check-btn').addEventListener('click', function() {
+      const resultElement = document.getElementById('result');
+      resultElement.innerHTML = '';
+      
+      // Check if window.mlModelsGestures exists
+      if (window.mlModelsGestures) {
+        resultElement.innerHTML += '<p class="success">✓ window.mlModelsGestures exists</p>';
+        
+        // Check if it has the expected methods
+        const methods = ['registerElement', 'registerGesture', 'enable', 'disable', 'showGestureFeedback'];
+        let allMethodsExist = true;
+        
+        methods.forEach(method => {
+          if (typeof window.mlModelsGestures[method] === 'function') {
+            resultElement.innerHTML += `<p class="success">✓ Method ${method} exists</p>`;
+          } else {
+            resultElement.innerHTML += `<p class="error">✗ Method ${method} does not exist</p>`;
+            allMethodsExist = false;
+          }
+        });
+        
+        if (allMethodsExist) {
+          resultElement.innerHTML += '<p class="success">✓ All required methods exist</p>';
+          
+          // Try to call a method
+          try {
+            const result = window.mlModelsGestures.registerGesture('test', () => {});
+            resultElement.innerHTML += `<p class="success">✓ Method call successful: registerGesture returned ${result}</p>`;
+          } catch (error) {
+            resultElement.innerHTML += `<p class="error">✗ Error calling method: ${error.message}</p>`;
+          }
+        }
+      } else {
+        resultElement.innerHTML += '<p class="error">✗ window.mlModelsGestures does not exist</p>';
+        
+        // Check if it's defined in ml-models-test.html
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = 'ml-models-test.html';
+        
+        iframe.onload = function() {
+          try {
+            if (iframe.contentWindow.mlModelsGestures) {
+              resultElement.innerHTML += '<p class="success">✓ mlModelsGestures exists in ml-models-test.html</p>';
+            } else {
+              resultElement.innerHTML += '<p class="error">✗ mlModelsGestures does not exist in ml-models-test.html</p>';
+            }
+          } catch (error) {
+            resultElement.innerHTML += `<p class="error">✗ Error checking iframe: ${error.message}</p>`;
+          }
+          
+          document.body.removeChild(iframe);
+        };
+        
+        document.body.appendChild(iframe);
+      }
+    });
+  </script>
+</body>
+</html>

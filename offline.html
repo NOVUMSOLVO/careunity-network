@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="theme-color" content="#6366F1">
+  <title>Offline - CareUnity Mobile</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #f9fafb;
+      color: #1f2937;
+      text-align: center;
+      padding: 0 20px;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #6366F1; /* CareUnity brand color */
+    }
+    p {
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      color: #6366F1; /* CareUnity brand color */
+    }
+    .btn {
+      background-color: #6366F1; /* CareUnity brand color */
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.25rem;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.2s;
+    }
+    .btn:hover {
+      background-color: #4F46E5; /* Darker shade */
+    }
+    .cached-data {
+      margin-top: 2rem;
+      background-color: white;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+      text-align: left;
+    }
+    .cached-data h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #6366F1; /* CareUnity brand color */
+    }
+    .data-item {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .data-item:last-child {
+      border-bottom: none;
+    }
+    .data-title {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    .data-meta {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    .badge {
+      background-color: #e5e7eb;
+      color: #374151;
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      display: inline-block;
+      margin-top: 0.5rem;
+    }
+    .badge.success {
+      background-color: #10b981;
+      color: white;
+    }
+    .material-icons {
+      font-family: 'Material Icons';
+    }
+    .spinner {
+      border: 4px solid rgba(99, 102, 241, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid #6366F1;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1.5rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .sync-status {
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      color: #6b7280;
+    }
+    .sync-count {
+      font-weight: bold;
+      color: #6366F1;
+    }
+  </style>
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <span class="material-icons icon">wifi_off</span>
+    <h1>You're Offline</h1>
+    <p>It looks like you've lost your internet connection. Don't worry, you can still access your cached care data and continue working offline.</p>
+    <div id="sync-indicator" class="sync-status" style="display: none;">
+      <span class="sync-count">0</span> changes pending synchronization
+    </div>
+    <button class="btn" onclick="tryReconnect()">Try Again</button>
+    
+    <div class="cached-data">
+      <h2>Available Offline Data</h2>
+      <div id="cached-data-container">
+        <div class="data-item">
+          <div class="data-title">Today's Visits</div>
+          <div class="data-meta">Last synced: <span id="last-sync-date">Loading...</span></div>
+          <span class="badge success">Available Offline</span>
+        </div>
+        <div class="data-item">
+          <div class="data-title">Service Users</div>
+          <div class="data-meta">Basic information available offline</div>
+          <span class="badge success">Available Offline</span>
+        </div>
+        <div class="data-item">
+          <div class="data-title">Care Plans</div>
+          <div class="data-meta">Core care plans available offline</div>
+          <span class="badge">Partial Data</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check for pending operations in IndexedDB
+    document.addEventListener('DOMContentLoaded', checkPendingOperations);
+    
+    // Set the last sync date
+    document.getElementById('last-sync-date').textContent = 
+      localStorage.getItem('lastSyncDate') ? 
+      new Date(localStorage.getItem('lastSyncDate')).toLocaleString() : 
+      'Never';
+    
+    // Function to try reconnecting
+    function tryReconnect() {
+      const button = document.querySelector('.btn');
+      button.innerHTML = '<div class="spinner" style="display:inline-block;width:20px;height:20px;margin:0 8px 0 0;vertical-align:middle;"></div> Connecting...';
+      button.disabled = true;
+      
+      // Check if we're back online
+      if (navigator.onLine) {
+        // Redirect to the main page
+        window.location.href = '/careunity-mobile.html';
+      } else {
+        setTimeout(() => {
+          button.innerHTML = 'Try Again';
+          button.disabled = false;
+          
+          // Show alert after button returns to normal
+          setTimeout(() => {
+            alert('Still offline. Please check your internet connection and try again.');
+          }, 100);
+        }, 1500);
+      }
+    }
+    
+    // Listen for online event
+    window.addEventListener('online', () => {
+      // Update UI to show we're back online
+      document.querySelector('h1').textContent = 'Back Online!';
+      document.querySelector('p').textContent = 'Your connection has been restored. Redirecting to the app...';
+      document.querySelector('.material-icons.icon').textContent = 'wifi';
+      document.querySelector('.material-icons.icon').style.color = '#10b981';
+      
+      // Redirect after a short delay
+      setTimeout(() => {
+        window.location.href = '/careunity-mobile.html';
+      }, 2000);
+    });
+    
+    // Check for pending sync operations
+    async function checkPendingOperations() {
+      try {
+        // Check if IndexedDB is available
+        if (!window.indexedDB) {
+          console.log('IndexedDB not supported');
+          return;
+        }
+        
+        // Open the database
+        const request = indexedDB.open('CareUnityDB', 1);
+        
+        request.onerror = (event) => {
+          console.error('IndexedDB error:', event.target.error);
+        };
+        
+        request.onsuccess = (event) => {
+          const db = event.target.result;
+          
+          // Check if pendingSync store exists
+          if (!db.objectStoreNames.contains('pendingSync')) {
+            console.log('No pendingSync store found');
+            return;
+          }
+          
+          // Get pending operations
+          const transaction = db.transaction(['pendingSync'], 'readonly');
+          const store = transaction.objectStore('pendingSync');
+          const countRequest = store.count();
+          
+          countRequest.onsuccess = () => {
+            const count = countRequest.result;
+            
+            if (count > 0) {
+              // Update the sync indicator
+              document.getElementById('sync-indicator').style.display = 'block';
+              document.querySelector('.sync-count').textContent = count;
+            }
+          };
+        };
+      } catch (error) {
+        console.error('Error checking pending operations:', error);
+      }
+    }
+  </script>
+  </script>
+</body>
+</html>

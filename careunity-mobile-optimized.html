@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="msapplication-navbutton-color" content="#6366F1">
+  <meta name="theme-color" content="#6366F1">
+  
+  <title>CareUnity Mobile</title>
+  
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <!-- Single entry point script that dynamically loads all other modules -->
+  <script src="js/careunity-mobile-main.js" type="module"></script>
+  
+  <style>
+    /* Critical CSS inlined for faster initial render */
+    body {
+      overscroll-behavior-y: contain; /* Prevents pull-to-refresh */
+      touch-action: manipulation; /* Improves touch experience */
+      -webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
+    }
+    
+    .bottom-nav {
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .bottom-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      color: #6B7280;
+      transition: color 0.2s;
+    }
+    
+    .bottom-nav-item.active {
+      color: #6366F1;
+    }
+    
+    /* Loading indicator */
+    .loading-indicator {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.3s ease-out;
+    }
+    
+    .loading-indicator.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid rgba(99, 102, 241, 0.3);
+      border-top-color: #6366F1;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <!-- Loading indicator -->
+  <div class="loading-indicator" id="loadingIndicator">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Content of your mobile app will go here -->
+  <!-- This is placeholder content that will be dynamically populated -->
+  <div id="app" class="hidden">
+    <!-- Header -->
+    <header class="bg-indigo-500 text-white p-4 shadow-md">
+      <div class="flex justify-between items-center">
+        <h1 class="text-xl font-semibold">CareUnity Mobile</h1>
+        <button id="notificationsBtn" class="p-2" aria-label="Notifications">
+          <span class="material-icons">notifications</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="p-4 pb-20">
+      <!-- Dynamic content will be loaded here -->
+      <div id="content">
+        <div class="space-y-4">
+          <div class="bg-white rounded-lg shadow-md p-4">
+            <h2 class="text-lg font-semibold text-indigo-700 mb-2">Welcome to CareUnity</h2>
+            <p class="text-gray-600">Loading your personalized dashboard...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav fixed bottom-0 w-full bg-white flex items-center justify-around py-1">
+      <button class="bottom-nav-item active" data-page="home">
+        <span class="material-icons">home</span>
+        <span class="text-xs">Home</span>
+      </button>
+      <button class="bottom-nav-item" data-page="careplans">
+        <span class="material-icons">description</span>
+        <span class="text-xs">Plans</span>
+      </button>
+      <button class="bottom-nav-item" data-page="check-in">
+        <span class="material-icons">check_circle</span>
+        <span class="text-xs">Check-in</span>
+      </button>
+      <button class="bottom-nav-item" data-page="messages">
+        <span class="material-icons">chat</span>
+        <span class="text-xs">Messages</span>
+      </button>
+      <button class="bottom-nav-item" data-page="account">
+        <span class="material-icons">person</span>
+        <span class="text-xs">Account</span>
+      </button>
+    </nav>
+  </div>
+
+  <script>
+    // Simple initialization script
+    document.addEventListener('DOMContentLoaded', function() {
+      // Show loading indicator
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      const app = document.getElementById('app');
+      
+      // Hide loading indicator and show app after resources are loaded
+      window.addEventListener('load', function() {
+        setTimeout(() => {
+          loadingIndicator.classList.add('hidden');
+          app.classList.remove('hidden');
+        }, 500); // Small delay for smoother transition
+      });
+      
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/mobile-service-worker-optimized.js')
+          .then(registration => {
+            console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch(error => {
+            console.error('Service Worker registration failed:', error);
+          });
+      }
+    });
+  </script>
+</body>
+</html>

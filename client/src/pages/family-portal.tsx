@@ -52,10 +52,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { OfflineIndicator } from "@/components/ui/offline-indicator";
+import DocumentSharing from "@/components/family-portal/document-sharing";
+import VideoCall from "@/components/family-portal/video-call";
 
 const FamilyPortal = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  
+
   // Mock data
   const serviceUser = {
     id: 1,
@@ -79,7 +82,7 @@ const FamilyPortal = () => {
       { date: "2023-05-05", mood: "happy", notes: "Garden time" },
     ]
   };
-  
+
   const recentActivities = [
     { id: 1, type: "medication", time: "08:30", description: "Morning medication administered", caregiver: "Jane Wilson", status: "completed" },
     { id: 2, type: "meal", time: "09:15", description: "Breakfast - Porridge with fruit", caregiver: "Jane Wilson", status: "completed" },
@@ -89,21 +92,21 @@ const FamilyPortal = () => {
     { id: 6, type: "medication", time: "14:00", description: "Afternoon medication", caregiver: "Jane Wilson", status: "scheduled" },
     { id: 7, type: "social", time: "15:30", description: "Family video call", caregiver: "Michael Brown", status: "scheduled" },
   ];
-  
+
   const upcomingVisits = [
     { id: 1, date: "Today", time: "14:30", caregiver: "Jane Wilson", duration: "45 min", purpose: "Medication & Wellbeing Check" },
     { id: 2, date: "Today", time: "18:00", caregiver: "Michael Brown", duration: "60 min", purpose: "Evening Care & Dinner Assistance" },
     { id: 3, date: "Tomorrow", time: "08:00", caregiver: "Jane Wilson", duration: "45 min", purpose: "Morning Care & Breakfast" },
     { id: 4, date: "Tomorrow", time: "14:00", caregiver: "Sarah Johnson", duration: "30 min", purpose: "Physiotherapy Session" },
   ];
-  
+
   const carePlanGoals = [
     { id: 1, name: "Increase daily physical activity", category: "Mobility", progress: 65, target: "20 minutes walking daily", notes: "Showing steady improvement" },
     { id: 2, name: "Maintain medication schedule", category: "Health", progress: 100, target: "No missed medications", notes: "Perfect compliance this month" },
     { id: 3, name: "Improve fluid intake", category: "Nutrition", progress: 78, target: "1.5 liters of water daily", notes: "Using reminder system effectively" },
     { id: 4, name: "Participate in social activities", category: "Social", progress: 50, target: "Join 3 group activities weekly", notes: "Enjoys music sessions most" },
   ];
-  
+
   const careNotes = [
     { id: 1, date: "Today", time: "08:30", author: "Jane Wilson", content: "Elizabeth had a good morning. Breakfast was fully consumed and medications taken without issues. Mood appears positive today." },
     { id: 2, date: "Yesterday", time: "19:45", author: "Michael Brown", content: "Evening routine completed smoothly. Elizabeth enjoyed listening to classical music before sleep. Requested an extra blanket which was provided." },
@@ -128,7 +131,7 @@ const FamilyPortal = () => {
       default: return <Clock className="text-gray-600" />;
     }
   };
-  
+
   const getMoodIcon = (mood: string) => {
     switch(mood) {
       case 'happy': return <div className="bg-green-100 text-green-600 p-1 rounded-full"><ThumbsUp className="h-5 w-5" /></div>;
@@ -137,7 +140,7 @@ const FamilyPortal = () => {
       default: return <div className="bg-gray-100 text-gray-600 p-1 rounded-full"><HelpCircle className="h-5 w-5" /></div>;
     }
   };
-  
+
   const getNotificationIcon = (type: string) => {
     switch(type) {
       case 'info': return <Info className="text-blue-600 h-5 w-5" />;
@@ -170,6 +173,8 @@ const FamilyPortal = () => {
         </div>
       </div>
 
+      <OfflineIndicator />
+
       {/* Service User Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <Card className="lg:col-span-2">
@@ -188,7 +193,7 @@ const FamilyPortal = () => {
                   <Badge className="ml-3 bg-green-100 text-green-800">{serviceUser.status}</Badge>
                 </div>
                 <CardDescription className="text-base mt-1">{serviceUser.age} years • {serviceUser.room}</CardDescription>
-                
+
                 <div className="flex gap-4 mt-3">
                   <div className="flex items-center text-sm">
                     <UserCheck className="h-4 w-4 mr-1 text-primary" />
@@ -213,7 +218,7 @@ const FamilyPortal = () => {
                 <TabsTrigger value="visits">Visits</TabsTrigger>
                 <TabsTrigger value="gallery">Gallery</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="overview" className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
@@ -221,20 +226,20 @@ const FamilyPortal = () => {
                     <Progress value={serviceUser.nutritionProgress} className="h-2" />
                     <p className="text-xs text-gray-500">Last meal: Breakfast at 9:15 AM</p>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <h3 className="text-sm font-medium text-gray-500">Medication</h3>
                     <Progress value={serviceUser.medicationCompliance} className="h-2" />
                     <p className="text-xs text-gray-500">All medications taken as scheduled</p>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <h3 className="text-sm font-medium text-gray-500">Mobility</h3>
                     <Progress value={serviceUser.mobilityProgress} className="h-2" />
                     <p className="text-xs text-gray-500">15 min walking achieved today</p>
                   </div>
                 </div>
-                
+
                 <div>
                   <h3 className="text-sm font-medium mb-2">Today's Activities</h3>
                   <div className="border rounded-lg divide-y">
@@ -254,8 +259,8 @@ const FamilyPortal = () => {
                           </div>
                         </div>
                         <Badge className={
-                          activity.status === 'completed' 
-                            ? 'bg-green-100 text-green-800' 
+                          activity.status === 'completed'
+                            ? 'bg-green-100 text-green-800'
                             : 'bg-blue-100 text-blue-800'
                         }>
                           {activity.status === 'completed' ? 'Completed' : 'Scheduled'}
@@ -264,7 +269,7 @@ const FamilyPortal = () => {
                     ))}
                   </div>
                 </div>
-                
+
                 <div>
                   <h3 className="text-sm font-medium mb-2">Recent Mood Log</h3>
                   <div className="grid grid-cols-5 gap-2">
@@ -281,7 +286,7 @@ const FamilyPortal = () => {
                   </div>
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="care-plan" className="space-y-4">
                 <div className="border rounded-lg p-4 bg-primary/5">
                   <h3 className="font-medium mb-2 flex items-center">
@@ -292,7 +297,7 @@ const FamilyPortal = () => {
                     Elizabeth's care plan focuses on maintaining mobility, medication compliance, and social engagement.
                     The plan is reviewed monthly by the care team.
                   </p>
-                  
+
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
                       <div className="text-sm text-gray-500">Last Updated</div>
@@ -303,7 +308,7 @@ const FamilyPortal = () => {
                       <div className="font-medium">May 15, 2025</div>
                     </div>
                   </div>
-                  
+
                   <div className="flex justify-end">
                     <Button variant="outline" size="sm">
                       <FileText className="h-4 w-4 mr-2" />
@@ -311,7 +316,7 @@ const FamilyPortal = () => {
                     </Button>
                   </div>
                 </div>
-                
+
                 <h3 className="font-medium">Progress Towards Goals</h3>
                 <div className="space-y-4">
                   {carePlanGoals.map((goal) => (
@@ -322,16 +327,16 @@ const FamilyPortal = () => {
                           <div className="text-sm text-gray-500">{goal.category}</div>
                         </div>
                         <Badge className={
-                          goal.progress >= 80 ? 'bg-green-100 text-green-800' : 
-                          goal.progress >= 50 ? 'bg-blue-100 text-blue-800' : 
+                          goal.progress >= 80 ? 'bg-green-100 text-green-800' :
+                          goal.progress >= 50 ? 'bg-blue-100 text-blue-800' :
                           'bg-amber-100 text-amber-800'
                         }>
                           {goal.progress}% Complete
                         </Badge>
                       </div>
-                      
+
                       <Progress value={goal.progress} className="h-2 mb-2" />
-                      
+
                       <div className="flex justify-between text-sm">
                         <div className="text-gray-500">Target: {goal.target}</div>
                         <div className="text-gray-500">{goal.notes}</div>
@@ -340,7 +345,7 @@ const FamilyPortal = () => {
                   ))}
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="visits" className="space-y-4">
                 <h3 className="font-medium">Upcoming Visits</h3>
                 <div className="space-y-3">
@@ -355,7 +360,7 @@ const FamilyPortal = () => {
                           {visit.duration}
                         </Badge>
                       </div>
-                      
+
                       <div className="flex justify-between text-sm">
                         <div className="flex items-center">
                           <User className="h-4 w-4 mr-1 text-gray-500" />
@@ -366,20 +371,20 @@ const FamilyPortal = () => {
                     </div>
                   ))}
                 </div>
-                
+
                 <div className="flex justify-between items-center">
                   <Button variant="outline" size="sm">
                     <Calendar className="h-4 w-4 mr-2" />
                     View All Scheduled Visits
                   </Button>
-                  
+
                   <Button size="sm">
                     <Video className="h-4 w-4 mr-2" />
                     Schedule Video Call
                   </Button>
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="gallery" className="space-y-4">
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="font-medium">Recent Photos</h3>
@@ -388,7 +393,7 @@ const FamilyPortal = () => {
                     Upload Photo
                   </Button>
                 </div>
-                
+
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
                     <div key={i} className="rounded-lg overflow-hidden bg-gray-100 aspect-square relative group">
@@ -402,7 +407,7 @@ const FamilyPortal = () => {
                     </div>
                   ))}
                 </div>
-                
+
                 <div className="flex justify-center mt-2">
                   <Button variant="outline" size="sm">
                     Load More Photos
@@ -422,7 +427,7 @@ const FamilyPortal = () => {
             </Button>
           </CardFooter>
         </Card>
-        
+
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -461,7 +466,7 @@ const FamilyPortal = () => {
               </Button>
             </CardFooter>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Care Notes</CardTitle>
@@ -489,7 +494,7 @@ const FamilyPortal = () => {
               </Button>
             </CardFooter>
           </Card>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Communication Preferences</CardTitle>
@@ -504,7 +509,7 @@ const FamilyPortal = () => {
                   </div>
                   <Switch id="care-notes" defaultChecked />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="medication">Medication Updates</Label>
@@ -512,7 +517,7 @@ const FamilyPortal = () => {
                   </div>
                   <Switch id="medication" defaultChecked />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="activities">Activity Participation</Label>
@@ -520,7 +525,7 @@ const FamilyPortal = () => {
                   </div>
                   <Switch id="activities" defaultChecked />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="health">Health Alerts</Label>
@@ -532,6 +537,24 @@ const FamilyPortal = () => {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* Additional Features */}
+      <div className="grid grid-cols-1 gap-6 mt-8">
+        <Tabs defaultValue="documents" className="w-full">
+          <TabsList className="grid grid-cols-2 mb-4">
+            <TabsTrigger value="documents">Documents</TabsTrigger>
+            <TabsTrigger value="video-calls">Video Calls</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="documents">
+            <DocumentSharing />
+          </TabsContent>
+
+          <TabsContent value="video-calls">
+            <VideoCall serviceUserName={serviceUser.name} />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

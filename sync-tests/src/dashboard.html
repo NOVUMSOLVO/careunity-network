@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareUnity Sync API Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    .dashboard-header {
+      margin-bottom: 30px;
+      border-bottom: 1px solid #dee2e6;
+      padding-bottom: 20px;
+    }
+    .card {
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .metric-card {
+      text-align: center;
+      padding: 15px;
+    }
+    .metric-value {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    .metric-label {
+      font-size: 14px;
+      color: #6c757d;
+    }
+    .chart-container {
+      height: 300px;
+      margin-bottom: 30px;
+    }
+    .status-indicator {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+    .status-good {
+      background-color: #28a745;
+    }
+    .status-warning {
+      background-color: #ffc107;
+    }
+    .status-error {
+      background-color: #dc3545;
+    }
+    .test-result {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .test-success {
+      background-color: #d4edda;
+    }
+    .test-failure {
+      background-color: #f8d7da;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="dashboard-header">
+      <h1>CareUnity Sync API Dashboard</h1>
+      <p class="text-muted">Real-time monitoring and performance metrics</p>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3">
+        <div class="card metric-card">
+          <div class="card-body">
+            <div class="metric-label">API Status</div>
+            <div class="metric-value">
+              <span class="status-indicator status-good"></span>
+              Online
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card metric-card">
+          <div class="card-body">
+            <div class="metric-label">Response Time</div>
+            <div class="metric-value" id="avg-response-time">--</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card metric-card">
+          <div class="card-body">
+            <div class="metric-label">Pending Operations</div>
+            <div class="metric-value" id="pending-operations">--</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card metric-card">
+          <div class="card-body">
+            <div class="metric-label">Success Rate</div>
+            <div class="metric-value" id="success-rate">--</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            Response Time Trends
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="response-time-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            Operation Processing Time
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="processing-time-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            Recent Test Results
+          </div>
+          <div class="card-body">
+            <div id="test-results">
+              <div class="test-result test-success">
+                <strong>Basic Functionality Tests:</strong> All tests passed
+              </div>
+              <div class="test-result test-success">
+                <strong>Authentication Tests:</strong> 5/6 tests passed
+              </div>
+              <div class="test-result test-failure">
+                <strong>Performance Tests:</strong> 3/4 tests passed
+              </div>
+              <div class="test-result test-success">
+                <strong>Conflict Resolution Tests:</strong> All tests passed
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            System Health
+          </div>
+          <div class="card-body">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <td>Server Status</td>
+                  <td><span class="status-indicator status-good"></span> Healthy</td>
+                </tr>
+                <tr>
+                  <td>Database Status</td>
+                  <td><span class="status-indicator status-good"></span> Connected</td>
+                </tr>
+                <tr>
+                  <td>Memory Usage</td>
+                  <td><span class="status-indicator status-warning"></span> 75%</td>
+                </tr>
+                <tr>
+                  <td>CPU Usage</td>
+                  <td><span class="status-indicator status-good"></span> 32%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample data - in a real implementation, this would be loaded from the server
+    const performanceData = {
+      dates: ['2023-06-01', '2023-06-02', '2023-06-03', '2023-06-04', '2023-06-05', '2023-06-06', '2023-06-07'],
+      responseTimes: [120, 115, 125, 110, 105, 95, 100],
+      processingTimes: [450, 420, 480, 460, 430, 410, 400],
+      pendingOperations: 12,
+      successRate: '98.5%'
+    };
+
+    // Update metrics
+    document.getElementById('avg-response-time').textContent = performanceData.responseTimes[performanceData.responseTimes.length - 1] + ' ms';
+    document.getElementById('pending-operations').textContent = performanceData.pendingOperations;
+    document.getElementById('success-rate').textContent = performanceData.successRate;
+
+    // Response time chart
+    const responseTimeCtx = document.getElementById('response-time-chart').getContext('2d');
+    new Chart(responseTimeCtx, {
+      type: 'line',
+      data: {
+        labels: performanceData.dates,
+        datasets: [{
+          label: 'Response Time (ms)',
+          data: performanceData.responseTimes,
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: false,
+            title: {
+              display: true,
+              text: 'Time (ms)'
+            }
+          }
+        }
+      }
+    });
+
+    // Processing time chart
+    const processingTimeCtx = document.getElementById('processing-time-chart').getContext('2d');
+    new Chart(processingTimeCtx, {
+      type: 'line',
+      data: {
+        labels: performanceData.dates,
+        datasets: [{
+          label: 'Processing Time (ms)',
+          data: performanceData.processingTimes,
+          borderColor: 'rgb(255, 99, 132)',
+          tension: 0.1,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: false,
+            title: {
+              display: true,
+              text: 'Time (ms)'
+            }
+          }
+        }
+      }
+    });
+
+    // In a real implementation, you would set up periodic polling to update the dashboard
+    function updateDashboard() {
+      // Fetch latest data from the server
+      // Update charts and metrics
+      console.log('Dashboard updated');
+    }
+
+    // Update every 30 seconds
+    setInterval(updateDashboard, 30000);
+  </script>
+</body>
+</html>

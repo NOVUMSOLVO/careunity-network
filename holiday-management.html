@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <title>CareUnity - Holiday Management</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    .calendar-day {
+      min-height: 100px;
+    }
+    .holiday-item {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <div class="w-64 bg-indigo-700 text-white">
+      <div class="p-4 text-xl font-bold">CareUnity</div>
+      <nav class="mt-6">
+        <a href="careunity-dashboard.html" class="block px-4 py-2 hover:bg-indigo-800">Dashboard</a>
+        <a href="service-users.html" class="block px-4 py-2 hover:bg-indigo-800">Service Users</a>
+        <a href="staff.html" class="block px-4 py-2 hover:bg-indigo-800">Staff</a>
+        <a href="scheduling.html" class="block px-4 py-2 hover:bg-indigo-800">Scheduling</a>
+        <a href="care-plans.html" class="block px-4 py-2 hover:bg-indigo-800">Care Plans</a>
+        <a href="reports.html" class="block px-4 py-2 hover:bg-indigo-800">Reports</a>
+        <a href="admin-dashboard.html" class="block px-4 py-2 hover:bg-indigo-800">Admin</a>
+        <a href="holiday-management.html" class="block px-4 py-2 bg-indigo-800">Holiday Management</a>
+        <a href="settings.html" class="block px-4 py-2 hover:bg-indigo-800">Settings</a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1">
+      <!-- Header -->
+      <header class="bg-white shadow-sm">
+        <div class="px-4 py-3 flex justify-between items-center">
+          <h1 class="text-xl font-semibold">Holiday Management</h1>
+          <div class="flex items-center space-x-4">
+            <button class="p-2 rounded-full hover:bg-gray-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </button>
+            <div class="relative">
+              <button class="flex items-center space-x-2">
+                <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="User" class="w-8 h-8 rounded-full">
+                <span class="font-medium">Sarah Johnson</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Holiday Management Content -->
+      <div class="p-6">
+        <!-- Holiday Calendar -->
+        <div class="bg-white rounded-lg shadow mb-8">
+          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 class="text-lg font-semibold">Holiday Calendar</h2>
+            <div class="flex space-x-2">
+              <button class="bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300">Previous</button>
+              <span class="px-3 py-1">May 2025</span>
+              <button class="bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300">Next</button>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="grid grid-cols-7 gap-2">
+              <!-- Day headers -->
+              <div class="text-center font-medium">Monday</div>
+              <div class="text-center font-medium">Tuesday</div>
+              <div class="text-center font-medium">Wednesday</div>
+              <div class="text-center font-medium">Thursday</div>
+              <div class="text-center font-medium">Friday</div>
+              <div class="text-center font-medium">Saturday</div>
+              <div class="text-center font-medium">Sunday</div>
+              
+              <!-- Calendar days -->
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">1</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">2</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">3</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">4</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">5</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day bg-gray-50">
+                <div class="text-right text-sm text-gray-500">6</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day bg-gray-50">
+                <div class="text-right text-sm text-gray-500">7</div>
+              </div>
+              
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">8</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">9</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">10</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">11</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">12</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day bg-gray-50">
+                <div class="text-right text-sm text-gray-500">13</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day bg-gray-50">
+                <div class="text-right text-sm text-gray-500">14</div>
+              </div>
+              
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">15</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">16</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">17</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">18</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">19</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day bg-gray-50">
+                <div class="text-right text-sm text-gray-500">20</div>
+                <div class="mt-1 p-1 bg-yellow-100 text-xs rounded">
+                  Emma Wilson
+                </div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day bg-gray-50">
+                <div class="text-right text-sm text-gray-500">21</div>
+                <div class="mt-1 p-1 bg-yellow-100 text-xs rounded">
+                  Emma Wilson
+                </div>
+              </div>
+              
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">22</div>
+                <div class="mt-1 p-1 bg-yellow-100 text-xs rounded">
+                  Emma Wilson
+                </div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">23</div>
+                <div class="mt-1 p-1 bg-yellow-100 text-xs rounded">
+                  Emma Wilson
+                </div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">24</div>
+                <div class="mt-1 p-1 bg-yellow-100 text-xs rounded">
+                  Emma Wilson
+                </div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">25</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">26</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day bg-gray-50">
+                <div class="text-right text-sm text-gray-500">27</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day bg-gray-50">
+                <div class="text-right text-sm text-gray-500">28</div>
+              </div>
+              
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">29</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">30</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day">
+                <div class="text-right text-sm text-gray-500">31</div>
+              </div>
+              <div class="border rounded-md p-2 calendar-day bg-gray-100">
+              </div>
+              <div class="border rounded-md p-2 calendar-day bg-gray-100">
+              </div>
+              <div class="border rounded-md p-2 calendar-day bg-gray-100">
+              </div>
+              <div class="border rounded-md p-2 calendar-day bg-gray-100">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Holiday Requests -->
+        <div class="bg-white rounded-lg shadow mb-8">
+          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 class="text-lg font-semibold">Holiday Requests</h2>
+            <button class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">New Request</button>
+          </div>
+          <div class="p-6">
+            <div class="mb-4">
+              <div class="flex space-x-2">
+                <button class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-md">All</button>
+                <button class="bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300">Pending</button>
+                <button class="bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300">Approved</button>
+                <button class="bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300">Denied</button>
+              </div>
+            </div>
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Member</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Days</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remaining</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Emma Wilson</td>
+                  <td class="px-6 py-4 whitespace-nowrap">May 20, 2025</td>
+                  <td class="px-6 py-4 whitespace-nowrap">May 24, 2025</td>
+                  <td class="px-6 py-4 whitespace-nowrap">5</td>
+                  <td class="px-6 py-4 whitespace-nowrap">15</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-green-600 hover:text-green-900 mr-2">Approve</button>
+                    <button class="text-red-600 hover:text-red-900">Deny</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">James Taylor</td>
+                  <td class="px-6 py-4 whitespace-nowrap">June 5, 2025</td>
+                  <td class="px-6 py-4 whitespace-nowrap">June 7, 2025</td>
+                  <td class="px-6 py-4 whitespace-nowrap">3</td>
+                  <td class="px-6 py-4 whitespace-nowrap">18</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-green-600 hover:text-green-900 mr-2">Approve</button>
+                    <button class="text-red-600 hover:text-red-900">Deny</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Michael Brown</td>
+                  <td class="px-6 py-4 whitespace-nowrap">April 10, 2025</td>
+                  <td class="px-6 py-4 whitespace-nowrap">April 14, 2025</td>
+                  <td class="px-6 py-4 whitespace-nowrap">5</td>
+                  <td class="px-6 py-4 whitespace-nowrap">20</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Approved</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-indigo-600 hover:text-indigo-900">View</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Staff Holiday Allowance -->
+        <div class="bg-white rounded-lg shadow">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold">Staff Holiday Allowance</h2>
+          </div>
+          <div class="p-6">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Member</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Allowance</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Used</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pending</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remaining</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Emma Wilson</td>
+                  <td class="px-6 py-4 whitespace-nowrap">25</td>
+                  <td class="px-6 py-4 whitespace-nowrap">5</td>
+                  <td class="px-6 py-4 whitespace-nowrap">5</td>
+                  <td class="px-6 py-4 whitespace-nowrap">15</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-indigo-600 hover:text-indigo-900">Edit</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">James Taylor</td>
+                  <td class="px-6 py-4 whitespace-nowrap">25</td>
+                  <td class="px-6 py-4 whitespace-nowrap">4</td>
+                  <td class="px-6 py-4 whitespace-nowrap">3</td>
+                  <td class="px-6 py-4 whitespace-nowrap">18</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-indigo-600 hover:text-indigo-900">Edit</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Michael Brown</td>
+                  <td class="px-6 py-4 whitespace-nowrap">28</td>
+                  <td class="px-6 py-4 whitespace-nowrap">8</td>
+                  <td class="px-6 py-4 whitespace-nowrap">0</td>
+                  <td class="px-6 py-4 whitespace-nowrap">20</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-indigo-600 hover:text-indigo-900">Edit</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Sarah Johnson</td>
+                  <td class="px-6 py-4 whitespace-nowrap">30</td>
+                  <td class="px-6 py-4 whitespace-nowrap">12</td>
+                  <td class="px-6 py-4 whitespace-nowrap">0</td>
+                  <td class="px-6 py-4 whitespace-nowrap">18</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-indigo-600 hover:text-indigo-900">Edit</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

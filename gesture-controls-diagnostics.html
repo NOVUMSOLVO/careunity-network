@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gesture Controls Diagnostics</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .section {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    .section h2 {
+      margin-top: 0;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    .log {
+      background-color: #f0f0f0;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    .warning {
+      color: orange;
+      font-weight: bold;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background-color: #4338ca;
+    }
+    .test-area {
+      width: 300px;
+      height: 150px;
+      background-color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 5px;
+      margin-top: 15px;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gesture Controls Diagnostics</h1>
+  
+  <div class="section">
+    <h2>File Availability Check</h2>
+    <button id="check-file-btn">Check File Availability</button>
+    <div id="file-check-log" class="log"></div>
+  </div>
+  
+  <div class="section">
+    <h2>Script Loading Test</h2>
+    <button id="test-original-btn">Test Original Script</button>
+    <button id="test-simple-btn">Test Simple Script</button>
+    <div id="script-test-log" class="log"></div>
+  </div>
+  
+  <div class="section">
+    <h2>Browser Compatibility Check</h2>
+    <button id="check-browser-btn">Check Browser Compatibility</button>
+    <div id="browser-check-log" class="log"></div>
+  </div>
+  
+  <div class="section">
+    <h2>Gesture Test Area</h2>
+    <p>Touch or interact with the area below to test gesture detection:</p>
+    <div id="test-area" class="test-area">Touch here to test gestures</div>
+    <div id="gesture-log" class="log"></div>
+  </div>
+  
+  <script>
+    // Utility function to log messages
+    function log(elementId, message, type = 'info') {
+      const logElement = document.getElementById(elementId);
+      const timestamp = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.className = type;
+      entry.textContent = `[${timestamp}] ${message}`;
+      logElement.appendChild(entry);
+      logElement.scrollTop = logElement.scrollHeight;
+    }
+    
+    // Check if a file exists
+    async function checkFileExists(url) {
+      try {
+        const response = await fetch(url, { method: 'HEAD' });
+        return response.ok;
+      } catch (error) {
+        return false;
+      }
+    }
+    
+    // File availability check
+    document.getElementById('check-file-btn').addEventListener('click', async function() {
+      const fileLog = 'file-check-log';
+      log(fileLog, 'Checking file availability...');
+      
+      const files = [
+        'ml-models-gestures.js',
+        'ml-models-gestures-simple.js',
+        'ml-models-offline-db.js',
+        'ml-models-voice.js',
+        'ml-models-notifications.js'
+      ];
+      
+      for (const file of files) {
+        const exists = await checkFileExists(file);
+        if (exists) {
+          log(fileLog, `✓ File ${file} is accessible`, 'success');
+        } else {
+          log(fileLog, `✗ File ${file} is NOT accessible`, 'error');
+        }
+      }
+    });
+    
+    // Test script loading
+    function testScriptLoading(scriptUrl, logElementId) {
+      return new Promise((resolve, reject) => {
+        log(logElementId, `Attempting to load ${scriptUrl}...`);
+        
+        // Remove any existing global object
+        if (window.mlModelsGestures) {
+          delete window.mlModelsGestures;
+          log(logElementId, 'Removed existing mlModelsGestures object');
+        }
+        
+        // Create script element
+        const script = document.createElement('script');
+        script.src = scriptUrl;
+        
+        // Set timeout for script loading
+        const timeoutId = setTimeout(() => {
+          log(logElementId, `Script loading timed out after 5 seconds: ${scriptUrl}`, 'error');
+          reject(new Error('Script loading timed out'));
+        }, 5000);
+        
+        // Handle script load success
+        script.onload = function() {
+          clearTimeout(timeoutId);
+          log(logElementId, `Script loaded successfully: ${scriptUrl}`, 'success');
+          
+          // Check if global object is available
+          if (window.mlModelsGestures) {
+            log(logElementId, 'mlModelsGestures global object is available', 'success');
+            resolve(true);
+          } else {
+            log(logElementId, 'Script loaded but mlModelsGestures global object is NOT available', 'error');
+            resolve(false);
+          }
+        };
+        
+        // Handle script load error
+        script.onerror = function(error) {
+          clearTimeout(timeoutId);
+          log(logElementId, `Error loading script: ${scriptUrl}`, 'error');
+          log(logElementId, `Error details: ${error.type}`, 'error');
+          reject(error);
+        };
+        
+        // Add script to document
+        document.body.appendChild(script);
+      });
+    }
+    
+    // Test original script
+    document.getElementById('test-original-btn').addEventListener('click', function() {
+      testScriptLoading('ml-models-gestures.js', 'script-test-log')
+        .catch(error => {
+          console.error('Script test error:', error);
+        });
+    });
+    
+    // Test simple script
+    document.getElementById('test-simple-btn').addEventListener('click', function() {
+      testScriptLoading('ml-models-gestures-simple.js', 'script-test-log')
+        .catch(error => {
+          console.error('Script test error:', error);
+        });
+    });
+    
+    // Browser compatibility check
+    document.getElementById('check-browser-btn').addEventListener('click', function() {
+      const browserLog = 'browser-check-log';
+      log(browserLog, 'Checking browser compatibility...');
+      
+      // Browser information
+      log(browserLog, `User Agent: ${navigator.userAgent}`);
+      
+      // Check for required APIs
+      const requiredAPIs = [
+        { name: 'Touch Events', check: 'ontouchstart' in window },
+        { name: 'Pointer Events', check: 'PointerEvent' in window },
+        { name: 'Passive Event Listeners', check: (() => {
+          let supportsPassive = false;
+          try {
+            const opts = Object.defineProperty({}, 'passive', {
+              get: function() { supportsPassive = true; return true; }
+            });
+            window.addEventListener('testPassive', null, opts);
+            window.removeEventListener('testPassive', null, opts);
+          } catch (e) {}
+          return supportsPassive;
+        })() },
+        { name: 'Custom Events', check: typeof CustomEvent === 'function' }
+      ];
+      
+      for (const api of requiredAPIs) {
+        if (api.check) {
+          log(browserLog, `✓ ${api.name} is supported`, 'success');
+        } else {
+          log(browserLog, `✗ ${api.name} is NOT supported`, 'error');
+        }
+      }
+    });
+    
+    // Gesture test area
+    const testArea = document.getElementById('test-area');
+    const gestureLog = document.getElementById('gesture-log');
+    
+    // Simple gesture detection
+    testArea.addEventListener('touchstart', function(e) {
+      log('gesture-log', `Touch start detected with ${e.touches.length} touch points`);
+      e.preventDefault();
+    });
+    
+    testArea.addEventListener('touchmove', function(e) {
+      log('gesture-log', `Touch move detected`);
+      e.preventDefault();
+    });
+    
+    testArea.addEventListener('touchend', function(e) {
+      log('gesture-log', `Touch end detected`);
+      e.preventDefault();
+    });
+    
+    // Initialize
+    window.addEventListener('load', function() {
+      log('file-check-log', 'Diagnostics tool loaded. Click buttons to run tests.');
+      log('script-test-log', 'Click a button to test script loading.');
+      log('browser-check-log', 'Click button to check browser compatibility.');
+      log('gesture-log', 'Touch the test area to check basic gesture detection.');
+    });
+  </script>
+</body>
+</html>

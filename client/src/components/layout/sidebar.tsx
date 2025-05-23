@@ -22,7 +22,10 @@ import {
   ShieldCheck,
   Lock,
   Activity,
-  Globe
+  Globe,
+  MessageSquarePlus,
+  Shield,
+  Link
 } from 'lucide-react';
 
 interface User {
@@ -46,14 +49,14 @@ export function Sidebar() {
   const [location] = useLocation();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await fetch('/api/user', {
           credentials: 'include',
         });
-        
+
         if (response.ok) {
           const userData = await response.json();
           setUser(userData);
@@ -67,10 +70,10 @@ export function Sidebar() {
         setIsLoading(false);
       }
     };
-    
+
     fetchUser();
   }, []);
-  
+
   const navigationItems: NavigationItem[] = [
     { name: 'Dashboard', icon: <BarChart3 className="h-5 w-5" />, id: 'dashboard', path: '/' },
     { name: 'Care Coordinator', icon: <CheckCircle className="h-5 w-5" />, id: 'coordinator-dashboard', path: '/coordinator-dashboard' },
@@ -83,12 +86,15 @@ export function Sidebar() {
     { name: 'Permissions', icon: <Lock className="h-5 w-5" />, id: 'permissions-management', path: '/permissions-management' },
     { name: 'Predictive Health', icon: <Activity className="h-5 w-5" />, id: 'predictive-health', path: '/predictive-health' },
     { name: 'Healthcare Integration', icon: <Globe className="h-5 w-5" />, id: 'healthcare-integration', path: '/healthcare-integration' },
+    { name: 'Integrations', icon: <Link className="h-5 w-5" />, id: 'integrations', path: '/integrations' },
     { name: 'Community Resources', icon: <Home className="h-5 w-5" />, id: 'community-resources', path: '/community-resources' },
     { name: 'Route Optimizer', icon: <Navigation className="h-5 w-5" />, id: 'route-optimizer', path: '/route-optimizer' },
     { name: 'Family Portal', icon: <Heart className="h-5 w-5" />, id: 'family-portal', path: '/family-portal' },
     { name: 'Incident Reporting', icon: <AlertTriangle className="h-5 w-5" />, id: 'incident-reporting', path: '/incident-reporting' },
     { name: 'Reports', icon: <FileText className="h-5 w-5" />, id: 'reports', path: '/reports' },
     { name: 'Messages', icon: <MessageSquare className="h-5 w-5" />, id: 'messages', path: '/messages' },
+    { name: 'Security', icon: <Shield className="h-5 w-5" />, id: 'security', path: '/security' },
+    { name: 'Feedback', icon: <MessageSquarePlus className="h-5 w-5" />, id: 'feedback', path: '/feedback' },
     { name: 'CQC Compliance', icon: <CheckCircle className="h-5 w-5" />, id: 'cqc-compliance', path: '/cqc-compliance' }
   ];
 
@@ -131,22 +137,22 @@ export function Sidebar() {
         </div>
         <span className="ml-2 text-xl font-semibold text-white">CareUnity</span>
       </div>
-      
+
       {/* Navigation items */}
       <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
         <nav className="mt-5 flex-1 px-4 space-y-1">
           {navigationItems.map((item) => {
-            const isActive = location === item.path || 
+            const isActive = location === item.path ||
                            (item.path !== '/' && location.startsWith(item.path));
-            
+
             return (
               <Link
                 key={item.id}
                 href={item.path}
                 className={cn(
                   'group flex items-center px-3 py-2 text-sm font-medium rounded-md border-l-4 transition-colors duration-150 ease-in-out',
-                  isActive 
-                    ? 'bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-primary-100 border-primary-500' 
+                  isActive
+                    ? 'bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-primary-100 border-primary-500'
                     : 'text-gray-600 border-transparent dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                 )}
               >
@@ -164,7 +170,7 @@ export function Sidebar() {
           })}
         </nav>
       </div>
-      
+
       {/* User profile area */}
       <div className="flex-shrink-0 flex border-t border-gray-200 dark:border-gray-700 p-4">
         <div className="flex-shrink-0 w-full group">

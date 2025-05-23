@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Module Test</title>
+</head>
+<body>
+    <h1>Basic Module Test</h1>
+    <p>This page tests if a basic JavaScript module can be imported.</p>
+    <div id="result">Loading module...</div>
+
+    <script type="module">
+        // Import the module
+        import { getMessage } from './basic-module.js';
+        
+        // Display the result
+        document.getElementById('result').textContent = getMessage();
+    </script>
+</body>
+</html>

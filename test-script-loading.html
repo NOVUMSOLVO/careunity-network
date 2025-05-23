@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Script Loading</title>
+</head>
+<body>
+  <h1>Test Script Loading</h1>
+  <div id="result"></div>
+  
+  <script>
+    // Function to check if script loaded
+    function checkScriptLoaded() {
+      const resultElement = document.getElementById('result');
+      
+      if (window.testScriptLoaded) {
+        resultElement.innerHTML = '<p style="color: green">✓ Test script loaded successfully</p>';
+      } else {
+        resultElement.innerHTML = '<p style="color: red">✗ Test script failed to load</p>';
+      }
+    }
+    
+    // Load the test script
+    const script = document.createElement('script');
+    script.src = 'test-script.js';
+    script.onload = function() {
+      console.log('Script onload event fired');
+      checkScriptLoaded();
+    };
+    script.onerror = function() {
+      console.error('Script failed to load');
+      document.getElementById('result').innerHTML = '<p style="color: red">✗ Error loading script</p>';
+    };
+    
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>

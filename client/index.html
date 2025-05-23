@@ -6,11 +6,93 @@
     <title>CareUnity - Next Generation Care Management</title>
     <meta name="description" content="CareUnity is a person-centered care management platform for healthcare providers">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        margin: 0;
+        padding: 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: white;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 1rem;
+        padding: 2rem;
+        margin: 1rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .btn {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 1rem 2rem;
+        margin: 0.5rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+      }
+      .btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+      .btn.primary {
+        background: #4f46e5;
+        border-color: #4f46e5;
+      }
+      .btn.primary:hover {
+        background: #4338ca;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
-    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+    <div class="container">
+      <h1>🏥 CareUnity Platform</h1>
+      <p>Welcome to the CareUnity care management platform. Choose from the available applications below:</p>
+
+      <div class="card">
+        <h2>📊 Working Applications</h2>
+        <p>These applications are ready to use and don't require compilation:</p>
+
+        <a href="/careunity-complete-dashboard.html" class="btn primary">
+          🏥 Complete CareUnity System
+        </a>
+        <a href="/care-coordinator-advanced.html" class="btn primary">
+          🎯 Care Coordinator Dashboard
+        </a>
+        <a href="/client/public/test-app.html" class="btn">
+          📊 Basic Dashboard
+        </a>
+        <a href="/client/public/inline-react.html" class="btn">
+          🔧 API Testing Interface
+        </a>
+      </div>
+
+      <div class="card">
+        <h2>📁 Additional Resources</h2>
+        <a href="/client/public/" class="btn">Browse Client Files</a>
+        <a href="/" class="btn">Project Root</a>
+      </div>
+
+      <div class="card">
+        <h3>🚀 Quick Start</h3>
+        <p>For the best experience, start with the <strong>Complete CareUnity System</strong> which includes:</p>
+        <ul style="text-align: left; max-width: 500px; margin: 0 auto;">
+          <li>🎯 AI-powered care coordination and allocation</li>
+          <li>❤️ Person-centered care hub with life stories</li>
+          <li>🗣️ Voice-enabled documentation and commands</li>
+          <li>🤖 Predictive scheduling and health monitoring</li>
+          <li>🔗 Healthcare ecosystem integration</li>
+          <li>📊 Intelligent insights and analytics</li>
+        </ul>
+      </div>
+    </div>
   </body>
 </html>

@@ -1,0 +1,10 @@
+{
+  "name": "sri-generator",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Generate SRI hashes for external resources",
+  "main": "generate-sri.js",
+  "dependencies": {
+    "node-fetch": "^3.3.1"
+  }
+}

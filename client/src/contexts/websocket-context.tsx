@@ -39,9 +39,23 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   
   // Initialize the WebSocket client
   useEffect(() => {
-    // Create WebSocket URL using the same host but with ws:// or wss:// protocol
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    // Create WebSocket URL
+    const isProduction = process.env.NODE_ENV === 'production';
+    let wsUrl: string;
+
+    if (isProduction) {
+      // In production, assume WebSocket is served on the same host/port as the HTTP/S server,
+      // but on the /ws path.
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      wsUrl = `${protocol}//${window.location.host}/ws`;
+    } else {
+      // In development, explicitly target the backend server (e.g., localhost:5000)
+      // The README states the dev server runs on http://localhost:5000
+      // Assuming WebSocket server is also there.
+      const backendHost = 'localhost:5000'; // Or use an environment variable like process.env.REACT_APP_WEBSOCKET_HOST
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'; // Or determine based on backend config
+      wsUrl = `${protocol}//${backendHost}/ws`;
+    }
     
     console.log(`Initializing WebSocket connection to ${wsUrl}`);
     

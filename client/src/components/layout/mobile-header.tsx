@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { AvatarWithStatus } from '@/components/ui/avatar-with-status';
 import { Button } from '@/components/ui/button';
-import { Bell, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
+import { NotificationCenter } from '@/components/notifications/notification-center';
+import { VoiceCommandButton } from '@/components/voice/voice-command-button';
 
 interface User {
   id: number;
@@ -28,7 +30,7 @@ export function MobileHeader({ onOpenSidebar }: MobileHeaderProps) {
         const response = await fetch('/api/user', {
           credentials: 'include',
         });
-        
+
         if (response.ok) {
           const userData = await response.json();
           setUser(userData);
@@ -42,10 +44,10 @@ export function MobileHeader({ onOpenSidebar }: MobileHeaderProps) {
         setIsLoading(false);
       }
     };
-    
+
     fetchUser();
   }, []);
-  
+
   // Generate initials for avatar fallback
   const initials = user?.fullName
     ? user.fullName
@@ -55,19 +57,19 @@ export function MobileHeader({ onOpenSidebar }: MobileHeaderProps) {
         .toUpperCase()
         .substring(0, 2)
     : 'NA';
-  
+
   return (
     <header className="bg-white dark:bg-gray-800 shadow-sm">
       <div className="px-4 py-3 flex items-center justify-between">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={onOpenSidebar} 
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onOpenSidebar}
           className="text-gray-500 focus:outline-none focus:text-gray-700"
         >
           <Menu className="h-6 w-6" />
         </Button>
-        
+
         <div className="flex items-center">
           <div className="rounded-full bg-primary-600 p-1 mr-2">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -76,16 +78,15 @@ export function MobileHeader({ onOpenSidebar }: MobileHeaderProps) {
           </div>
           <span className="text-primary-600 font-semibold text-lg">CareUnity</span>
         </div>
-        
+
         <div className="flex items-center">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="text-gray-500 focus:outline-none focus:text-gray-700 mr-4"
-          >
-            <Bell className="h-5 w-5" />
-          </Button>
-          
+          <div className="mr-2">
+            <VoiceCommandButton />
+          </div>
+          <div className="mr-2">
+            <NotificationCenter />
+          </div>
+
           <Link href="/profile">
             <AvatarWithStatus
               src={user?.profileImage || ''}

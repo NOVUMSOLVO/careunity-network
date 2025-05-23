@@ -1,0 +1,45 @@
+{
+  "short_name": "CareUnity",
+  "name": "CareUnity Mobile",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "id": "/careunity-mobile.html",
+  "start_url": "/careunity-mobile.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#6366F1",
+  "background_color": "#F3F4F6",
+  "description": "CareUnity mobile app for care management and coordination",
+  "categories": ["healthcare", "productivity", "business"],
+  "screenshots": [
+    {
+      "src": "screenshot1.jpg",
+      "type": "image/jpeg",
+      "sizes": "1080x1920",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "screenshot2.jpg",
+      "type": "image/jpeg",
+      "sizes": "1080x1920",
+      "form_factor": "narrow"
+    }
+  ]
+}

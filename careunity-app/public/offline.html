@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1976d2" />
+  <meta name="description" content="CareUnity - Comprehensive Care Management Platform" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <title>CareUnity - Offline</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 2rem;
+      text-align: center;
+    }
+    
+    .logo {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 2rem;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #1976d2;
+    }
+    
+    p {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .button {
+      display: inline-block;
+      background-color: #1976d2;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    
+    .button:hover {
+      background-color: #1565c0;
+    }
+    
+    .info {
+      background-color: #e3f2fd;
+      border-left: 4px solid #1976d2;
+      padding: 1rem;
+      text-align: left;
+      margin-top: 2rem;
+      border-radius: 4px;
+    }
+    
+    .info h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: #1976d2;
+    }
+    
+    .info ul {
+      margin-bottom: 0;
+      padding-left: 1.5rem;
+    }
+    
+    .info li {
+      margin-bottom: 0.5rem;
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="%PUBLIC_URL%/logo192.png" alt="CareUnity Logo" class="logo" />
+    <h1>You're currently offline</h1>
+    
+    <div class="card">
+      <p>It looks like you've lost your internet connection. Don't worry - CareUnity can still work offline with limited functionality.</p>
+      <p>You can access previously loaded data and make changes that will sync when you're back online.</p>
+      <a href="/" class="button">Try Again</a>
+    </div>
+    
+    <div class="info">
+      <h2>Available Offline Features:</h2>
+      <ul>
+        <li>View previously loaded service user profiles</li>
+        <li>View your schedule and appointments</li>
+        <li>Record care notes (will sync when online)</li>
+        <li>View medication schedules</li>
+        <li>Access emergency contact information</li>
+      </ul>
+    </div>
+    
+    <p>If you continue to experience issues, please contact support at support@careunity.com</p>
+  </div>
+  
+  <script>
+    // Check if the user comes back online
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+    
+    // Add click event to the "Try Again" button
+    document.querySelector('.button').addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>

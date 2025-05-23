@@ -4,6 +4,10 @@ import { queryClient } from '@/lib/shared-query-client';
 import { RouterProvider } from '@/components/router';
 import { LoadingProvider } from '@/contexts/loading-context';
 import { WebSocketProvider } from '@/contexts/websocket-context';
+import { LanguageProvider } from '@/contexts/language-context';
+import { AccessibilityProvider } from '@/contexts/accessibility-context';
+import { SyncProvider } from '@/contexts/sync-context';
+import { OfflineProvider } from '@/contexts/offline-context';
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -15,13 +19,21 @@ interface AppProvidersProps {
 export function AppProviders({ children }: AppProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider>
-        <WebSocketProvider>
-          <LoadingProvider>
-            {children}
-          </LoadingProvider>
-        </WebSocketProvider>
-      </RouterProvider>
+      <LanguageProvider>
+        <AccessibilityProvider>
+          <RouterProvider>
+            <OfflineProvider>
+              <WebSocketProvider autoConnect={true}>
+                <SyncProvider>
+                  <LoadingProvider>
+                    {children}
+                  </LoadingProvider>
+                </SyncProvider>
+              </WebSocketProvider>
+            </OfflineProvider>
+          </RouterProvider>
+        </AccessibilityProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }

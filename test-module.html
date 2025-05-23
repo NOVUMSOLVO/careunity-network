@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Module Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>JavaScript Module Test</h1>
+    <p>This page tests if JavaScript modules are being served with the correct MIME type.</p>
+    <div id="result">Loading module...</div>
+
+    <script type="module">
+        // Import a module
+        import { getMessage } from './test-module.js';
+        
+        // Display the result
+        document.getElementById('result').textContent = getMessage();
+    </script>
+</body>
+</html>

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  CircleAlert, 
-  Clock, 
-  ClipboardCheck, 
-  Users, 
-  Calendar, 
-  ListChecks, 
-  MapPin, 
-  BarChart4, 
-  AlertTriangle, 
-  CheckCircle, 
+import {
+  CircleAlert,
+  Clock,
+  ClipboardCheck,
+  Users,
+  Calendar,
+  ListChecks,
+  MapPin,
+  BarChart4,
+  AlertTriangle,
+  CheckCircle,
   UserCog,
   Layers,
   ExternalLink,
@@ -26,29 +26,29 @@ import {
   AlertCircle,
   ClipboardList
 } from 'lucide-react';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
 } from '@/components/ui/card';
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
 } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from '@/components/ui/select';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 import { AllocationMethodsCard } from '@/components/care-allocation/allocation-methods-card';
@@ -103,7 +103,7 @@ interface CareMetric {
 export default function CareCoordinatorDashboard() {
   const [dateFilter, setDateFilter] = useState('today');
   const [urgentAlertsFilter, setUrgentAlertsFilter] = useState('all');
-  
+
   // Fetch dashboard stats - in a real app, this would come from the API
   const { data: dashboardStats, isLoading: statsLoading } = useQuery({
     queryKey: ['/api/dashboard/coordinator-stats', dateFilter],
@@ -111,7 +111,7 @@ export default function CareCoordinatorDashboard() {
     queryFn: async () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 800));
-      
+
       return {
         careHours: '248.5',
         serviceUsersCount: 45,
@@ -135,7 +135,7 @@ export default function CareCoordinatorDashboard() {
     queryFn: async () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Sample data - in a real app, this would come from the API
       return [
         {
@@ -193,7 +193,7 @@ export default function CareCoordinatorDashboard() {
     queryFn: async () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 900));
-      
+
       return [
         {
           id: 1,
@@ -229,7 +229,7 @@ export default function CareCoordinatorDashboard() {
     queryFn: async () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 850));
-      
+
       return [
         {
           id: 1,
@@ -257,7 +257,7 @@ export default function CareCoordinatorDashboard() {
     queryFn: async () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 750));
-      
+
       return [
         {
           id: 'missed_visits',
@@ -335,11 +335,11 @@ export default function CareCoordinatorDashboard() {
 
       {/* Key Metrics Overview */}
       <div className="mb-6">
-        <DashboardStats 
-          careHours={dashboardStats?.careHours || '0'} 
-          serviceUsersCount={dashboardStats?.serviceUsersCount || 0} 
-          carePlanCompliance={dashboardStats?.carePlanCompliance || '0%'} 
-          isLoading={statsLoading} 
+        <DashboardStats
+          careHours={dashboardStats?.careHours || '0'}
+          serviceUsersCount={dashboardStats?.serviceUsersCount || 0}
+          carePlanCompliance={dashboardStats?.carePlanCompliance || '0%'}
+          isLoading={statsLoading}
         />
       </div>
 
@@ -418,8 +418,8 @@ export default function CareCoordinatorDashboard() {
               ) : filteredUrgentAllocations && filteredUrgentAllocations.length > 0 ? (
                 <div className="space-y-3">
                   {filteredUrgentAllocations.map((allocation) => (
-                    <div 
-                      key={allocation.id} 
+                    <div
+                      key={allocation.id}
                       className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                     >
                       <div className="flex-1 min-w-0">
@@ -491,8 +491,8 @@ export default function CareCoordinatorDashboard() {
               ) : staffAlerts && staffAlerts.length > 0 ? (
                 <div className="space-y-3">
                   {staffAlerts.map((alert) => (
-                    <div 
-                      key={alert.id} 
+                    <div
+                      key={alert.id}
                       className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                     >
                       <div className="flex-1 min-w-0">
@@ -554,8 +554,8 @@ export default function CareCoordinatorDashboard() {
               ) : serviceUserAlerts && serviceUserAlerts.length > 0 ? (
                 <div className="space-y-3">
                   {serviceUserAlerts.map((alert) => (
-                    <div 
-                      key={alert.id} 
+                    <div
+                      key={alert.id}
                       className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                     >
                       <div className="flex-1 min-w-0">
@@ -582,9 +582,9 @@ export default function CareCoordinatorDashboard() {
                       </div>
                       <div className="flex items-center gap-2 mt-3 md:mt-0 ml-0 md:ml-4">
                         <Badge className={
-                          alert.status === 'pending' 
-                            ? 'bg-gray-100 text-gray-800 border-gray-200' 
-                            : alert.status === 'in-progress' 
+                          alert.status === 'pending'
+                            ? 'bg-gray-100 text-gray-800 border-gray-200'
+                            : alert.status === 'in-progress'
                               ? 'bg-blue-100 text-blue-800 border-blue-200'
                               : 'bg-green-100 text-green-800 border-green-200'
                         }>
@@ -659,7 +659,7 @@ export default function CareCoordinatorDashboard() {
                       Staff training, medication management, and incident reporting
                     </p>
                   </div>
-                  
+
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
@@ -673,7 +673,7 @@ export default function CareCoordinatorDashboard() {
                       Staff skills, care outcomes, and inter-agency working
                     </p>
                   </div>
-                  
+
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
@@ -687,7 +687,7 @@ export default function CareCoordinatorDashboard() {
                       Dignity, respect, and person-centered approach
                     </p>
                   </div>
-                  
+
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
@@ -701,7 +701,7 @@ export default function CareCoordinatorDashboard() {
                       Personalized care, complaints handling, and adapting to changing needs
                     </p>
                   </div>
-                  
+
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
@@ -802,7 +802,7 @@ export default function CareCoordinatorDashboard() {
                   <div key={metric.id} className="flex items-center justify-between">
                     <div className="flex items-start gap-3">
                       <div className={`
-                        flex items-center justify-center rounded-lg p-2 
+                        flex items-center justify-center rounded-lg p-2
                         ${metric.trend === 'up' && metric.id === 'medication_compliance' ? 'bg-green-100 text-green-600' : ''}
                         ${metric.trend === 'up' && metric.id !== 'medication_compliance' ? 'bg-red-100 text-red-600' : ''}
                         ${metric.trend === 'down' && metric.id === 'missed_visits' ? 'bg-green-100 text-green-600' : ''}
@@ -875,7 +875,7 @@ export default function CareCoordinatorDashboard() {
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </Link>
-              
+
               <Link href="/staff-management" className="w-full">
                 <Button variant="outline" size="lg" className="w-full justify-between font-normal">
                   <div className="flex items-center">
@@ -885,7 +885,7 @@ export default function CareCoordinatorDashboard() {
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </Link>
-              
+
               <Link href="/calendar" className="w-full">
                 <Button variant="outline" size="lg" className="w-full justify-between font-normal">
                   <div className="flex items-center">
@@ -895,7 +895,7 @@ export default function CareCoordinatorDashboard() {
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </Link>
-              
+
               <Link href="/service-users" className="w-full">
                 <Button variant="outline" size="lg" className="w-full justify-between font-normal">
                   <div className="flex items-center">
@@ -905,7 +905,7 @@ export default function CareCoordinatorDashboard() {
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </Link>
-              
+
               <Link href="/incident-reporting" className="w-full">
                 <Button variant="outline" size="lg" className="w-full justify-between font-normal">
                   <div className="flex items-center">
@@ -915,7 +915,7 @@ export default function CareCoordinatorDashboard() {
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </Link>
-              
+
               <Link href="/route-optimizer" className="w-full">
                 <Button variant="outline" size="lg" className="w-full justify-between font-normal">
                   <div className="flex items-center">
@@ -929,3 +929,6 @@ export default function CareCoordinatorDashboard() {
           </CardContent>
         </Card>
       </div>
+    </div>
+  );
+}

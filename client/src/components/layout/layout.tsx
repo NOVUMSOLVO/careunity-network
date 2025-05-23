@@ -1,17 +1,17 @@
 import React, { ReactNode, useState, useEffect } from 'react';
 import { RouterLink } from '@/components/router/router-provider';
 import { useRouter } from '@/components/router/router-provider';
-import { 
-  Home, 
-  Calendar, 
-  Users, 
-  FilePlus, 
-  Users2, 
-  BarChart3, 
-  MessageSquare, 
-  Settings, 
-  Menu, 
-  X, 
+import {
+  Home,
+  Calendar,
+  Users,
+  FilePlus,
+  Users2,
+  BarChart3,
+  MessageSquare,
+  Settings,
+  Menu,
+  X,
   AlertTriangle,
   Briefcase,
   ShieldCheck,
@@ -25,9 +25,14 @@ import {
   Lock,
   Bell,
   HelpCircle,
-  Smartphone
+  Smartphone,
+  Brain,
+  Clock
 } from 'lucide-react';
 import { OfflineIndicator } from '@/components/ui/offline-indicator';
+import { MobileNav } from './mobile-nav';
+import { useDevice } from '@/hooks/use-mobile';
+import { TouchButton } from '@/components/ui/touch-button';
 
 interface LayoutProps {
   children: ReactNode;
@@ -41,27 +46,14 @@ type NavItem = {
   group: 'overview' | 'care' | 'admin' | 'compliance' | 'advanced' | 'user';
   mobileVisible?: boolean;
   role?: 'admin' | 'manager' | 'caregiver' | 'all';
+  badge?: number;
 };
 
 export function Layout({ children }: LayoutProps) {
   const { currentPath } = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
-  const [isTablet, setIsTablet] = useState<boolean>(false);
+  const { isMobile, isTablet, deviceType } = useDevice();
   const [currentRole, setCurrentRole] = useState<string>('caregiver');
-
-  // Handle responsive layout
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 640);
-      setIsTablet(window.innerWidth >= 640 && window.innerWidth < 1024);
-    };
-
-    checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    
-    return () => window.removeEventListener('resize', checkScreenSize);
-  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -72,32 +64,34 @@ export function Layout({ children }: LayoutProps) {
     // Overview and Planning
     { href: '/', icon: <Home size={20} />, label: 'Dashboard', group: 'overview', mobileVisible: true, role: 'all' },
     { href: '/calendar', icon: <Calendar size={20} />, label: 'Calendar', group: 'overview', mobileVisible: true, role: 'all' },
-    
+
     // Service User Management
     { href: '/service-users', icon: <Users size={20} />, label: 'Service Users', group: 'care', mobileVisible: true, role: 'all' },
+    { href: '/visits', icon: <Clock size={20} />, label: 'Visits', group: 'care', mobileVisible: true, role: 'all', badge: 3 },
     { href: '/care-plans', icon: <ClipboardList size={20} />, label: 'Care Plans', group: 'care', mobileVisible: true, role: 'all' },
     { href: '/care-allocation', icon: <Users2 size={20} />, label: 'Care Allocation', group: 'care', mobileVisible: false, role: 'manager' },
-    
+
     // Staff and Administration
     { href: '/staff-management', icon: <Briefcase size={20} />, label: 'Staff Management', group: 'admin', mobileVisible: false, role: 'manager' },
     { href: '/rbac-management', icon: <ShieldCheck size={20} />, label: 'Access Control', group: 'admin', mobileVisible: false, role: 'admin' },
     { href: '/permissions-management', icon: <Lock size={20} />, label: 'Permissions', group: 'admin', mobileVisible: false, role: 'admin' },
-    
+
     // Compliance and Reporting
     { href: '/incident-reporting', icon: <AlertTriangle size={20} />, label: 'Incidents', group: 'compliance', mobileVisible: true, role: 'all' },
     { href: '/cqc-compliance', icon: <CheckCircle size={20} />, label: 'CQC Compliance', group: 'compliance', mobileVisible: false, role: 'manager' },
     { href: '/reports', icon: <FileText size={20} />, label: 'Reports', group: 'compliance', mobileVisible: false, role: 'manager' },
-    
+
     // Advanced Features
     { href: '/predictive-health', icon: <Activity size={20} />, label: 'Predictive Health', group: 'advanced', mobileVisible: false, role: 'manager' },
     { href: '/healthcare-integration', icon: <Globe size={20} />, label: 'Healthcare Integration', group: 'advanced', mobileVisible: false, role: 'manager' },
+    { href: '/ml-models', icon: <Brain size={20} />, label: 'ML Models', group: 'advanced', mobileVisible: false, role: 'manager' },
     { href: '/community-resources', icon: <Home size={20} />, label: 'Community Resources', group: 'advanced', mobileVisible: true, role: 'all' },
     { href: '/route-optimizer', icon: <Navigation size={20} />, label: 'Route Optimizer', group: 'advanced', mobileVisible: true, role: 'all' },
     { href: '/family-portal', icon: <Heart size={20} />, label: 'Family Portal', group: 'advanced', mobileVisible: false, role: 'manager' },
-    
+
     // User Tools and Settings
-    { href: '/messages', icon: <MessageSquare size={20} />, label: 'Messages', group: 'user', mobileVisible: true, role: 'all' },
-    { href: '/alerts', icon: <Bell size={20} />, label: 'Alerts', group: 'user', mobileVisible: true, role: 'all' },
+    { href: '/messages', icon: <MessageSquare size={20} />, label: 'Messages', group: 'user', mobileVisible: true, role: 'all', badge: 2 },
+    { href: '/alerts', icon: <Bell size={20} />, label: 'Alerts', group: 'user', mobileVisible: true, role: 'all', badge: 5 },
     { href: '/settings', icon: <Settings size={20} />, label: 'Settings', group: 'user', mobileVisible: true, role: 'all' },
     { href: '/help', icon: <HelpCircle size={20} />, label: 'Help', group: 'user', mobileVisible: true, role: 'all' },
   ];
@@ -107,7 +101,7 @@ export function Layout({ children }: LayoutProps) {
     return items.filter(item => {
       const roleMatches = item.role === 'all' || item.role === currentRole;
       const deviceMatches = !isMobile || (isMobile && item.mobileVisible);
-      
+
       return roleMatches && deviceMatches;
     });
   };
@@ -123,14 +117,21 @@ export function Layout({ children }: LayoutProps) {
   // Navigation link component
   const NavLink = ({ item }: { item: NavItem }) => (
     <li>
-      <RouterLink 
+      <RouterLink
         to={item.href}
         className={`flex items-center px-4 py-2 text-gray-100 rounded-lg hover:bg-indigo-600 transition-colors ${
           currentPath === item.href ? 'bg-indigo-800 font-medium' : ''
         }`}
         onClick={() => setIsSidebarOpen(false)}
       >
-        <span className="mr-3">{item.icon}</span>
+        <span className="relative mr-3">
+          {item.icon}
+          {item.badge && (
+            <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] text-[10px] font-bold text-white bg-red-500 rounded-full px-1">
+              {item.badge}
+            </span>
+          )}
+        </span>
         <span className={isMobile ? "text-sm" : ""}>{item.label}</span>
       </RouterLink>
     </li>
@@ -139,7 +140,7 @@ export function Layout({ children }: LayoutProps) {
   // Section component (don't render if no items)
   const NavSection = ({ title, items }: { title: string, items: NavItem[] }) => {
     if (items.length === 0) return null;
-    
+
     return (
       <div>
         <h3 className="text-xs uppercase font-semibold text-indigo-200 tracking-wider px-3 mb-2">
@@ -154,29 +155,7 @@ export function Layout({ children }: LayoutProps) {
     );
   };
 
-  // Mobile bottom navigation bar
-  const MobileBottomNav = () => {
-    const mobileNavItems = navItems.filter(item => 
-      item.mobileVisible && (item.role === 'all' || item.role === currentRole)
-    ).slice(0, 5); // Limit to 5 items for mobile
-    
-    return (
-      <div className="fixed bottom-0 left-0 right-0 bg-indigo-800 shadow-lg z-10 sm:hidden">
-        <div className="flex justify-around">
-          {mobileNavItems.map((item) => (
-            <RouterLink 
-              key={item.href}
-              to={item.href}
-              className={`flex flex-col items-center py-2 px-1 ${currentPath === item.href ? 'text-white' : 'text-indigo-200'}`}
-            >
-              <span className="p-1">{item.icon}</span>
-              <span className="text-xs">{item.label}</span>
-            </RouterLink>
-          ))}
-        </div>
-      </div>
-    );
-  };
+  // We'll use our enhanced MobileNav component instead of this one
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -192,7 +171,7 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Sidebar for mobile (overlay) */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-10 bg-black bg-opacity-50 sm:hidden"
           onClick={() => setIsSidebarOpen(false)}
         ></div>
@@ -207,7 +186,7 @@ export function Layout({ children }: LayoutProps) {
         <div className="flex items-center justify-center h-16 bg-indigo-800">
           <h2 className="text-white text-2xl font-semibold">CareUnity</h2>
         </div>
-        
+
         <div className="mt-4 px-4">
           <div className="bg-indigo-600 rounded-lg p-2 mb-4 flex items-center">
             <Smartphone className="h-5 w-5 text-indigo-200 mr-2" />
@@ -216,7 +195,7 @@ export function Layout({ children }: LayoutProps) {
             </span>
           </div>
         </div>
-        
+
         <nav className="px-2 py-4">
           <div className="space-y-6">
             <NavSection title="Dashboard" items={overviewItems} />
@@ -233,23 +212,23 @@ export function Layout({ children }: LayoutProps) {
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow h-16 flex items-center justify-between px-6">
           <div className="sm:hidden"></div> {/* Placeholder for mobile layout */}
-          
+
           <div className="hidden sm:block">
             {/* Breadcrumb for tablet/desktop */}
             <div className="text-sm text-gray-600">
-              {currentPath === '/' ? 'Dashboard' : 
+              {currentPath === '/' ? 'Dashboard' :
                 currentPath.split('/').map((part, index, array) => {
                   if (!part) return null;
                   const path = array.slice(0, index + 1).join('/');
-                  const formattedPart = part.split('-').map(word => 
+                  const formattedPart = part.split('-').map(word =>
                     word.charAt(0).toUpperCase() + word.slice(1)
                   ).join(' ');
-                  
+
                   return (
                     <span key={path}>
                       {index > 0 && <span className="mx-2">/</span>}
-                      {index === array.length - 1 ? 
-                        <span className="font-medium text-gray-900">{formattedPart}</span> : 
+                      {index === array.length - 1 ?
+                        <span className="font-medium text-gray-900">{formattedPart}</span> :
                         <RouterLink to={path} className="text-indigo-600 hover:text-indigo-800">{formattedPart}</RouterLink>
                       }
                     </span>
@@ -258,11 +237,11 @@ export function Layout({ children }: LayoutProps) {
               }
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-3">
             {/* Offline indicator */}
             <OfflineIndicator showOnlineStatus={true} />
-            
+
             <div className="hidden sm:block bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
               {currentRole.charAt(0).toUpperCase() + currentRole.slice(1)}
             </div>
@@ -271,13 +250,13 @@ export function Layout({ children }: LayoutProps) {
             </div>
           </div>
         </header>
-        
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6 pb-16 sm:pb-6">
+
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6 pb-24 sm:pb-6">
           {children}
         </main>
-        
+
         {/* Mobile bottom navigation */}
-        {isMobile && <MobileBottomNav />}
+        {isMobile && <MobileNav />}
       </div>
     </div>
   );

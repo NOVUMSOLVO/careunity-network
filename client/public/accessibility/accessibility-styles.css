@@ -1,0 +1,215 @@
+/**
+ * CareUnity Network Accessibility Styles
+ * 
+ * This file contains CSS variables and styles that improve accessibility
+ * throughout the CareUnity Network application.
+ */
+
+:root {
+  /* Accessibility variables */
+  --focus-outline-color: #2196f3;
+  --focus-outline-width: 3px;
+  --base-font-size: 16px;
+  --line-height-ratio: 1.5;
+  
+  /* WCAG 2.1 AA compliant color contrast ratios */
+  --text-default-color: #333333;
+  --text-light-bg: #333333;  /* Contrast ratio > 4.5:1 on white */
+  --text-dark-bg: #ffffff;   /* Contrast ratio > 4.5:1 on dark backgrounds */
+  --link-color: #0056b3;     /* Contrast ratio > 4.5:1 on white */
+  --error-color: #d32f2f;    /* Contrast ratio > 4.5:1 on white */
+  --success-color: #2e7d32;  /* Contrast ratio > 4.5:1 on white */
+  --warning-color: #af6c00;  /* Contrast ratio > 4.5:1 on white */
+  --info-color: #0277bd;     /* Contrast ratio > 4.5:1 on white */
+  
+  /* UI interactive element colors with proper contrast */
+  --button-primary-bg: #0277bd;
+  --button-primary-text: #ffffff;
+  --button-secondary-bg: #ffffff;
+  --button-secondary-text: #0277bd;
+  --button-secondary-border: #0277bd;
+}
+
+/* High contrast mode */
+.high-contrast {
+  --text-default-color: #000000;
+  --text-light-bg: #000000;
+  --text-dark-bg: #ffffff;
+  --link-color: #0000EE;
+  --error-color: #ff0000;
+  --success-color: #008000;
+  --warning-color: #ff8c00;
+  --info-color: #0000ff;
+  --focus-outline-color: #ff0000;
+  --button-primary-bg: #000000;
+  --button-primary-text: #ffffff;
+  --button-secondary-bg: #ffffff;
+  --button-secondary-text: #000000;
+  --button-secondary-border: #000000;
+  
+  /* Increase contrast for all elements */
+  * {
+    color: var(--text-default-color) !important;
+    background-color: #ffffff !important;
+    border-color: #000000 !important;
+  }
+  
+  /* Ensure links are clearly identifiable */
+  a {
+    color: var(--link-color) !important;
+    text-decoration: underline !important;
+    text-underline-offset: 2px !important;
+  }
+  
+  /* Make buttons highly visible */
+  button, .button, [role="button"] {
+    background-color: var(--button-primary-bg) !important;
+    color: var(--button-primary-text) !important;
+    border: 2px solid #000000 !important;
+    text-decoration: none !important;
+  }
+}
+
+/* Large Text Mode */
+.large-text {
+  font-size: var(--base-font-size);
+  
+  /* Scale all relative font sizes */
+  p, div, span, h1, h2, h3, h4, h5, h6, button, input, select, textarea, li, th, td {
+    font-size: max(1em, 1rem);
+    line-height: var(--line-height-ratio);
+  }
+  
+  h1 { font-size: max(2em, 2rem); }
+  h2 { font-size: max(1.75em, 1.75rem); }
+  h3 { font-size: max(1.5em, 1.5rem); }
+  h4 { font-size: max(1.25em, 1.25rem); }
+  
+  /* Increase spacing for readability */
+  p, li {
+    margin-bottom: 1.2em;
+  }
+  
+  /* Ensure interactive elements have sufficient touch target size */
+  button, .button, input[type="button"], input[type="submit"],
+  input[type="reset"], a.button, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px 16px;
+  }
+  
+  input[type="text"], input[type="email"], input[type="password"],
+  input[type="number"], input[type="tel"], input[type="url"],
+  input[type="search"], textarea, select {
+    min-height: 44px;
+    font-size: max(1em, 1rem);
+    padding: 8px 12px;
+  }
+}
+
+/* Reduced motion mode */
+.reduced-motion {
+  /* Remove animations and transitions */
+  *, *::before, *::after {
+    animation-duration: 0.001s !important;
+    animation-delay: 0.001s !important;
+    transition-duration: 0.001s !important;
+    transition-delay: 0.001s !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Enhanced focus indicators for keyboard navigation */
+.focus-indicators button:focus,
+.focus-indicators a:focus,
+.focus-indicators input:focus,
+.focus-indicators select:focus,
+.focus-indicators textarea:focus,
+.focus-indicators [tabindex]:focus {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.3) !important;
+  border-radius: 2px !important;
+}
+
+/* Hidden, but available to screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* When keyboard navigation is active, show focus outlines */
+body.keyboard-navigation *:focus {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color) !important;
+  outline-offset: 2px !important;
+}
+
+/* Ensure skip link is visible when focused */
+.skip-link {
+  background: #ffffff;
+  color: var(--link-color);
+  font-weight: 700;
+  padding: 10px;
+  position: absolute;
+  transform: translateY(-120%);
+  transition: transform 0.3s;
+  left: 1em;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* Accessibility menu styles */
+#accessibility-menu {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  max-width: 320px;
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#accessibility-menu.show {
+  display: flex;
+}
+
+#accessibility-menu h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #cccccc;
+  padding-bottom: 8px;
+}
+
+#accessibility-menu label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+#accessibility-menu button {
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="msapplication-navbutton-color" content="#6366F1">
+  <meta name="theme-color" content="#6366F1">
+  
+  <title>CareUnity Mobile (With Module Support)</title>
+  
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <!-- Custom JS with required type="module" attribute -->
+  <script src="js/careunity-mobile-db.js" type="module"></script>
+  <script src="js/careunity-touch-interactions.js" type="module"></script>
+  <script src="js/careunity-sync-manager.js" type="module"></script>
+  <script src="js/careunity-notifications.js" type="module"></script>
+  <script src="js/careunity-conflict-resolution.js" type="module"></script>
+  <script src="js/careunity-checkin.js" type="module"></script>
+  <script src="js/careunity-voice-commands.js" type="module"></script>
+  <script src="js/careunity-biometric-auth.js" type="module"></script>
+  <script src="js/careunity-care-plan-viewer.js" type="module"></script>
+  <script src="js/careunity-care-plan.js" type="module"></script>
+  
+  <style>
+    /* Custom styles */
+    body {
+      overscroll-behavior-y: contain; /* Prevents pull-to-refresh */
+      touch-action: manipulation; /* Improves touch experience */
+      -webkit-tap-highlight-color: transparent; /* Removes tap highlight on iOS */
+    }
+    
+    .bottom-nav {
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .bottom-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      color: #6B7280;
+      transition: color 0.2s;
+    }
+    
+    .bottom-nav-item.active {
+      color: #6366F1;
+    }
+  </style>
+</head>
+<body>
+  <!-- The rest of your HTML content remains the same -->
+</body>
+</html>

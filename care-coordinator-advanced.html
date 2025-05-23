@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareUnity - Care Coordinator Dashboard</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f8fafc;
+    }
+    .allocation-card {
+      background: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+    .allocation-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .urgent-alert {
+      animation: pulse 2s infinite;
+      background: linear-gradient(45deg, #ef4444, #dc2626);
+    }
+    .ai-indicator {
+      background: linear-gradient(45deg, #8b5cf6, #7c3aed);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .voice-active {
+      border: 2px solid #10b981;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    function CareCoordinatorDashboard() {
+      const [activeTab, setActiveTab] = React.useState('allocation');
+      const [voiceMode, setVoiceMode] = React.useState(false);
+      const [selectedAllocation, setSelectedAllocation] = React.useState(null);
+      const [currentTime, setCurrentTime] = React.useState(new Date());
+
+      React.useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+      }, []);
+
+      const dashboardStats = {
+        totalVisitsToday: 156,
+        completedVisits: 89,
+        inProgressVisits: 23,
+        unallocatedVisits: 7,
+        staffOnShift: 34,
+        lateVisits: 3,
+        cqcCompliance: 96.8,
+        allocationEfficiency: 94.2
+      };
+
+      const urgentAllocations = [
+        {
+          id: 1,
+          serviceUser: 'Margaret Thompson',
+          visitType: 'Personal Care',
+          scheduledTime: '14:30',
+          duration: '45 min',
+          location: 'Hampstead, NW3',
+          urgency: 'high',
+          reason: 'Staff callout - needs immediate cover',
+          requiredSkills: ['Personal Care', 'Medication'],
+          aiSuggestions: [
+            { caregiverId: 'CG001', name: 'Sarah Johnson', matchScore: 95, travelTime: '12 min' },
+            { caregiverId: 'CG003', name: 'Emma Wilson', matchScore: 87, travelTime: '18 min' }
+          ]
+        },
+        {
+          id: 2,
+          serviceUser: 'Robert Davies',
+          visitType: 'Medication Support',
+          scheduledTime: '16:00',
+          duration: '30 min',
+          location: 'Camden, NW1',
+          urgency: 'medium',
+          reason: 'Qualification verification needed',
+          requiredSkills: ['Medication Administration'],
+          aiSuggestions: [
+            { caregiverId: 'CG005', name: 'Michael Brown', matchScore: 92, travelTime: '8 min' }
+          ]
+        }
+      ];
+
+      const allocationMethods = [
+        {
+          id: 'ai-smart',
+          name: 'AI Smart Allocation',
+          description: 'ML-powered optimization considering preferences, skills, and efficiency',
+          icon: '🤖',
+          efficiency: 94.2,
+          active: true
+        },
+        {
+          id: 'bulk',
+          name: 'Bulk Allocation',
+          description: 'Template-based allocation for recurring visits',
+          icon: '📋',
+          efficiency: 87.5,
+          active: false
+        },
+        {
+          id: 'manual',
+          name: 'Manual Assignment',
+          description: 'Direct caregiver selection with AI assistance',
+          icon: '👤',
+          efficiency: 82.1,
+          active: false
+        }
+      ];
+
+      const staffHeatMap = [
+        { area: 'North London', coverage: 95, staff: 12, workload: 'optimal' },
+        { area: 'Central London', coverage: 87, staff: 8, workload: 'high' },
+        { area: 'South London', coverage: 92, staff: 10, workload: 'optimal' },
+        { area: 'East London', coverage: 78, staff: 4, workload: 'critical' }
+      ];
+
+      const toggleVoice = () => {
+        setVoiceMode(!voiceMode);
+        if (!voiceMode) {
+          setTimeout(() => {
+            alert('Voice commands active! Try: "Show unallocated visits", "Allocate visit to Sarah", "Display staff coverage"');
+          }, 500);
+        }
+      };
+
+      const handleAllocation = (allocationId, caregiverId) => {
+        alert(`Allocating visit ${allocationId} to caregiver ${caregiverId} using AI optimization...`);
+        // Simulate allocation process
+        setTimeout(() => {
+          alert('✅ Allocation successful! Notifications sent to caregiver and service user.');
+        }, 1500);
+      };
+
+      const renderAllocationTab = () => (
+        <div className="space-y-6">
+          {/* Urgent Allocations */}
+          <div className="allocation-card p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-red-600">🚨 Urgent Allocations</h3>
+              <span className="ai-indicator">AI POWERED</span>
+            </div>
+            
+            <div className="space-y-4">
+              {urgentAllocations.map(allocation => (
+                <div key={allocation.id} className={`p-4 border rounded-lg ${allocation.urgency === 'high' ? 'border-red-300 bg-red-50' : 'border-yellow-300 bg-yellow-50'}`}>
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h4 className="font-semibold">{allocation.serviceUser}</h4>
+                      <p className="text-sm text-gray-600">{allocation.visitType} • {allocation.scheduledTime} • {allocation.duration}</p>
+                      <p className="text-sm text-gray-500">📍 {allocation.location}</p>
+                    </div>
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                      allocation.urgency === 'high' ? 'bg-red-200 text-red-800' : 'bg-yellow-200 text-yellow-800'
+                    }`}>
+                      {allocation.urgency.toUpperCase()}
+                    </span>
+                  </div>
+                  
+                  <p className="text-sm mb-3 font-medium text-gray-700">⚠️ {allocation.reason}</p>
+                  
+                  <div className="mb-3">
+                    <p className="text-xs font-medium text-gray-600 mb-1">Required Skills:</p>
+                    <div className="flex gap-1">
+                      {allocation.requiredSkills.map(skill => (
+                        <span key={skill} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <p className="text-xs font-medium text-gray-600 mb-2">🤖 AI Suggestions:</p>
+                    <div className="space-y-2">
+                      {allocation.aiSuggestions.map(suggestion => (
+                        <div key={suggestion.caregiverId} className="flex items-center justify-between p-2 bg-white rounded border">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                              {suggestion.name.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm">{suggestion.name}</p>
+                              <p className="text-xs text-gray-500">Match: {suggestion.matchScore}% • Travel: {suggestion.travelTime}</p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleAllocation(allocation.id, suggestion.caregiverId)}
+                            className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors"
+                          >
+                            Allocate
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Allocation Methods */}
+          <div className="allocation-card p-6">
+            <h3 className="text-lg font-semibold mb-4">🎯 Allocation Methods</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {allocationMethods.map(method => (
+                <div key={method.id} className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                  method.active ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                }`}>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-2xl">{method.icon}</span>
+                    <h4 className="font-semibold">{method.name}</h4>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-3">{method.description}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium">Efficiency: {method.efficiency}%</span>
+                    {method.active && <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">ACTIVE</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+
+      const renderStaffCoverageTab = () => (
+        <div className="space-y-6">
+          <div className="allocation-card p-6">
+            <h3 className="text-lg font-semibold mb-4">🗺️ Staff Coverage Heat Map</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {staffHeatMap.map(area => (
+                <div key={area.area} className="p-4 border rounded-lg">
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="font-semibold">{area.area}</h4>
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+                      area.workload === 'optimal' ? 'bg-green-100 text-green-800' :
+                      area.workload === 'high' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {area.workload.toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm">Coverage:</span>
+                      <span className="font-medium">{area.coverage}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm">Staff:</span>
+                      <span className="font-medium">{area.staff} active</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full ${
+                          area.coverage >= 90 ? 'bg-green-500' :
+                          area.coverage >= 80 ? 'bg-yellow-500' : 'bg-red-500'
+                        }`}
+                        style={{ width: `${area.coverage}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+
+      return (
+        <div className="min-h-screen bg-gray-50">
+          {/* Header */}
+          <div className="bg-white shadow-sm border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between items-center py-4">
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">Care Coordinator Dashboard</h1>
+                  <p className="text-sm text-gray-500">{currentTime.toLocaleString()}</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={toggleVoice}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                      voiceMode ? 'bg-green-600 text-white voice-active' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    🎤 Voice {voiceMode ? 'ON' : 'OFF'}
+                  </button>
+                  <div className="text-sm">
+                    <div className="text-green-600 font-medium">✓ System Online</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats Bar */}
+          <div className="bg-white border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">{dashboardStats.totalVisitsToday}</div>
+                  <div className="text-xs text-gray-500">Total Visits</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">{dashboardStats.completedVisits}</div>
+                  <div className="text-xs text-gray-500">Completed</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-yellow-600">{dashboardStats.inProgressVisits}</div>
+                  <div className="text-xs text-gray-500">In Progress</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-red-600">{dashboardStats.unallocatedVisits}</div>
+                  <div className="text-xs text-gray-500">Unallocated</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600">{dashboardStats.staffOnShift}</div>
+                  <div className="text-xs text-gray-500">Staff On Shift</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-600">{dashboardStats.lateVisits}</div>
+                  <div className="text-xs text-gray-500">Late Visits</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-indigo-600">{dashboardStats.cqcCompliance}%</div>
+                  <div className="text-xs text-gray-500">CQC Compliance</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-teal-600">{dashboardStats.allocationEfficiency}%</div>
+                  <div className="text-xs text-gray-500">AI Efficiency</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="bg-white border-b">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex space-x-8">
+                <button
+                  onClick={() => setActiveTab('allocation')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'allocation'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  🎯 Smart Allocation
+                </button>
+                <button
+                  onClick={() => setActiveTab('coverage')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'coverage'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  🗺️ Staff Coverage
+                </button>
+                <button
+                  onClick={() => setActiveTab('analytics')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'analytics'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  📊 Analytics
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            {activeTab === 'allocation' && renderAllocationTab()}
+            {activeTab === 'coverage' && renderStaffCoverageTab()}
+            {activeTab === 'analytics' && (
+              <div className="allocation-card p-6">
+                <h3 className="text-lg font-semibold mb-4">📊 Allocation Analytics</h3>
+                <p className="text-gray-600">Advanced analytics and reporting coming soon...</p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<CareCoordinatorDashboard />);
+  </script>
+</body>
+</html>

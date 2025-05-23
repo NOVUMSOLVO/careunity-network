@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Module Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            min-height: 20px;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>JavaScript Module Test</h1>
+    <p>This page tests if JavaScript modules are being served with the correct MIME type.</p>
+    
+    <div class="test-section">
+        <h2>Basic Module Import Test</h2>
+        <p>Tests if a basic JavaScript module can be imported.</p>
+        <div id="basic-result" class="test-result">Loading module...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Dynamic Import Test</h2>
+        <p>Tests if a module can be dynamically imported.</p>
+        <button id="dynamic-import-btn">Load Module Dynamically</button>
+        <div id="dynamic-result" class="test-result">Click the button to load the module.</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>MIME Type Information</h2>
+        <p>This section will display information about the MIME type of the loaded modules.</p>
+        <div id="mime-info" class="test-result">Waiting for module loads...</div>
+    </div>
+
+    <script type="module">
+        // Basic module import
+        try {
+            import { getMessage } from './test-module.js';
+            document.getElementById('basic-result').innerHTML = 
+                `<span class="success">SUCCESS:</span> ${getMessage()}`;
+            
+            // Update MIME info
+            updateMimeInfo('Basic import successful');
+        } catch (error) {
+            document.getElementById('basic-result').innerHTML = 
+                `<span class="error">ERROR:</span> ${error.message}`;
+            
+            // Update MIME info
+            updateMimeInfo(`Basic import failed: ${error.message}`);
+        }
+        
+        // Set up dynamic import button
+        document.getElementById('dynamic-import-btn').addEventListener('click', async () => {
+            const resultElement = document.getElementById('dynamic-result');
+            resultElement.textContent = 'Loading module dynamically...';
+            
+            try {
+                const module = await import('./test-module.js');
+                resultElement.innerHTML = 
+                    `<span class="success">SUCCESS:</span> Dynamically imported module. Message: ${module.getMessage()}`;
+                
+                // Update MIME info
+                updateMimeInfo('Dynamic import successful');
+            } catch (error) {
+                resultElement.innerHTML = 
+                    `<span class="error">ERROR:</span> ${error.message}`;
+                
+                // Update MIME info
+                updateMimeInfo(`Dynamic import failed: ${error.message}`);
+            }
+        });
+        
+        // Function to update MIME info
+        function updateMimeInfo(message) {
+            const mimeInfoElement = document.getElementById('mime-info');
+            const currentInfo = mimeInfoElement.innerHTML !== 'Waiting for module loads...' 
+                ? mimeInfoElement.innerHTML + '<br>' 
+                : '';
+            
+            mimeInfoElement.innerHTML = currentInfo + `${new Date().toLocaleTimeString()}: ${message}`;
+        }
+    </script>
+</body>
+</html>

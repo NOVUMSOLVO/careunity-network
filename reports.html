@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <title>CareUnity - Reports</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    .chart-container {
+      height: 300px;
+      position: relative;
+    }
+    .chart-bar {
+      position: absolute;
+      bottom: 0;
+      width: 30px;
+      background-color: #6366f1;
+      border-radius: 4px 4px 0 0;
+      transition: height 0.5s ease;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <div class="w-64 bg-indigo-700 text-white">
+      <div class="p-4 text-xl font-bold">CareUnity</div>
+      <nav class="mt-6">
+        <a href="careunity-dashboard.html" class="block px-4 py-2 hover:bg-indigo-800">Dashboard</a>
+        <a href="service-users.html" class="block px-4 py-2 hover:bg-indigo-800">Service Users</a>
+        <a href="staff.html" class="block px-4 py-2 hover:bg-indigo-800">Staff</a>
+        <a href="scheduling.html" class="block px-4 py-2 hover:bg-indigo-800">Scheduling</a>
+        <a href="care-plans.html" class="block px-4 py-2 hover:bg-indigo-800">Care Plans</a>
+        <a href="reports.html" class="block px-4 py-2 bg-indigo-800">Reports</a>
+        <a href="settings.html" class="block px-4 py-2 hover:bg-indigo-800">Settings</a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1">
+      <!-- Header -->
+      <header class="bg-white shadow-sm">
+        <div class="px-4 py-3 flex justify-between items-center">
+          <h1 class="text-xl font-semibold">Reports</h1>
+          <div class="flex items-center space-x-4">
+            <button class="p-2 rounded-full hover:bg-gray-100">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </button>
+            <div class="relative">
+              <button class="flex items-center space-x-2">
+                <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="User" class="w-8 h-8 rounded-full">
+                <span class="font-medium">Sarah Johnson</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Reports Content -->
+      <div class="p-6">
+        <!-- Report Filters -->
+        <div class="bg-white rounded-lg shadow mb-8 p-6">
+          <h2 class="text-lg font-semibold mb-4">Report Filters</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
+              <select class="w-full border rounded-md px-3 py-2">
+                <option>Care Hours</option>
+                <option>Incidents</option>
+                <option>Compliance</option>
+                <option>Staff Performance</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+              <select class="w-full border rounded-md px-3 py-2">
+                <option>Last 7 days</option>
+                <option>Last 30 days</option>
+                <option>Last 90 days</option>
+                <option>Custom range</option>
+              </select>
+            </div>
+            <div class="flex items-end">
+              <button class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Generate Report</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Care Hours Report -->
+        <div class="bg-white rounded-lg shadow mb-8">
+          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 class="text-lg font-semibold">Care Hours Report</h2>
+            <div class="flex space-x-2">
+              <button class="bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300">Print</button>
+              <button class="bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300">Export</button>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="mb-6">
+              <h3 class="text-md font-medium mb-2">Weekly Care Hours</h3>
+              <div class="chart-container border rounded-md p-4">
+                <div class="flex justify-between h-full items-end">
+                  <div class="flex flex-col items-center">
+                    <div class="chart-bar" style="height: 60%; margin-left: 15px;"></div>
+                    <div class="mt-2">Mon</div>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div class="chart-bar" style="height: 75%; margin-left: 15px;"></div>
+                    <div class="mt-2">Tue</div>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div class="chart-bar" style="height: 45%; margin-left: 15px;"></div>
+                    <div class="mt-2">Wed</div>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div class="chart-bar" style="height: 80%; margin-left: 15px;"></div>
+                    <div class="mt-2">Thu</div>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div class="chart-bar" style="height: 65%; margin-left: 15px;"></div>
+                    <div class="mt-2">Fri</div>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div class="chart-bar" style="height: 40%; margin-left: 15px;"></div>
+                    <div class="mt-2">Sat</div>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <div class="chart-bar" style="height: 30%; margin-left: 15px;"></div>
+                    <div class="mt-2">Sun</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h3 class="text-md font-medium mb-2">Care Hours by Staff Member</h3>
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Staff Member</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hours</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">% of Total</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">Emma Wilson</td>
+                    <td class="px-6 py-4 whitespace-nowrap">42</td>
+                    <td class="px-6 py-4 whitespace-nowrap">32.8%</td>
+                  </tr>
+                  <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">James Taylor</td>
+                    <td class="px-6 py-4 whitespace-nowrap">38</td>
+                    <td class="px-6 py-4 whitespace-nowrap">29.7%</td>
+                  </tr>
+                  <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">Michael Brown</td>
+                    <td class="px-6 py-4 whitespace-nowrap">25</td>
+                    <td class="px-6 py-4 whitespace-nowrap">19.5%</td>
+                  </tr>
+                  <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">Other Staff</td>
+                    <td class="px-6 py-4 whitespace-nowrap">23</td>
+                    <td class="px-6 py-4 whitespace-nowrap">18.0%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Saved Reports -->
+        <div class="bg-white rounded-lg shadow">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold">Saved Reports</h2>
+          </div>
+          <div class="p-6">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Report Name</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Created</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">April 2025 Care Hours</td>
+                  <td class="px-6 py-4 whitespace-nowrap">Care Hours</td>
+                  <td class="px-6 py-4 whitespace-nowrap">May 1, 2025</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-indigo-600 hover:text-indigo-900 mr-2">View</button>
+                    <button class="text-gray-600 hover:text-gray-900">Delete</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Q1 2025 Incidents</td>
+                  <td class="px-6 py-4 whitespace-nowrap">Incidents</td>
+                  <td class="px-6 py-4 whitespace-nowrap">April 5, 2025</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-indigo-600 hover:text-indigo-900 mr-2">View</button>
+                    <button class="text-gray-600 hover:text-gray-900">Delete</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Staff Performance Q1</td>
+                  <td class="px-6 py-4 whitespace-nowrap">Staff Performance</td>
+                  <td class="px-6 py-4 whitespace-nowrap">April 2, 2025</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-indigo-600 hover:text-indigo-900 mr-2">View</button>
+                    <button class="text-gray-600 hover:text-gray-900">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

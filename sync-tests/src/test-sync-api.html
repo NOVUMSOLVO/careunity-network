@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareUnity Sync API Test</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+    h1 {
+      color: #2c3e50;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+    .container {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .result {
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      margin-top: 20px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .success {
+      border-left: 4px solid #2ecc71;
+    }
+    .error {
+      border-left: 4px solid #e74c3c;
+    }
+    .test-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .status {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    .status-online {
+      background-color: #2ecc71;
+      color: white;
+    }
+    .status-offline {
+      background-color: #e74c3c;
+      color: white;
+    }
+    .operation-list {
+      margin-top: 20px;
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+    }
+    .operation-item {
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .operation-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    .operation-id {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    .operation-status {
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .status-pending {
+      background-color: #f39c12;
+      color: white;
+    }
+    .status-completed {
+      background-color: #2ecc71;
+      color: white;
+    }
+    .status-error {
+      background-color: #e74c3c;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>CareUnity Sync API Test</h1>
+  
+  <div class="container">
+    <h2>Authentication</h2>
+    <div class="form-group">
+      <label for="username">Username:</label>
+      <input type="text" id="username" value="testuser">
+    </div>
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input type="password" id="password" value="password123">
+    </div>
+    <button id="login-btn">Login</button>
+    <div id="auth-result" class="result"></div>
+  </div>
+  
+  <div class="container">
+    <h2>Sync API Tests</h2>
+    <p>Connection Status: <span id="connection-status" class="status status-online">Online</span></p>
+    
+    <div class="test-buttons">
+      <button id="get-status-btn">Get Sync Status</button>
+      <button id="create-operation-btn">Create Operation</button>
+      <button id="get-operations-btn">Get Operations</button>
+      <button id="process-operations-btn">Process Operations</button>
+      <button id="batch-operations-btn">Batch Operations</button>
+      <button id="clear-completed-btn">Clear Completed</button>
+    </div>
+    
+    <div id="test-result" class="result"></div>
+    
+    <div class="operation-list" id="operations-container" style="display: none;">
+      <h3>Sync Operations</h3>
+      <div id="operations-list"></div>
+    </div>
+  </div>
+  
+  <script>
+    // Configuration
+    const API_BASE_URL = 'http://localhost:5000/api/v2';
+    const AUTH_URL = 'http://localhost:5000/api/auth/login';
+    
+    // DOM elements
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('login-btn');
+    const authResult = document.getElementById('auth-result');
+    const connectionStatus = document.getElementById('connection-status');
+    const getStatusBtn = document.getElementById('get-status-btn');
+    const createOperationBtn = document.getElementById('create-operation-btn');
+    const getOperationsBtn = document.getElementById('get-operations-btn');
+    const processOperationsBtn = document.getElementById('process-operations-btn');
+    const batchOperationsBtn = document.getElementById('batch-operations-btn');
+    const clearCompletedBtn = document.getElementById('clear-completed-btn');
+    const testResult = document.getElementById('test-result');
+    const operationsContainer = document.getElementById('operations-container');
+    const operationsList = document.getElementById('operations-list');
+    
+    // Store the auth token
+    let authToken = null;
+    
+    // Update connection status based on navigator.onLine
+    function updateConnectionStatus() {
+      if (navigator.onLine) {
+        connectionStatus.textContent = 'Online';
+        connectionStatus.className = 'status status-online';
+      } else {
+        connectionStatus.textContent = 'Offline';
+        connectionStatus.className = 'status status-offline';
+      }
+    }
+    
+    // Listen for online/offline events
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+    
+    // Initial connection status
+    updateConnectionStatus();
+    
+    // Helper function to make authenticated API requests
+    async function apiRequest(endpoint, method = 'GET', body = null) {
+      try {
+        const url = `${API_BASE_URL}${endpoint}`;
+        const headers = {
+          'Content-Type': 'application/json',
+        };
+        
+        // Add auth token if available
+        if (authToken) {
+          headers['Authorization'] = `Bearer ${authToken}`;
+        }
+        
+        const options = {
+          method,
+          headers,
+        };
+        
+        // Add body for non-GET requests
+        if (body && method !== 'GET') {
+          options.body = JSON.stringify(body);
+        }
+        
+        const response = await fetch(url, options);
+        const data = await response.json();
+        
+        return {
+          success: response.ok,
+          status: response.status,
+          data,
+        };
+      } catch (error) {
+        return {
+          success: false,
+          error: error.message,
+        };
+      }
+    }
+    
+    // Login handler
+    loginBtn.addEventListener('click', async () => {
+      const username = usernameInput.value;
+      const password = passwordInput.value;
+      
+      if (!username || !password) {
+        authResult.textContent = 'Please enter username and password';
+        authResult.className = 'result error';
+        return;
+      }
+      
+      try {
+        authResult.textContent = 'Authenticating...';
+        authResult.className = 'result';
+        
+        const response = await fetch(AUTH_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.token) {
+          authToken = data.token;
+          authResult.textContent = `Authentication successful! Token: ${data.token.substring(0, 10)}...`;
+          authResult.className = 'result success';
+        } else {
+          authResult.textContent = `Authentication failed: ${data.message || 'Unknown error'}`;
+          authResult.className = 'result error';
+        }
+      } catch (error) {
+        authResult.textContent = `Error: ${error.message}`;
+        authResult.className = 'result error';
+      }
+    });
+    
+    // Get sync status
+    getStatusBtn.addEventListener('click', async () => {
+      if (!authToken) {
+        testResult.textContent = 'Please login first';
+        testResult.className = 'result error';
+        return;
+      }
+      
+      testResult.textContent = 'Getting sync status...';
+      testResult.className = 'result';
+      
+      const result = await apiRequest('/sync/status');
+      
+      if (result.success) {
+        testResult.textContent = `Sync Status:\n${JSON.stringify(result.data, null, 2)}`;
+        testResult.className = 'result success';
+      } else {
+        testResult.textContent = `Error: ${result.error || 'Unknown error'}`;
+        testResult.className = 'result error';
+      }
+    });
+    
+    // Create a sync operation
+    createOperationBtn.addEventListener('click', async () => {
+      if (!authToken) {
+        testResult.textContent = 'Please login first';
+        testResult.className = 'result error';
+        return;
+      }
+      
+      testResult.textContent = 'Creating sync operation...';
+      testResult.className = 'result';
+      
+      const operation = {
+        url: 'http://example.com/api/test',
+        method: 'POST',
+        body: JSON.stringify({ test: 'data' }),
+        headers: { 'Content-Type': 'application/json' },
+        entityType: 'test',
+        entityId: '123',
+      };
+      
+      const result = await apiRequest('/sync/operations', 'POST', operation);
+      
+      if (result.success) {
+        testResult.textContent = `Operation Created:\n${JSON.stringify(result.data, null, 2)}`;
+        testResult.className = 'result success';
+      } else {
+        testResult.textContent = `Error: ${result.error || 'Unknown error'}`;
+        testResult.className = 'result error';
+      }
+    });
+    
+    // Get all sync operations
+    getOperationsBtn.addEventListener('click', async () => {
+      if (!authToken) {
+        testResult.textContent = 'Please login first';
+        testResult.className = 'result error';
+        return;
+      }
+      
+      testResult.textContent = 'Getting sync operations...';
+      testResult.className = 'result';
+      
+      const result = await apiRequest('/sync/operations');
+      
+      if (result.success) {
+        testResult.textContent = `Found ${result.data.length} operations`;
+        testResult.className = 'result success';
+        
+        // Display operations in a list
+        operationsContainer.style.display = 'block';
+        operationsList.innerHTML = '';
+        
+        if (result.data.length === 0) {
+          operationsList.innerHTML = '<p>No operations found</p>';
+        } else {
+          result.data.forEach(op => {
+            const opElement = document.createElement('div');
+            opElement.className = 'operation-item';
+            
+            const header = document.createElement('div');
+            header.className = 'operation-header';
+            
+            const idSpan = document.createElement('span');
+            idSpan.className = 'operation-id';
+            idSpan.textContent = `ID: ${op.id}`;
+            
+            const statusSpan = document.createElement('span');
+            statusSpan.className = `operation-status status-${op.status}`;
+            statusSpan.textContent = op.status;
+            
+            header.appendChild(idSpan);
+            header.appendChild(statusSpan);
+            
+            const details = document.createElement('div');
+            details.innerHTML = `
+              <div>URL: ${op.url}</div>
+              <div>Method: ${op.method}</div>
+              <div>Entity: ${op.entityType || 'N/A'} (${op.entityId || 'N/A'})</div>
+              <div>Timestamp: ${new Date(op.timestamp).toLocaleString()}</div>
+            `;
+            
+            opElement.appendChild(header);
+            opElement.appendChild(details);
+            operationsList.appendChild(opElement);
+          });
+        }
+      } else {
+        testResult.textContent = `Error: ${result.error || 'Unknown error'}`;
+        testResult.className = 'result error';
+      }
+    });
+    
+    // Process pending operations
+    processOperationsBtn.addEventListener('click', async () => {
+      if (!authToken) {
+        testResult.textContent = 'Please login first';
+        testResult.className = 'result error';
+        return;
+      }
+      
+      testResult.textContent = 'Processing pending operations...';
+      testResult.className = 'result';
+      
+      const result = await apiRequest('/sync/process', 'POST');
+      
+      if (result.success) {
+        testResult.textContent = `Processing Result:\n${JSON.stringify(result.data, null, 2)}`;
+        testResult.className = 'result success';
+      } else {
+        testResult.textContent = `Error: ${result.error || 'Unknown error'}`;
+        testResult.className = 'result error';
+      }
+    });
+    
+    // Create batch operations
+    batchOperationsBtn.addEventListener('click', async () => {
+      if (!authToken) {
+        testResult.textContent = 'Please login first';
+        testResult.className = 'result error';
+        return;
+      }
+      
+      testResult.textContent = 'Creating batch operations...';
+      testResult.className = 'result';
+      
+      const batch = {
+        operations: [
+          {
+            url: 'http://example.com/api/test1',
+            method: 'POST',
+            body: JSON.stringify({ test: 'batch1' }),
+            entityType: 'test',
+            entityId: '456',
+          },
+          {
+            url: 'http://example.com/api/test2',
+            method: 'PUT',
+            body: JSON.stringify({ test: 'batch2' }),
+            entityType: 'test',
+            entityId: '789',
+          },
+        ],
+      };
+      
+      const result = await apiRequest('/sync/batch', 'POST', batch);
+      
+      if (result.success) {
+        testResult.textContent = `Batch Created:\n${JSON.stringify(result.data, null, 2)}`;
+        testResult.className = 'result success';
+      } else {
+        testResult.textContent = `Error: ${result.error || 'Unknown error'}`;
+        testResult.className = 'result error';
+      }
+    });
+    
+    // Clear completed operations
+    clearCompletedBtn.addEventListener('click', async () => {
+      if (!authToken) {
+        testResult.textContent = 'Please login first';
+        testResult.className = 'result error';
+        return;
+      }
+      
+      testResult.textContent = 'Clearing completed operations...';
+      testResult.className = 'result';
+      
+      const result = await apiRequest('/sync/completed', 'DELETE');
+      
+      if (result.success) {
+        testResult.textContent = `Cleared Result:\n${JSON.stringify(result.data, null, 2)}`;
+        testResult.className = 'result success';
+      } else {
+        testResult.textContent = `Error: ${result.error || 'Unknown error'}`;
+        testResult.className = 'result error';
+      }
+    });
+  </script>
+</body>
+</html>
