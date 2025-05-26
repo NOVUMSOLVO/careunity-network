@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareUnity Network - Comprehensive Proof of Concept</title>
+
+  <!-- React and Material-UI -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Material-UI -->
+  <script src="https://unpkg.com/@mui/material@5.14.20/umd/material-ui.development.js"></script>
+  <script src="https://unpkg.com/@mui/icons-material@5.14.19/umd/material-ui-icons.development.js"></script>
+
+  <!-- Material-UI Fonts and Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+
+    #root {
+      min-height: 100vh;
+    }
+
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    /* Animation for cards */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-card {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* Pulse animation for voice indicator */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div class="loading">
+      🏥 Loading CareUnity Network...
+    </div>
+  </div>
+
+  <script type="text/babel">
+    const {
+      Container, Grid, Card, CardContent, Typography, Box,
+      Button, Chip, Avatar, LinearProgress, Tabs, Tab,
+      List, ListItem, ListItemText, ListItemIcon, Badge,
+      Paper, Divider, IconButton, Switch, FormControlLabel,
+      Alert, AlertTitle, ThemeProvider, createTheme
+    } = MaterialUI;
+
+    const {
+      Dashboard: DashboardIcon,
+      People: PeopleIcon,
+      Schedule: ScheduleIcon,
+      Assignment: AssignmentIcon,
+      Mic: MicIcon,
+      Notifications: NotificationsIcon,
+      Security: SecurityIcon,
+      Analytics: AnalyticsIcon,
+      Phone: PhoneIcon,
+      Email: EmailIcon,
+      LocationOn: LocationIcon,
+      CheckCircle: CheckCircleIcon,
+      Warning: WarningIcon,
+      TrendingUp: TrendingUpIcon,
+      AccessTime: AccessTimeIcon,
+      Group: GroupIcon,
+      LocalHospital: LocalHospitalIcon
+    } = MaterialUIIcons;
+
+    // Create Material-UI theme
+    const theme = createTheme({
+      palette: {
+        primary: {
+          main: '#1976d2',
+        },
+        secondary: {
+          main: '#dc004e',
+        },
+      },
+      typography: {
+        fontFamily: 'Roboto, sans-serif',
+      },
+    });
+
+    function CareUnityPOC() {
+      const [activeTab, setActiveTab] = React.useState(0);
+      const [voiceEnabled, setVoiceEnabled] = React.useState(false);
+      const [currentTime, setCurrentTime] = React.useState(new Date());
+      const [notifications, setNotifications] = React.useState(3);
+
+      React.useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+      }, []);
+
+      // Demo data
+      const systemStats = {
+        totalServiceUsers: 248,
+        activeStaff: 89,
+        todaysVisits: 156,
+        completionRate: 94.2,
+        cqcCompliance: 96.8,
+        systemUptime: 99.9,
+        careHours: 1284,
+        emergencyAlerts: 2
+      };
+
+      const modules = [
+        {
+          id: 'care-coordinator',
+          title: 'Care Coordinator Dashboard',
+          description: 'AI-powered scheduling, allocation management, and operational command center',
+          icon: React.createElement(DashboardIcon, { sx: { fontSize: 40 } }),
+          color: '#1976d2',
+          features: ['Smart Allocation', 'Real-time Monitoring', 'CQC Compliance', 'Staff Management'],
+          status: 'active'
+        },
+        {
+          id: 'person-centered',
+          title: 'Person-Centered Care Hub',
+          description: 'Digital life stories, outcome tracking, and personalized care recommendations',
+          icon: React.createElement(LocalHospitalIcon, { sx: { fontSize: 40 } }),
+          color: '#d32f2f',
+          features: ['Life Stories', 'Goal Tracking', 'Family Portal', 'Care Preferences'],
+          status: 'active'
+        },
+        {
+          id: 'caregiver-companion',
+          title: 'Caregiver Companion',
+          description: 'Voice-enabled documentation, mobile interface, and wellness tracking',
+          icon: React.createElement(MicIcon, { sx: { fontSize: 40 } }),
+          color: '#388e3c',
+          features: ['Voice Documentation', 'Biometric Auth', 'Offline Mode', 'Wellness Tracking'],
+          status: 'active'
+        },
+        {
+          id: 'ai-scheduling',
+          title: 'AI Scheduling Engine',
+          description: 'Predictive scheduling optimization with ML-powered insights',
+          icon: React.createElement(ScheduleIcon, { sx: { fontSize: 40 } }),
+          color: '#f57c00',
+          features: ['Route Optimization', 'Preference Matching', 'Predictive Analytics', 'Auto-allocation'],
+          status: 'active'
+        },
+        {
+          id: 'insights-engine',
+          title: 'Intelligent Insights Engine',
+          description: 'Predictive health monitoring and pattern recognition',
+          icon: React.createElement(AnalyticsIcon, { sx: { fontSize: 40 } }),
+          color: '#7b1fa2',
+          features: ['Health Predictions', 'NLP Analysis', 'Quality Monitoring', 'Outcome Measurement'],
+          status: 'active'
+        }
+      ];
+
+      const recentActivity = [
+        { id: 1, type: 'allocation', message: 'AI allocation completed for 12 visits', time: '2 min ago', status: 'success' },
+        { id: 2, type: 'voice', message: 'Voice documentation processed for Sarah M.', time: '5 min ago', status: 'info' },
+        { id: 3, type: 'alert', message: 'Medication reminder sent to John D.', time: '8 min ago', status: 'warning' },
+        { id: 4, type: 'compliance', message: 'CQC compliance check completed', time: '15 min ago', status: 'success' }
+      ];
+
+      const serviceUsers = [
+        { id: 1, name: 'Margaret Thompson', age: 78, condition: 'Dementia Care', riskLevel: 'Medium', nextVisit: '10:30 AM' },
+        { id: 2, name: 'Robert Wilson', age: 65, condition: 'Post-Surgery Care', riskLevel: 'High', nextVisit: '2:15 PM' },
+        { id: 3, name: 'Eleanor Davis', age: 82, condition: 'Diabetes Management', riskLevel: 'Low', nextVisit: '4:00 PM' }
+      ];
+
+      const staffMembers = [
+        { id: 1, name: 'Sarah Johnson', role: 'Senior Carer', status: 'On Duty', visits: 6, location: 'North District' },
+        { id: 2, name: 'Michael Brown', role: 'Care Assistant', status: 'Available', visits: 4, location: 'Central District' },
+        { id: 3, name: 'Emma Wilson', role: 'Nurse', status: 'In Transit', visits: 5, location: 'South District' }
+      ];
+
+      const handleTabChange = (event, newValue) => {
+        setActiveTab(newValue);
+      };
+
+      const toggleVoice = () => {
+        setVoiceEnabled(!voiceEnabled);
+        if (!voiceEnabled) {
+          setTimeout(() => {
+            alert('🎤 Voice commands activated! Try saying "Show today\'s schedule" or "Display service users"');
+          }, 500);
+        }
+      };
+
+      const getRiskColor = (level) => {
+        switch (level) {
+          case 'High': return '#d32f2f';
+          case 'Medium': return '#f57c00';
+          case 'Low': return '#388e3c';
+          default: return '#757575';
+        }
+      };
+
+      const getStatusColor = (status) => {
+        switch (status) {
+          case 'On Duty': return '#388e3c';
+          case 'Available': return '#1976d2';
+          case 'In Transit': return '#f57c00';
+          default: return '#757575';
+        }
+      };
+
+      return React.createElement(Container, { maxWidth: "xl", sx: { mt: 2, mb: 4 } },
+        // Header
+        React.createElement(Paper, {
+          elevation: 3,
+          sx: { p: 3, mb: 3, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }
+        },
+          React.createElement(Grid, { container: true, alignItems: "center", justifyContent: "space-between" },
+            React.createElement(Grid, { item: true },
+              React.createElement(Typography, { variant: "h3", component: "h1", gutterBottom: true, sx: { fontWeight: 'bold' } },
+                "🏥 CareUnity Network"
+              ),
+              React.createElement(Typography, { variant: "h6", sx: { opacity: 0.9 } },
+                "Next Generation Care Management System"
+              ),
+              React.createElement(Typography, { variant: "body2", sx: { opacity: 0.8, mt: 1 } },
+                `${currentTime.toLocaleString()} • System Status: Operational`
+              )
+            ),
+            React.createElement(Grid, { item: true },
+              React.createElement(Box, { sx: { display: 'flex', alignItems: 'center', gap: 2 } },
+                React.createElement(Badge, { badgeContent: notifications, color: "error" },
+                  React.createElement(IconButton, { color: "inherit" },
+                    React.createElement(NotificationsIcon)
+                  )
+                ),
+                React.createElement(FormControlLabel, {
+                  control: React.createElement(Switch, {
+                    checked: voiceEnabled,
+                    onChange: toggleVoice,
+                    color: "default"
+                  }),
+                  label: React.createElement(Box, { sx: { display: 'flex', alignItems: 'center', gap: 1 } },
+                    React.createElement(MicIcon),
+                    `Voice ${voiceEnabled ? 'ON' : 'OFF'}`
+                  )
+                })
+              )
+            )
+          )
+        ),
+
+        // Emergency Alerts
+        systemStats.emergencyAlerts > 0 && React.createElement(Alert, { severity: "warning", sx: { mb: 3 } },
+          React.createElement(AlertTitle, null, "Emergency Alerts"),
+          `${systemStats.emergencyAlerts} urgent care situations require immediate attention.`,
+          React.createElement(Button, { color: "inherit", size: "small", sx: { ml: 2 } },
+            "View Details"
+          )
+        ),
+
+        // System Stats Overview
+        React.createElement(Grid, { container: true, spacing: 3, sx: { mb: 4 } },
+          React.createElement(Grid, { item: true, xs: 12, sm: 6, md: 3 },
+            React.createElement(Card, { sx: { height: '100%', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' } },
+              React.createElement(CardContent, null,
+                React.createElement(Box, { sx: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+                  React.createElement(Box, null,
+                    React.createElement(Typography, { variant: "h4", component: "div", sx: { fontWeight: 'bold' } },
+                      systemStats.totalServiceUsers
+                    ),
+                    React.createElement(Typography, { variant: "body2", sx: { opacity: 0.9 } },
+                      "Service Users"
+                    )
+                  ),
+                  React.createElement(PeopleIcon, { sx: { fontSize: 40, opacity: 0.8 } })
+                )
+              )
+            )
+          ),
+
+          React.createElement(Grid, { item: true, xs: 12, sm: 6, md: 3 },
+            React.createElement(Card, { sx: { height: '100%', background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', color: 'white' } },
+              React.createElement(CardContent, null,
+                React.createElement(Box, { sx: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+                  React.createElement(Box, null,
+                    React.createElement(Typography, { variant: "h4", component: "div", sx: { fontWeight: 'bold' } },
+                      systemStats.activeStaff
+                    ),
+                    React.createElement(Typography, { variant: "body2", sx: { opacity: 0.9 } },
+                      "Active Staff"
+                    )
+                  ),
+                  React.createElement(GroupIcon, { sx: { fontSize: 40, opacity: 0.8 } })
+                )
+              )
+            )
+          ),
+
+          React.createElement(Grid, { item: true, xs: 12, sm: 6, md: 3 },
+            React.createElement(Card, { sx: { height: '100%', background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', color: 'white' } },
+              React.createElement(CardContent, null,
+                React.createElement(Box, { sx: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+                  React.createElement(Box, null,
+                    React.createElement(Typography, { variant: "h4", component: "div", sx: { fontWeight: 'bold' } },
+                      systemStats.todaysVisits
+                    ),
+                    React.createElement(Typography, { variant: "body2", sx: { opacity: 0.9 } },
+                      "Today's Visits"
+                    ),
+                    React.createElement(Typography, { variant: "caption", sx: { opacity: 0.8 } },
+                      `${systemStats.completionRate}% completed`
+                    )
+                  ),
+                  React.createElement(AccessTimeIcon, { sx: { fontSize: 40, opacity: 0.8 } })
+                )
+              )
+            )
+          ),
+
+          React.createElement(Grid, { item: true, xs: 12, sm: 6, md: 3 },
+            React.createElement(Card, { sx: { height: '100%', background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', color: '#333' } },
+              React.createElement(CardContent, null,
+                React.createElement(Box, { sx: { display: 'flex', alignItems: 'center', justifyContent: 'space-between' } },
+                  React.createElement(Box, null,
+                    React.createElement(Typography, { variant: "h4", component: "div", sx: { fontWeight: 'bold' } },
+                      `${systemStats.cqcCompliance}%`
+                    ),
+                    React.createElement(Typography, { variant: "body2" },
+                      "CQC Compliance"
+                    ),
+                    React.createElement(LinearProgress, {
+                      variant: "determinate",
+                      value: systemStats.cqcCompliance,
+                      sx: { mt: 1, height: 6, borderRadius: 3 }
+                    })
+                  ),
+                  React.createElement(SecurityIcon, { sx: { fontSize: 40, opacity: 0.8 } })
+                )
+              )
+            )
+          )
+        ),
+
+        // Main Content Tabs
+        React.createElement(Paper, { elevation: 2, sx: { mb: 4 } },
+          React.createElement(Tabs, {
+            value: activeTab,
+            onChange: handleTabChange,
+            variant: "scrollable",
+            scrollButtons: "auto"
+          },
+            React.createElement(Tab, { label: "System Overview", icon: React.createElement(DashboardIcon) }),
+            React.createElement(Tab, { label: "Core Modules", icon: React.createElement(LocalHospitalIcon) }),
+            React.createElement(Tab, { label: "Service Users", icon: React.createElement(PeopleIcon) }),
+            React.createElement(Tab, { label: "Staff Management", icon: React.createElement(GroupIcon) }),
+            React.createElement(Tab, { label: "Recent Activity", icon: React.createElement(TrendingUpIcon) })
+          ),
+
+          React.createElement(Box, { sx: { p: 3 } },
+            // Tab 0: System Overview
+            activeTab === 0 && React.createElement(Grid, { container: true, spacing: 3 },
+              React.createElement(Grid, { item: true, xs: 12, md: 6 },
+                React.createElement(Card, { sx: { height: '100%' } },
+                  React.createElement(CardContent, null,
+                    React.createElement(Typography, { variant: "h6", gutterBottom: true },
+                      "System Health Metrics"
+                    ),
+                    React.createElement(Box, { sx: { mb: 2 } },
+                      React.createElement(Typography, { variant: "body2", color: "text.secondary" },
+                        "System Uptime"
+                      ),
+                      React.createElement(LinearProgress, {
+                        variant: "determinate",
+                        value: systemStats.systemUptime,
+                        sx: { height: 8, borderRadius: 4, mb: 1 }
+                      }),
+                      React.createElement(Typography, { variant: "caption" }, `${systemStats.systemUptime}%`)
+                    ),
+                    React.createElement(Box, { sx: { mb: 2 } },
+                      React.createElement(Typography, { variant: "body2", color: "text.secondary" },
+                        "Visit Completion Rate"
+                      ),
+                      React.createElement(LinearProgress, {
+                        variant: "determinate",
+                        value: systemStats.completionRate,
+                        sx: { height: 8, borderRadius: 4, mb: 1 },
+                        color: "success"
+                      }),
+                      React.createElement(Typography, { variant: "caption" }, `${systemStats.completionRate}%`)
+                    ),
+                    React.createElement(Box, null,
+                      React.createElement(Typography, { variant: "body2", color: "text.secondary" },
+                        "Care Hours This Month"
+                      ),
+                      React.createElement(Typography, { variant: "h4", color: "primary" },
+                        systemStats.careHours
+                      )
+                    )
+                  )
+                )
+              ),
+
+              React.createElement(Grid, { item: true, xs: 12, md: 6 },
+                React.createElement(Card, { sx: { height: '100%' } },
+                  React.createElement(CardContent, null,
+                    React.createElement(Typography, { variant: "h6", gutterBottom: true },
+                      "Key Performance Indicators"
+                    ),
+                    React.createElement(List, null,
+                      React.createElement(ListItem, null,
+                        React.createElement(ListItemIcon, null,
+                          React.createElement(CheckCircleIcon, { color: "success" })
+                        ),
+                        React.createElement(ListItemText, {
+                          primary: "CQC Compliance",
+                          secondary: `${systemStats.cqcCompliance}% - Excellent`
+                        })
+                      ),
+                      React.createElement(ListItem, null,
+                        React.createElement(ListItemIcon, null,
+                          React.createElement(TrendingUpIcon, { color: "primary" })
+                        ),
+                        React.createElement(ListItemText, {
+                          primary: "Service Quality Score",
+                          secondary: "4.8/5.0 - Outstanding"
+                        })
+                      ),
+                      React.createElement(ListItem, null,
+                        React.createElement(ListItemIcon, null,
+                          React.createElement(SecurityIcon, { color: "info" })
+                        ),
+                        React.createElement(ListItemText, {
+                          primary: "Data Security",
+                          secondary: "ISO 27001 Compliant"
+                        })
+                      )
+                    )
+                  )
+                )
+              )
+            ),
+
+            // Tab 1: Core Modules
+            activeTab === 1 && React.createElement(Grid, { container: true, spacing: 3 },
+              ...modules.map((module) =>
+                React.createElement(Grid, { item: true, xs: 12, md: 6, lg: 4, key: module.id },
+                  React.createElement(Card, {
+                    sx: {
+                      height: '100%',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: 4
+                      }
+                    },
+                    onClick: () => alert(`🚀 Launching ${module.title}...\n\nThis would open the full module interface with all features.`)
+                  },
+                    React.createElement(CardContent, null,
+                      React.createElement(Box, { sx: { display: 'flex', alignItems: 'center', mb: 2 } },
+                        React.createElement(Box, { sx: { color: module.color, mr: 2 } },
+                          module.icon
+                        ),
+                        React.createElement(Typography, { variant: "h6", component: "div" },
+                          module.title
+                        )
+                      ),
+                      React.createElement(Typography, { variant: "body2", color: "text.secondary", sx: { mb: 2 } },
+                        module.description
+                      ),
+                      React.createElement(Box, { sx: { display: 'flex', flexWrap: 'wrap', gap: 1 } },
+                        ...module.features.map((feature, index) =>
+                          React.createElement(Chip, {
+                            key: index,
+                            label: feature,
+                            size: "small",
+                            variant: "outlined",
+                            sx: { borderColor: module.color, color: module.color }
+                          })
+                        )
+                      ),
+                      React.createElement(Button, {
+                        variant: "contained",
+                        fullWidth: true,
+                        sx: { mt: 2, backgroundColor: module.color },
+                        startIcon: React.createElement(DashboardIcon)
+                      },
+                        "Launch Module"
+                      )
+                    )
+                  )
+                )
+              )
+            ),
+
+            // Tab 2: Service Users
+            activeTab === 2 && React.createElement(Grid, { container: true, spacing: 3 },
+              ...serviceUsers.map((user) =>
+                React.createElement(Grid, { item: true, xs: 12, md: 6, lg: 4, key: user.id },
+                  React.createElement(Card, { sx: { height: '100%' } },
+                    React.createElement(CardContent, null,
+                      React.createElement(Box, { sx: { display: 'flex', alignItems: 'center', mb: 2 } },
+                        React.createElement(Avatar, { sx: { mr: 2, bgcolor: getRiskColor(user.riskLevel) } },
+                          user.name.split(' ').map(n => n[0]).join('')
+                        ),
+                        React.createElement(Box, null,
+                          React.createElement(Typography, { variant: "h6" }, user.name),
+                          React.createElement(Typography, { variant: "body2", color: "text.secondary" },
+                            `Age ${user.age} • ${user.condition}`
+                          )
+                        )
+                      ),
+                      React.createElement(Box, { sx: { mb: 2 } },
+                        React.createElement(Chip, {
+                          label: `${user.riskLevel} Risk`,
+                          size: "small",
+                          sx: {
+                            backgroundColor: getRiskColor(user.riskLevel),
+                            color: 'white'
+                          }
+                        })
+                      ),
+                      React.createElement(Box, { sx: { display: 'flex', alignItems: 'center', gap: 1 } },
+                        React.createElement(AccessTimeIcon, { fontSize: "small", color: "action" }),
+                        React.createElement(Typography, { variant: "body2" },
+                          `Next visit: ${user.nextVisit}`
+                        )
+                      ),
+                      React.createElement(Button, {
+                        variant: "outlined",
+                        fullWidth: true,
+                        sx: { mt: 2 },
+                        startIcon: React.createElement(AssignmentIcon)
+                      },
+                        "View Care Plan"
+                      )
+                    )
+                  )
+                )
+              )
+            ),
+
+            // Tab 3: Staff Management
+            activeTab === 3 && React.createElement(Grid, { container: true, spacing: 3 },
+              ...staffMembers.map((staff) =>
+                React.createElement(Grid, { item: true, xs: 12, md: 6, lg: 4, key: staff.id },
+                  React.createElement(Card, { sx: { height: '100%' } },
+                    React.createElement(CardContent, null,
+                      React.createElement(Box, { sx: { display: 'flex', alignItems: 'center', mb: 2 } },
+                        React.createElement(Avatar, { sx: { mr: 2, bgcolor: getStatusColor(staff.status) } },
+                          staff.name.split(' ').map(n => n[0]).join('')
+                        ),
+                        React.createElement(Box, null,
+                          React.createElement(Typography, { variant: "h6" }, staff.name),
+                          React.createElement(Typography, { variant: "body2", color: "text.secondary" },
+                            staff.role
+                          )
+                        )
+                      ),
+                      React.createElement(Box, { sx: { mb: 2 } },
+                        React.createElement(Chip, {
+                          label: staff.status,
+                          size: "small",
+                          sx: {
+                            backgroundColor: getStatusColor(staff.status),
+                            color: 'white'
+                          }
+                        })
+                      ),
+                      React.createElement(Box, { sx: { mb: 1 } },
+                        React.createElement(Typography, { variant: "body2" },
+                          `📍 ${staff.location}`
+                        ),
+                        React.createElement(Typography, { variant: "body2" },
+                          `📋 ${staff.visits} visits today`
+                        )
+                      ),
+                      React.createElement(Button, {
+                        variant: "outlined",
+                        fullWidth: true,
+                        sx: { mt: 2 },
+                        startIcon: React.createElement(ScheduleIcon)
+                      },
+                        "View Schedule"
+                      )
+                    )
+                  )
+                )
+              )
+            ),
+
+            // Tab 4: Recent Activity
+            activeTab === 4 && React.createElement(Card, null,
+              React.createElement(CardContent, null,
+                React.createElement(Typography, { variant: "h6", gutterBottom: true },
+                  "Recent System Activity"
+                ),
+                React.createElement(List, null,
+                  ...recentActivity.map((activity) =>
+                    React.createElement(ListItem, { key: activity.id },
+                      React.createElement(ListItemIcon, null,
+                        activity.status === 'success' && React.createElement(CheckCircleIcon, { color: "success" }),
+                        activity.status === 'warning' && React.createElement(WarningIcon, { color: "warning" }),
+                        activity.status === 'info' && React.createElement(NotificationsIcon, { color: "info" })
+                      ),
+                      React.createElement(ListItemText, {
+                        primary: activity.message,
+                        secondary: activity.time
+                      })
+                    )
+                  )
+                )
+              )
+            )
+          )
+        ),
+
+        // Feature Highlights
+        React.createElement(Paper, {
+          elevation: 2,
+          sx: { p: 3, mb: 4, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white' }
+        },
+          React.createElement(Typography, { variant: "h5", gutterBottom: true, sx: { fontWeight: 'bold' } },
+            "🚀 CareUnity Key Features"
+          ),
+          React.createElement(Grid, { container: true, spacing: 3 },
+            React.createElement(Grid, { item: true, xs: 12, md: 3 },
+              React.createElement(Box, { sx: { textAlign: 'center' } },
+                React.createElement(MicIcon, { sx: { fontSize: 48, mb: 1 } }),
+                React.createElement(Typography, { variant: "h6" }, "Voice-First Interface"),
+                React.createElement(Typography, { variant: "body2", sx: { opacity: 0.9 } },
+                  "Hands-free documentation and navigation"
+                )
+              )
+            ),
+            React.createElement(Grid, { item: true, xs: 12, md: 3 },
+              React.createElement(Box, { sx: { textAlign: 'center' } },
+                React.createElement(AnalyticsIcon, { sx: { fontSize: 48, mb: 1 } }),
+                React.createElement(Typography, { variant: "h6" }, "AI-Powered Insights"),
+                React.createElement(Typography, { variant: "body2", sx: { opacity: 0.9 } },
+                  "Predictive analytics and smart recommendations"
+                )
+              )
+            ),
+            React.createElement(Grid, { item: true, xs: 12, md: 3 },
+              React.createElement(Box, { sx: { textAlign: 'center' } },
+                React.createElement(SecurityIcon, { sx: { fontSize: 48, mb: 1 } }),
+                React.createElement(Typography, { variant: "h6" }, "Enterprise Security"),
+                React.createElement(Typography, { variant: "body2", sx: { opacity: 0.9 } },
+                  "GDPR compliant with end-to-end encryption"
+                )
+              )
+            ),
+            React.createElement(Grid, { item: true, xs: 12, md: 3 },
+              React.createElement(Box, { sx: { textAlign: 'center' } },
+                React.createElement(LocalHospitalIcon, { sx: { fontSize: 48, mb: 1 } }),
+                React.createElement(Typography, { variant: "h6" }, "Person-Centered Care"),
+                React.createElement(Typography, { variant: "body2", sx: { opacity: 0.9 } },
+                  "Individualized care plans and family engagement"
+                )
+              )
+            )
+          )
+        ),
+
+        // Footer
+        React.createElement(Paper, { elevation: 1, sx: { p: 3, textAlign: 'center', backgroundColor: '#f5f5f5' } },
+          React.createElement(Typography, { variant: "h6", gutterBottom: true },
+            "CareUnity Network - Comprehensive Proof of Concept"
+          ),
+          React.createElement(Typography, { variant: "body2", color: "text.secondary", sx: { mb: 2 } },
+            "Enhancing human care through intelligent technology • Voice-First • Person-Centered • Predictive • Comprehensive"
+          ),
+          React.createElement(Box, { sx: { display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' } },
+            React.createElement(Button, {
+              variant: "contained",
+              color: "primary",
+              startIcon: React.createElement(DashboardIcon),
+              onClick: () => alert('🚀 This would launch the full CareUnity system with all modules and features!')
+            },
+              "Launch Full System"
+            ),
+            React.createElement(Button, {
+              variant: "outlined",
+              startIcon: React.createElement(PhoneIcon),
+              onClick: () => alert('📞 Contact our sales team for a personalized demonstration!')
+            },
+              "Contact Sales"
+            ),
+            React.createElement(Button, {
+              variant: "outlined",
+              startIcon: React.createElement(EmailIcon),
+              onClick: () => alert('📧 Request a detailed demo of CareUnity features!')
+            },
+              "Request Demo"
+            )
+          )
+        )
+      );
+    }
+
+    function App() {
+      return React.createElement(ThemeProvider, { theme },
+        React.createElement(CareUnityPOC)
+      );
+    }
+
+    // Render the application
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+  </script>
+</body>
+</html>
