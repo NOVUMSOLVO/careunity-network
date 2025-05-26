@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!-- 
+    This file contains suppressions for known false positives in dependency-check.
+    Add suppressions here for vulnerabilities that don't apply to your use case.
+    -->
+    
+    <!-- Example suppression for a specific CVE -->
+    <!--
+    <suppress>
+        <notes><![CDATA[
+        This vulnerability doesn't apply to our use case because we don't use the affected functionality.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/package-name@.*$</packageUrl>
+        <cve>CVE-2021-12345</cve>
+    </suppress>
+    -->
+    
+    <!-- Suppress development dependencies that are not used in production -->
+    <suppress>
+        <notes><![CDATA[
+        Development dependencies are not deployed to production.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/@types/.*$</packageUrl>
+    </suppress>
+    
+    <suppress>
+        <notes><![CDATA[
+        Testing libraries are not deployed to production.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/@testing-library/.*$</packageUrl>
+    </suppress>
+    
+    <suppress>
+        <notes><![CDATA[
+        Build tools are not deployed to production.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/(vite|esbuild|typescript|eslint|prettier)@.*$</packageUrl>
+    </suppress>
+    
+    <!-- Suppress known false positives for common packages -->
+    <suppress>
+        <notes><![CDATA[
+        This is a false positive for Node.js built-in modules.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/node@.*$</packageUrl>
+    </suppress>
+</suppressions>

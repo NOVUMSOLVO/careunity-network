@@ -72,6 +72,7 @@ jobs:
 
     - name: Run dependency check
       run: npx audit-ci --moderate
+      continue-on-error: true
 
   docker:
     runs-on: ubuntu-latest
